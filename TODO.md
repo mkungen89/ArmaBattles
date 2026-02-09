@@ -1205,6 +1205,17 @@ Prioritera dessa för snabb impact:
   - [x] Server-side category filtering support in NotificationController
   - **Files:** `resources/views/layouts/app.blade.php` (notification dropdown), `app/Http/Controllers/NotificationController.php`
 
+- [x] **Standalone Admin Panel Layout** 🟢 ✅ **KLART 2026-02-09**
+  - [x] Replace `@extends('layouts.app')` with self-contained HTML document
+  - [x] Own `<!DOCTYPE>`, `<head>` with Vite assets, Alpine.js, Lucide icons
+  - [x] Fixed sidebar (w-64) with all admin nav links, collapsible on mobile
+  - [x] Sticky top bar with page title (`@yield('admin-title')`), "View Site" button, user avatar
+  - [x] Full-width main content — no competing sidebars or background image
+  - [x] Clean `bg-gray-900` background instead of Arma Reforger wallpaper
+  - [x] Mobile responsive — sidebar slides in with dark overlay, hamburger toggle
+  - [x] Zero changes needed to child views, routes, controllers, or middleware
+  - **Files:** `resources/views/admin/layout.blade.php` (rewritten)
+
 - [x] **Server Status Widget** 🟢 ✅ **KLART 2026-02-09**
   - [x] Embeddable widget för external sites (standalone HTML, auto-refresh 60s)
   - [x] Iframe embed code generator with live preview
