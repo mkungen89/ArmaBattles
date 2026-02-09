@@ -1,0 +1,2075 @@
+openapi: 3.0.3
+info:
+  title: Reforger Community API
+  version: '1.0'
+  description: |
+    Game statistics and server monitoring API for Arma Reforger.
+
+    ## Authentication
+
+    All endpoints require a **Bearer token** (Laravel Sanctum). Obtain tokens from the admin panel at `/admin/game-stats/api-tokens`.
+
+    ```
+    Authorization: Bearer <your-token>
+    ```
+
+    ## Rate Limits
+
+    Rate limits depend on your token type:
+
+    | Tier | Limit |
+    |------|-------|
+    | Standard | 60 requests/min |
+    | High-Volume | 180 requests/min |
+    | Premium | 300 requests/min |
+
+    When rate-limited, the API returns `429 Too Many Requests`.
+
+    ## Versioning
+
+    **Current version:** `/api/v1/` (introduced 2026-02-08)
+
+    The legacy `/api/*` endpoints are deprecated and will sunset on **2026-06-01**. Deprecated responses include `X-API-Deprecated` and `X-API-Sunset-Date` headers.
+
+  contact:
+    name: Reforger Community
+  license:
+    name: Proprietary
+
+servers:
+  - url: /api/v1
+    description: Current API (v1)
+
+tags:
+  - name: Server Status
+    description: Server status reporting and querying
+  - name: Players
+    description: Player data, stats, and event history
+  - name: Combat
+    description: Kill events, damage tracking, and shooting stats
+  - name: World Events
+    description: Base captures, buildings, consciousness, groups, and XP
+  - name: Logistics
+    description: Distance tracking, supplies, grenades, and healing
+  - name: Social & GM
+    description: Chat, editor actions, GM sessions, and player reports
+  - name: Anti-Cheat
+    description: Raven Anti-Cheat events and statistics
+  - name: Leaderboards
+    description: Ranked player leaderboards
+  - name: Events & Logs
+    description: Raw event log queries
+  - name: Statistics
+    description: Aggregated statistics and analytics
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: Laravel Sanctum API token
+
+  parameters:
+    ServerId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: Server ID
+    PlayerId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Player UUID
+    PerPage:
+      name: per_page
+      in: query
+      schema:
+        type: integer
+        default: 25
+      description: Results per page
+    PerPage50:
+      name: per_page
+      in: query
+      schema:
+        type: integer
+        default: 50
+      description: Results per page
+    Limit:
+      name: limit
+      in: query
+      schema:
+        type: integer
+        default: 100
+      description: Maximum results to return
+    ServerIdFilter:
+      name: server_id
+      in: query
+      schema:
+        type: integer
+      description: Filter by server ID
+
+  schemas:
+    SuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+      required:
+        - success
+
+    SuccessWithIdResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        id:
+          type: integer
+          example: 42
+      required:
+        - success
+        - id
+
+    ValidationErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: The server_id field is required.
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+
+    RateLimitResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Too Many Attempts.
+
+    PaginatedResponse:
+      type: object
+      properties:
+        current_page:
+          type: integer
+        data:
+          type: array
+          items: {}
+        first_page_url:
+          type: string
+        from:
+          type: integer
+          nullable: true
+        last_page:
+          type: integer
+        last_page_url:
+          type: string
+        next_page_url:
+          type: string
+          nullable: true
+        path:
+          type: string
+        per_page:
+          type: integer
+        prev_page_url:
+          type: string
+          nullable: true
+        to:
+          type: integer
+          nullable: true
+        total:
+          type: integer
+
+    Position:
+      type: array
+      description: "[x, y, z] coordinates"
+      items:
+        type: number
+      example: [1024.5, 12.3, 2048.7]
+
+    PlayerStatsObject:
+      type: object
+      properties:
+        id:
+          type: integer
+        server_id:
+          type: integer
+        player_uuid:
+          type: string
+        player_name:
+          type: string
+        kills:
+          type: integer
+        deaths:
+          type: integer
+        headshots:
+          type: integer
+        team_kills:
+          type: integer
+        total_roadkills:
+          type: integer
+        playtime_seconds:
+          type: integer
+        total_distance:
+          type: number
+        shots_fired:
+          type: integer
+        grenades_thrown:
+          type: integer
+        heals_given:
+          type: integer
+        heals_received:
+          type: integer
+        bases_captured:
+          type: integer
+        supplies_delivered:
+          type: integer
+        xp_total:
+          type: integer
+        hits_head:
+          type: integer
+        hits_torso:
+          type: integer
+        hits_arms:
+          type: integer
+        hits_legs:
+          type: integer
+        total_hits:
+          type: integer
+        total_damage_dealt:
+          type: number
+        last_seen_at:
+          type: string
+          format: date-time
+
+security:
+  - bearerAuth: []
+
+paths:
+  # ============================================================
+  # WRITE ENDPOINTS - Server Status
+  # ============================================================
+
+  /server-status:
+    post:
+      tags: [Server Status]
+      summary: Report server status
+      description: Submit a periodic server status snapshot. Uses upsert on server_id.
+      operationId: storeServerStatus
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [server_id]
+              properties:
+                server_id:
+                  type: integer
+                server_name:
+                  type: string
+                  maxLength: 255
+                map:
+                  type: string
+                  maxLength: 255
+                players:
+                  type: integer
+                max_players:
+                  type: integer
+                ping:
+                  type: integer
+                timestamp:
+                  type: string
+      responses:
+        '200':
+          description: Status recorded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        '429':
+          description: Rate limited
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RateLimitResponse'
+
+  # ============================================================
+  # WRITE ENDPOINTS - Combat
+  # ============================================================
+
+  /player-kills:
+    post:
+      tags: [Combat]
+      summary: Record a kill event
+      description: Store a kill event and update aggregated player_stats for both killer and victim.
+      operationId: storeKill
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [server_id]
+              properties:
+                server_id:
+                  type: integer
+                killer_name:
+                  type: string
+                  maxLength: 255
+                killer_uuid:
+                  type: string
+                  maxLength: 255
+                killer_faction:
+                  type: string
+                  maxLength: 255
+                victim_name:
+                  type: string
+                  maxLength: 255
+                victim_uuid:
+                  type: string
+                  maxLength: 255
+                victim_type:
+                  type: string
+                  maxLength: 50
+                  description: "'AI' or 'PLAYER'"
+                weapon_name:
+                  type: string
+                  maxLength: 255
+                weapon_type:
+                  type: string
+                  maxLength: 255
+                kill_distance:
+                  type: number
+                is_headshot:
+                  type: boolean
+                is_team_kill:
+                  type: boolean
+                is_roadkill:
+                  type: boolean
+                event_type:
+                  type: string
+                  maxLength: 50
+                timestamp:
+                  type: string
+      responses:
+        '200':
+          description: Kill recorded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessWithIdResponse'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+
+  /damage-events:
+    post:
+      tags: [Combat]
+      summary: Record damage events (batch)
+      description: Submit an array of damage events. Updates hit zone stats per event.
+      operationId: storeDamageEvents
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [events]
+              properties:
+                events:
+                  type: array
+                  minItems: 1
+                  items:
+                    type: object
+                    required: [server_id]
+                    properties:
+                      server_id:
+                        type: integer
+                      damage_type:
+                        type: string
+                        maxLength: 50
+                      damage_amount:
+                        type: number
+                      hit_zone_name:
+                        type: string
+                        maxLength: 50
+                        description: "HEAD, UPPERTORSO, LOWERTORSO, LEFTARM, RIGHTARM, LEFTLEG, RIGHTLEG"
+                      killer_name:
+                        type: string
+                        maxLength: 255
+                      killer_uuid:
+                        type: string
+                        maxLength: 255
+                      killer_id:
+                        type: integer
+                      killer_faction:
+                        type: string
+                        maxLength: 255
+                      victim_name:
+                        type: string
+                        maxLength: 255
+                      victim_uuid:
+                        type: string
+                        maxLength: 255
+                      victim_id:
+                        type: integer
+                      victim_faction:
+                        type: string
+                        maxLength: 255
+                      weapon_name:
+                        type: string
+                        maxLength: 255
+                      distance:
+                        type: number
+                      is_friendly_fire:
+                        type: boolean
+                      timestamp:
+                        type: string
+      responses:
+        '200':
+          description: Damage events recorded
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  inserted:
+                    type: integer
+                    example: 5
+
+  /player-shooting:
+    post:
+      tags: [Combat]
+      summary: Record shooting event
+      description: Store shots fired data and update player_stats.shots_fired.
+      operationId: storeShooting
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [server_id, player_name, total_rounds]
+              properties:
+                server_id:
+                  type: integer
+                player_name:
+                  type: string
+                  maxLength: 255
+                player_uuid:
+                  type: string
+                  maxLength: 255
+                player_faction:
+                  type: string
+                  maxLength: 255
+                weapons:
+                  type: string
+                  maxLength: 500
+                total_rounds:
+                  type: integer
+                timestamp:
+                  type: string
+      responses:
+        '200':
+          description: Shooting data recorded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessWithIdResponse'
+
+  # ============================================================
+  # WRITE ENDPOINTS - Players
+  # ============================================================
+
+  /player-stats:
+    post:
+      tags: [Players]
+      summary: Upsert player stats
+      description: Create or update aggregated player statistics. Uses upsert on player_uuid.
+      operationId: storePlayerStats
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [server_id, player_uuid, player_name]
+              properties:
+                server_id:
+                  type: integer
+                player_uuid:
+                  type: string
+                  maxLength: 255
+                player_name:
+                  type: string
+                  maxLength: 255
+                kills:
+                  type: integer
+                deaths:
+                  type: integer
+                headshots:
+                  type: integer
+                team_kills:
+                  type: integer
+                playtime_seconds:
+                  type: integer
+                total_distance:
+                  type: number
+                shots_fired:
+                  type: integer
+                grenades_thrown:
+                  type: integer
+                heals_given:
+                  type: integer
+                heals_received:
+                  type: integer
+                bases_captured:
+                  type: integer
+                supplies_delivered:
+                  type: integer
+                xp_total:
+                  type: integer
+      responses:
+        '200':
+          description: Stats saved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+
+  /connections:
+    post:
+      tags: [Players]
+      summary: Record player connection event
+      description: Store a player connect or disconnect event.
+      operationId: storeConnection
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [server_id, event_type, player_name]
+              properties:
+                server_id:
+                  type: integer
+                event_type:
+                  type: string
+                  enum: [CONNECT, DISCONNECT]
+                player_name:
+                  type: string
+                  maxLength: 255
+                player_uuid:
+                  type: string
+                  maxLength: 255
+                player_id:
+                  type: integer
+                player_platform:
+                  type: string
+                  maxLength: 50
+                player_faction:
+                  type: string
+                  maxLength: 255
+                timestamp:
+                  type: string
+      responses:
+        '200':
+          description: Connection recorded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessWithIdResponse'
+
+  # ============================================================
+  # WRITE ENDPOINTS - World Events
+  # ============================================================
+
+  /base-events:
+    post:
+      tags: [World Events]
+      summary: Record base/objective event
+      description: Store a base capture or objective event. Capture types (CAPTURED, CAPTURE, BASE_SEIZED, BASE_CAPTURE) increment player_stats.bases_captured.
+      operationId: storeBaseEvent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [server_id, event_type]
+              properties:
+                server_id:
+                  type: integer
+                event_type:
+                  type: string
+                  maxLength: 50
+                  description: "e.g. CAPTURED, CAPTURE, BASE_SEIZED, BASE_CAPTURE, CONTESTED"
+                base_name:
+                  type: string
+                  maxLength: 255
+                position:
+                  $ref: '#/components/schemas/Position'
+                player_name:
+                  type: string
+                  maxLength: 255
+                player_uuid:
+                  type: string
+                  maxLength: 255
+                player_faction:
+                  type: string
+                  maxLength: 255
+                capturing_faction:
+                  type: string
+                  maxLength: 255
+                previous_faction:
+                  type: string
+                  maxLength: 255
+                xp_awarded:
+                  type: integer
+                timestamp:
+                  type: string
+      responses:
+        '200':
+          description: Base event recorded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessWithIdResponse'
+
+  /building-events:
+    post:
+      tags: [World Events]
+      summary: Record building/composition event
+      description: Store a building or composition placement event.
+      operationId: storeBuildingEvent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [server_id, event_type, player_name]
+              properties:
+                server_id:
+                  type: integer
+                event_type:
+                  type: string
+                  maxLength: 50
+                player_name:
+                  type: string
+                  maxLength: 255
+                player_uuid:
+                  type: string
+                  maxLength: 255
+                player_faction:
+                  type: string
+                  maxLength: 255
+                composition_name:
+                  type: string
+                  maxLength: 255
+                composition_type:
+                  type: string
+                  maxLength: 255
+                position:
+                  $ref: '#/components/schemas/Position'
+                timestamp:
+                  type: string
+      responses:
+        '200':
+          description: Building event recorded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessWithIdResponse'
+
+  /consciousness-events:
+    post:
+      tags: [World Events]
+      summary: Record consciousness state change
+      description: Store a player knocked/unconscious state change event.
+      operationId: storeConsciousnessEvent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [server_id, event_type, player_name]
+              properties:
+                server_id:
+                  type: integer
+                event_type:
+                  type: string
+                  maxLength: 50
+                player_name:
+                  type: string
+                  maxLength: 255
+                player_uuid:
+                  type: string
+                  maxLength: 255
+                player_faction:
+                  type: string
+                  maxLength: 255
+                state:
+                  type: string
+                  maxLength: 50
+                position:
+                  $ref: '#/components/schemas/Position'
+                knocker_name:
+                  type: string
+                  maxLength: 255
+                knocker_uuid:
+                  type: string
+                  maxLength: 255
+                is_friendly_knock:
+                  type: boolean
+                timestamp:
+                  type: string
+      responses:
+        '200':
+          description: Consciousness event recorded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessWithIdResponse'
+
+  /group-events:
+    post:
+      tags: [World Events]
+      summary: Record group/squad event
+      description: Store a squad join or leave event.
+      operationId: storeGroupEvent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [server_id, event_type, player_name, group_name]
+              properties:
+                server_id:
+                  type: integer
+                event_type:
+                  type: string
+                  maxLength: 50
+                player_name:
+                  type: string
+                  maxLength: 255
+                player_uuid:
+                  type: string
+                  maxLength: 255
+                player_faction:
+                  type: string
+                  maxLength: 255
+                group_name:
+                  type: string
+                  maxLength: 255
+                timestamp:
+                  type: string
+      responses:
+        '200':
+          description: Group event recorded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessWithIdResponse'
+
+  /xp-events:
+    post:
+      tags: [World Events]
+      summary: Record XP reward event
+      description: Store an XP reward event. The `xp_type` field is mapped to `reward_type` column. Updates player_stats.xp_total.
+      operationId: storeXpEvent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                server_id:
+                  type: integer
+                  default: 1
+                player_uuid:
+                  type: string
+                player_name:
+                  type: string
+                xp_amount:
+                  type: integer
+                  default: 0
+                xp_type:
+                  type: string
+                  description: Maps to reward_type column
+                reward_type:
+                  type: string
+                  description: Alternative to xp_type
+                timestamp:
+                  type: string
+      responses:
+        '200':
+          description: XP event recorded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessWithIdResponse'
+
+  # ============================================================
+  # WRITE ENDPOINTS - Logistics
+  # ============================================================
+
+  /player-distance:
+    post:
+      tags: [Logistics]
+      summary: Record movement/distance data
+      description: Store player movement distances for walking and vehicles. Updates player_stats.total_distance and playtime_seconds.
+      operationId: storeDistance
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                server_id:
+                  type: integer
+                  default: 1
+                player_uuid:
+                  type: string
+                player_name:
+                  type: string
+                player_faction:
+                  type: string
+                walking_distance:
+                  type: number
+                  default: 0
+                walking_time_seconds:
+                  type: integer
+                  default: 0
+                total_vehicle_distance:
+                  type: number
+                  default: 0
+                total_vehicle_time_seconds:
+                  type: integer
+                  default: 0
+                vehicles:
+                  type: array
+                  description: Per-vehicle distance breakdown
+                  items:
+                    type: object
+                is_final_log:
+                  type: boolean
+                  default: false
+                timestamp:
+                  type: string
+      responses:
+        '200':
+          description: Distance recorded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessWithIdResponse'
+
+  /player-healing:
+    post:
+      tags: [Logistics]
+      summary: Record healing event
+      description: Store a healing/medical item usage event. Updates heals_given for healer, heals_received for patient.
+      operationId: storeHealing
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [server_id, healer_name]
+              properties:
+                server_id:
+                  type: integer
+                healer_name:
+                  type: string
+                  maxLength: 255
+                healer_uuid:
+                  type: string
+                  maxLength: 255
+                healer_id:
+                  type: integer
+                patient_name:
+                  type: string
+                  maxLength: 255
+                patient_uuid:
+                  type: string
+                  maxLength: 255
+                patient_id:
+                  type: integer
+                action:
+                  type: string
+                  maxLength: 50
+                item:
+                  type: string
+                  maxLength: 100
+                is_self:
+                  type: boolean
+                timestamp:
+                  type: string
+      responses:
+        '200':
+          description: Healing recorded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessWithIdResponse'
+
+  /player-grenades:
+    post:
+      tags: [Logistics]
+      summary: Record grenade usage
+      description: Store a grenade throw event. Increments player_stats.grenades_thrown.
+      operationId: storeGrenade
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [server_id, player_name, grenade_type]
+              properties:
+                server_id:
+                  type: integer
+                player_name:
+                  type: string
+                  maxLength: 255
+                player_uuid:
+                  type: string
+                  maxLength: 255
+                player_faction:
+                  type: string
+                  maxLength: 255
+                grenade_type:
+                  type: string
+                  maxLength: 100
+                position:
+                  $ref: '#/components/schemas/Position'
+                timestamp:
+                  type: string
+      responses:
+        '200':
+          description: Grenade event recorded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessWithIdResponse'
+
+  /player-supplies:
+    post:
+      tags: [Logistics]
+      summary: Record supply delivery
+      description: Store a supply delivery event. Increments player_stats.supplies_delivered.
+      operationId: storeSupplies
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [server_id, player_name]
+              properties:
+                server_id:
+                  type: integer
+                player_name:
+                  type: string
+                  maxLength: 255
+                player_uuid:
+                  type: string
+                  maxLength: 255
+                player_faction:
+                  type: string
+                  maxLength: 255
+                position:
+                  $ref: '#/components/schemas/Position'
+                estimated_amount:
+                  type: integer
+                xp_awarded:
+                  type: integer
+                timestamp:
+                  type: string
+      responses:
+        '200':
+          description: Supply delivery recorded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessWithIdResponse'
+
+  /supply-deliveries:
+    post:
+      tags: [Logistics]
+      summary: Record supply delivery (alias)
+      description: Alias for `/player-supplies`. Same handler and schema.
+      operationId: storeSupplyDelivery
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [server_id, player_name]
+              properties:
+                server_id:
+                  type: integer
+                player_name:
+                  type: string
+                  maxLength: 255
+                player_uuid:
+                  type: string
+                  maxLength: 255
+                player_faction:
+                  type: string
+                  maxLength: 255
+                position:
+                  $ref: '#/components/schemas/Position'
+                estimated_amount:
+                  type: integer
+                xp_awarded:
+                  type: integer
+                timestamp:
+                  type: string
+      responses:
+        '200':
+          description: Supply delivery recorded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessWithIdResponse'
+
+  # ============================================================
+  # WRITE ENDPOINTS - Social & GM
+  # ============================================================
+
+  /chat-events:
+    post:
+      tags: [Social & GM]
+      summary: Record chat message
+      description: Store an in-game chat message.
+      operationId: storeChatEvent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [server_id, player_name, message]
+              properties:
+                server_id:
+                  type: integer
+                player_name:
+                  type: string
+                  maxLength: 255
+                player_uuid:
+                  type: string
+                  maxLength: 255
+                message:
+                  type: string
+                  maxLength: 1000
+                channel:
+                  type: string
+                  maxLength: 50
+                  description: "e.g. global, team, squad"
+                timestamp:
+                  type: string
+      responses:
+        '200':
+          description: Chat event recorded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessWithIdResponse'
+
+  /editor-actions:
+    post:
+      tags: [Social & GM]
+      summary: Record GM editor action
+      description: Store a Game Master editor action for audit logging.
+      operationId: storeEditorAction
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [server_id, player_name, action]
+              properties:
+                server_id:
+                  type: integer
+                player_name:
+                  type: string
+                  maxLength: 255
+                player_uuid:
+                  type: string
+                  maxLength: 255
+                player_id:
+                  type: integer
+                action:
+                  type: string
+                  maxLength: 255
+                hovered_entity_component_name:
+                  type: string
+                  maxLength: 500
+                hovered_entity_component_owner_id:
+                  type: string
+                  maxLength: 255
+                selected_entity_components_owners_ids:
+                  type: string
+                selected_entity_components_names:
+                  type: string
+                timestamp:
+                  type: string
+      responses:
+        '200':
+          description: Editor action recorded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessWithIdResponse'
+
+  /gm-sessions:
+    post:
+      tags: [Social & GM]
+      summary: Record GM session event
+      description: Store a Game Master enter or exit event.
+      operationId: storeGmSession
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [server_id, event_type, player_name]
+              properties:
+                server_id:
+                  type: integer
+                event_type:
+                  type: string
+                  enum: [GM_ENTER, GM_EXIT]
+                player_name:
+                  type: string
+                  maxLength: 255
+                player_uuid:
+                  type: string
+                  maxLength: 255
+                duration:
+                  type: integer
+                  description: Session duration in seconds (for GM_EXIT)
+                timestamp:
+                  type: string
+      responses:
+        '200':
+          description: GM session recorded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessWithIdResponse'
+
+  /player-reports:
+    post:
+      tags: [Social & GM]
+      summary: Submit a player report
+      description: Submit a player report from in-game.
+      operationId: storePlayerReport
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [server_id, reporter_name, target_name, timestamp]
+              properties:
+                server_id:
+                  type: integer
+                reporter_name:
+                  type: string
+                  maxLength: 255
+                reporter_uuid:
+                  type: string
+                  maxLength: 255
+                reporter_id:
+                  type: integer
+                target_name:
+                  type: string
+                  maxLength: 255
+                reason:
+                  type: string
+                  maxLength: 2000
+                channel:
+                  type: string
+                  maxLength: 50
+                timestamp:
+                  type: string
+      responses:
+        '201':
+          description: Report created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessWithIdResponse'
+
+  # ============================================================
+  # WRITE ENDPOINTS - Anti-Cheat
+  # ============================================================
+
+  /anticheat-events:
+    post:
+      tags: [Anti-Cheat]
+      summary: Record anti-cheat event
+      description: Store a Raven Anti-Cheat enforcement or detection event.
+      operationId: storeAnticheatEvent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [server_id, event_type]
+              properties:
+                server_id:
+                  type: integer
+                event_type:
+                  type: string
+                  enum: [ENFORCEMENT_ACTION, ENFORCEMENT_SKIPPED, LIFESTATE, SPAWN_GRACE, OTHER, UNKNOWN]
+                player_name:
+                  type: string
+                  maxLength: 255
+                player_id:
+                  type: integer
+                is_admin:
+                  type: boolean
+                reason:
+                  type: string
+                  maxLength: 500
+                raw:
+                  type: string
+                  maxLength: 2000
+                timestamp:
+                  type: string
+      responses:
+        '200':
+          description: Event recorded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessWithIdResponse'
+
+  /anticheat-stats:
+    post:
+      tags: [Anti-Cheat]
+      summary: Record anti-cheat statistics snapshot
+      description: Store a periodic anti-cheat statistics snapshot (~every 10 seconds).
+      operationId: storeAnticheatStats
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [server_id]
+              properties:
+                server_id:
+                  type: integer
+                active_players:
+                  type: integer
+                online_players:
+                  type: integer
+                registered_players:
+                  type: integer
+                potential_cheaters:
+                  type: integer
+                banned_players:
+                  type: string
+                  description: JSON string of banned player list
+                confirmed_cheaters:
+                  type: string
+                  description: JSON string of confirmed cheaters list
+                potentials_list:
+                  type: string
+                  description: JSON string of potential cheaters list
+                top_movement:
+                  type: string
+                  description: JSON string of top movement offenders
+                top_collision:
+                  type: string
+                  description: JSON string of top collision offenders
+                timestamp:
+                  type: string
+      responses:
+        '200':
+          description: Stats recorded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessWithIdResponse'
+
+  # ============================================================
+  # READ ENDPOINTS - Servers
+  # ============================================================
+
+  /servers:
+    get:
+      tags: [Server Status]
+      summary: List all servers
+      description: Returns all tracked servers.
+      operationId: getServers
+      responses:
+        '200':
+          description: Server list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+
+  /servers/{id}:
+    get:
+      tags: [Server Status]
+      summary: Get server details
+      description: Returns details for a specific server.
+      operationId: getServer
+      parameters:
+        - $ref: '#/components/parameters/ServerId'
+      responses:
+        '200':
+          description: Server details
+          content:
+            application/json:
+              schema:
+                type: object
+        '404':
+          description: Server not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Server not found
+
+  /servers/{id}/status:
+    get:
+      tags: [Server Status]
+      summary: Get server status
+      description: Returns the latest status snapshot for a server.
+      operationId: getServerStatus
+      parameters:
+        - $ref: '#/components/parameters/ServerId'
+      responses:
+        '200':
+          description: Server status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  server_id:
+                    type: integer
+                  server_name:
+                    type: string
+                  map:
+                    type: string
+                  players:
+                    type: integer
+                  max_players:
+                    type: integer
+                  ping:
+                    type: integer
+                  recorded_at:
+                    type: string
+                    format: date-time
+
+  /servers/{id}/players:
+    get:
+      tags: [Server Status]
+      summary: Get online players
+      description: Returns players currently connected to a server (based on connection events without a corresponding disconnect).
+      operationId: getServerPlayers
+      parameters:
+        - $ref: '#/components/parameters/ServerId'
+      responses:
+        '200':
+          description: Online players
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+
+  # ============================================================
+  # READ ENDPOINTS - Players
+  # ============================================================
+
+  /players:
+    get:
+      tags: [Players]
+      summary: List players
+      description: Returns paginated player stats with optional search and sorting.
+      operationId: getPlayers
+      parameters:
+        - $ref: '#/components/parameters/PerPage'
+        - name: search
+          in: query
+          schema:
+            type: string
+          description: Search by player name (partial match)
+        - name: sort
+          in: query
+          schema:
+            type: string
+            enum: [player_name, kills, deaths, playtime_seconds, last_seen_at]
+            default: last_seen_at
+          description: Sort field
+        - name: direction
+          in: query
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
+          description: Sort direction
+      responses:
+        '200':
+          description: Paginated player list
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PaginatedResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/PlayerStatsObject'
+
+  /players/{id}:
+    get:
+      tags: [Players]
+      summary: Get player by UUID
+      description: Returns a single player's aggregated stats.
+      operationId: getPlayer
+      parameters:
+        - $ref: '#/components/parameters/PlayerId'
+      responses:
+        '200':
+          description: Player data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlayerStatsObject'
+        '404':
+          description: Player not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Player not found
+
+  /players/{id}/stats:
+    get:
+      tags: [Players]
+      summary: Get player stats
+      description: Returns aggregated stats for a player. Same data as GET /players/{id}.
+      operationId: getPlayerStats
+      parameters:
+        - $ref: '#/components/parameters/PlayerId'
+      responses:
+        '200':
+          description: Player stats
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlayerStatsObject'
+
+  /players/{id}/kills:
+    get:
+      tags: [Players]
+      summary: Get player kill events
+      description: Returns paginated kill events where this player is the killer.
+      operationId: getPlayerKills
+      parameters:
+        - $ref: '#/components/parameters/PlayerId'
+        - $ref: '#/components/parameters/PerPage'
+      responses:
+        '200':
+          description: Player kills
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse'
+
+  /players/{id}/deaths:
+    get:
+      tags: [Players]
+      summary: Get player death events
+      description: Returns paginated kill events where this player is the victim.
+      operationId: getPlayerDeaths
+      parameters:
+        - $ref: '#/components/parameters/PlayerId'
+        - $ref: '#/components/parameters/PerPage'
+      responses:
+        '200':
+          description: Player deaths
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse'
+
+  /players/{id}/connections:
+    get:
+      tags: [Players]
+      summary: Get player connection history
+      description: Returns paginated connection/disconnection events for a player.
+      operationId: getPlayerConnections
+      parameters:
+        - $ref: '#/components/parameters/PlayerId'
+        - $ref: '#/components/parameters/PerPage'
+      responses:
+        '200':
+          description: Player connections
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse'
+
+  /players/{id}/xp:
+    get:
+      tags: [Players]
+      summary: Get player XP events
+      description: Returns paginated XP reward events for a player.
+      operationId: getPlayerXp
+      parameters:
+        - $ref: '#/components/parameters/PlayerId'
+        - $ref: '#/components/parameters/PerPage'
+      responses:
+        '200':
+          description: Player XP events
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse'
+
+  /players/{id}/distance:
+    get:
+      tags: [Players]
+      summary: Get player distance data
+      description: Returns the most recent distance/movement record for a player.
+      operationId: getPlayerDistance
+      parameters:
+        - $ref: '#/components/parameters/PlayerId'
+      responses:
+        '200':
+          description: Player distance data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  server_id:
+                    type: integer
+                  player_uuid:
+                    type: string
+                  player_name:
+                    type: string
+                  walking_distance:
+                    type: number
+                  walking_time_seconds:
+                    type: integer
+                  total_vehicle_distance:
+                    type: number
+                  total_vehicle_time_seconds:
+                    type: integer
+                  vehicles:
+                    type: array
+                    items:
+                      type: object
+                  occurred_at:
+                    type: string
+                    format: date-time
+
+  /players/{id}/shooting:
+    get:
+      tags: [Players]
+      summary: Get player shooting events
+      description: Returns paginated shooting events for a player.
+      operationId: getPlayerShooting
+      parameters:
+        - $ref: '#/components/parameters/PlayerId'
+        - $ref: '#/components/parameters/PerPage'
+      responses:
+        '200':
+          description: Player shooting events
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse'
+
+  # ============================================================
+  # READ ENDPOINTS - Leaderboards
+  # ============================================================
+
+  /leaderboards/kills:
+    get:
+      tags: [Leaderboards]
+      summary: Kills leaderboard
+      description: Returns players ranked by total kills. Cached for 5 minutes.
+      operationId: getKillsLeaderboard
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Leaderboard
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    player_uuid:
+                      type: string
+                    player_name:
+                      type: string
+                    kills:
+                      type: integer
+                    deaths:
+                      type: integer
+                    playtime_seconds:
+                      type: integer
+
+  /leaderboards/deaths:
+    get:
+      tags: [Leaderboards]
+      summary: Deaths leaderboard
+      description: Returns players ranked by total deaths. Cached for 5 minutes.
+      operationId: getDeathsLeaderboard
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Leaderboard
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    player_uuid:
+                      type: string
+                    player_name:
+                      type: string
+                    kills:
+                      type: integer
+                    deaths:
+                      type: integer
+                    playtime_seconds:
+                      type: integer
+
+  /leaderboards/kd:
+    get:
+      tags: [Leaderboards]
+      summary: K/D ratio leaderboard
+      description: Returns players ranked by kill/death ratio. Filters by minimum player kills. Cached for 5 minutes.
+      operationId: getKdLeaderboard
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - name: min_kills
+          in: query
+          schema:
+            type: integer
+            default: 10
+          description: Minimum player kills required to qualify
+      responses:
+        '200':
+          description: Leaderboard
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    player_uuid:
+                      type: string
+                    player_name:
+                      type: string
+                    kills:
+                      type: integer
+                    player_kills_count:
+                      type: integer
+                    deaths:
+                      type: integer
+                    playtime_seconds:
+                      type: integer
+                    kd_ratio:
+                      type: number
+
+  /leaderboards/playtime:
+    get:
+      tags: [Leaderboards]
+      summary: Playtime leaderboard
+      description: Returns players ranked by total playtime. Cached for 5 minutes.
+      operationId: getPlaytimeLeaderboard
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Leaderboard
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    player_uuid:
+                      type: string
+                    player_name:
+                      type: string
+                    playtime_seconds:
+                      type: integer
+                    kills:
+                      type: integer
+                    deaths:
+                      type: integer
+
+  /leaderboards/xp:
+    get:
+      tags: [Leaderboards]
+      summary: XP leaderboard
+      description: Returns players ranked by total XP. Cached for 5 minutes.
+      operationId: getXpLeaderboard
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Leaderboard
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    player_uuid:
+                      type: string
+                    player_name:
+                      type: string
+                    xp_total:
+                      type: integer
+                    kills:
+                      type: integer
+                    deaths:
+                      type: integer
+
+  /leaderboards/distance:
+    get:
+      tags: [Leaderboards]
+      summary: Distance leaderboard
+      description: Returns players ranked by total distance traveled. Cached for 5 minutes.
+      operationId: getDistanceLeaderboard
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Leaderboard
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    player_uuid:
+                      type: string
+                    player_name:
+                      type: string
+                    total_distance:
+                      type: number
+                    playtime_seconds:
+                      type: integer
+
+  /leaderboards/roadkills:
+    get:
+      tags: [Leaderboards]
+      summary: Roadkills leaderboard
+      description: Returns players ranked by roadkill count. Only includes players with at least 1 roadkill. Cached for 5 minutes.
+      operationId: getRoadkillLeaderboard
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Leaderboard
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    player_uuid:
+                      type: string
+                    player_name:
+                      type: string
+                    total_roadkills:
+                      type: integer
+                    kills:
+                      type: integer
+                    deaths:
+                      type: integer
+
+  # ============================================================
+  # READ ENDPOINTS - Events & Logs
+  # ============================================================
+
+  /events/kills:
+    get:
+      tags: [Events & Logs]
+      summary: List kill events
+      description: Returns paginated kill events with optional filtering.
+      operationId: getKills
+      parameters:
+        - $ref: '#/components/parameters/PerPage50'
+        - $ref: '#/components/parameters/ServerIdFilter'
+        - name: victim_type
+          in: query
+          schema:
+            type: string
+          description: "Filter by victim type (e.g. 'AI', 'PLAYER')"
+      responses:
+        '200':
+          description: Kill events
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse'
+
+  /events/connections:
+    get:
+      tags: [Events & Logs]
+      summary: List connection events
+      description: Returns paginated player connection/disconnection events.
+      operationId: getConnections
+      parameters:
+        - $ref: '#/components/parameters/PerPage50'
+        - $ref: '#/components/parameters/ServerIdFilter'
+        - name: event_type
+          in: query
+          schema:
+            type: string
+            enum: [CONNECT, DISCONNECT]
+          description: Filter by event type
+      responses:
+        '200':
+          description: Connection events
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse'
+
+  /events/bases:
+    get:
+      tags: [Events & Logs]
+      summary: List base events
+      description: Returns paginated base capture and objective events.
+      operationId: getBaseEvents
+      parameters:
+        - $ref: '#/components/parameters/PerPage50'
+        - $ref: '#/components/parameters/ServerIdFilter'
+      responses:
+        '200':
+          description: Base events
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse'
+
+  /events/chat:
+    get:
+      tags: [Events & Logs]
+      summary: List chat messages
+      description: Returns paginated in-game chat messages.
+      operationId: getChatMessages
+      parameters:
+        - $ref: '#/components/parameters/PerPage50'
+        - $ref: '#/components/parameters/ServerIdFilter'
+        - name: channel
+          in: query
+          schema:
+            type: string
+          description: "Filter by chat channel (e.g. 'global', 'team')"
+      responses:
+        '200':
+          description: Chat messages
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse'
+
+  /events/gm-sessions:
+    get:
+      tags: [Events & Logs]
+      summary: List GM sessions
+      description: Returns paginated Game Master session events.
+      operationId: getGmSessions
+      parameters:
+        - $ref: '#/components/parameters/PerPage50'
+        - $ref: '#/components/parameters/ServerIdFilter'
+      responses:
+        '200':
+          description: GM sessions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse'
+
+  # ============================================================
+  # READ ENDPOINTS - Statistics
+  # ============================================================
+
+  /stats/overview:
+    get:
+      tags: [Statistics]
+      summary: Get statistics overview
+      description: Returns aggregate counts across all tracked data.
+      operationId: getOverview
+      responses:
+        '200':
+          description: Overview stats
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total_players:
+                    type: integer
+                  total_kills:
+                    type: integer
+                  total_deaths:
+                    type: integer
+                  total_playtime_seconds:
+                    type: integer
+                  total_connections:
+                    type: integer
+                  total_kill_events:
+                    type: integer
+                  ai_kills:
+                    type: integer
+                  player_kills:
+                    type: integer
+                  active_players_24h:
+                    type: integer
+                  total_headshots:
+                    type: integer
+                  total_heals:
+                    type: integer
+                  total_base_captures:
+                    type: integer
+                  total_supply_deliveries:
+                    type: integer
+
+  /stats/weapons:
+    get:
+      tags: [Statistics]
+      summary: Get weapon statistics
+      description: Returns weapons ranked by total kills with headshot counts.
+      operationId: getWeaponStats
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+          description: Number of weapons to return
+      responses:
+        '200':
+          description: Weapon stats
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    weapon_name:
+                      type: string
+                    total_kills:
+                      type: integer
+                    headshots:
+                      type: integer
+
+  /stats/factions:
+    get:
+      tags: [Statistics]
+      summary: Get faction statistics
+      description: Returns kills grouped by killer faction.
+      operationId: getFactionStats
+      responses:
+        '200':
+          description: Faction stats
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    faction:
+                      type: string
+                    kills:
+                      type: integer
+
+  /stats/bases:
+    get:
+      tags: [Statistics]
+      summary: Get base capture statistics
+      description: Returns bases ranked by capture count.
+      operationId: getBaseStats
+      responses:
+        '200':
+          description: Base stats
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    base_name:
+                      type: string
+                    capture_count:
+                      type: integer

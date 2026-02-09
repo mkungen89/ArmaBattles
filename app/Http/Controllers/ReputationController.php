@@ -1,0 +1,182 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\PlayerReputation;
+use App\Models\ReputationVote;
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+
+class ReputationController extends Controller
+{
+    /**
+     * Show reputation leaderboard
+     */
+    public function index()
+    {
+        $topPlayers = PlayerReputation::with('user')
+            ->where('total_score', '>', 0)
+            ->orderBy('total_score', 'desc')
+            ->limit(50)
+            ->get();
+
+        $trustedPlayers = PlayerReputation::with('user')
+            ->where('total_score', '>=', 100)
+            ->orderBy('total_score', 'desc')
+            ->get();
+
+        $flaggedPlayers = PlayerReputation::with('user')
+            ->where('total_score', '<=', -50)
+            ->orderBy('total_score', 'asc')
+            ->get();
+
+        return view('reputation.index', compact('topPlayers', 'trustedPlayers', 'flaggedPlayers'));
+    }
+
+    /**
+     * Submit a reputation vote
+     */
+    public function vote(Request $request, User $user)
+    {
+        $validated = $request->validate([
+            'vote_type' => 'required|in:positive,negative',
+            'category' => 'required|in:teamwork,leadership,sportsmanship,general',
+            'comment' => 'nullable|string|max:500',
+        ]);
+
+        // Cannot vote for yourself
+        if ($user->id === auth()->id()) {
+            return back()->with('error', 'You cannot vote for yourself.');
+        }
+
+        // Check if user already voted (within 24 hours)
+        $existingVote = ReputationVote::where('voter_id', auth()->id())
+            ->where('target_id', $user->id)
+            ->first();
+
+        if ($existingVote) {
+            if (!$existingVote->canBeChanged()) {
+                return back()->with('error', 'You can only vote once per 24 hours per player.');
+            }
+
+            // Update existing vote
+            DB::transaction(function () use ($existingVote, $validated, $user) {
+                // Revert old vote
+                $this->updateReputationScore($user, $existingVote->vote_type, $existingVote->category, -1);
+
+                // Apply new vote
+                $existingVote->update($validated);
+                $this->updateReputationScore($user, $validated['vote_type'], $validated['category'], 1);
+            });
+
+            return back()->with('success', 'Your vote has been updated!');
+        }
+
+        // Create new vote
+        DB::transaction(function () use ($user, $validated) {
+            ReputationVote::create([
+                'voter_id' => auth()->id(),
+                'target_id' => $user->id,
+                'vote_type' => $validated['vote_type'],
+                'category' => $validated['category'],
+                'comment' => $validated['comment'],
+            ]);
+
+            $this->updateReputationScore($user, $validated['vote_type'], $validated['category'], 1);
+        });
+
+        return back()->with('success', 'Your vote has been submitted!');
+    }
+
+    /**
+     * Remove a vote
+     */
+    public function removeVote(User $user)
+    {
+        $vote = ReputationVote::where('voter_id', auth()->id())
+            ->where('target_id', $user->id)
+            ->first();
+
+        if (!$vote) {
+            return back()->with('error', 'No vote found.');
+        }
+
+        if (!$vote->canBeChanged()) {
+            return back()->with('error', 'You can only change your vote within 24 hours.');
+        }
+
+        DB::transaction(function () use ($vote, $user) {
+            $this->updateReputationScore($user, $vote->vote_type, $vote->category, -1);
+            $vote->delete();
+        });
+
+        return back()->with('success', 'Your vote has been removed.');
+    }
+
+    /**
+     * Update reputation score
+     */
+    protected function updateReputationScore(User $user, string $voteType, string $category, int $multiplier)
+    {
+        $reputation = PlayerReputation::firstOrCreate(
+            ['user_id' => $user->id],
+            [
+                'total_score' => 0,
+                'positive_votes' => 0,
+                'negative_votes' => 0,
+                'teamwork_count' => 0,
+                'leadership_count' => 0,
+                'sportsmanship_count' => 0,
+            ]
+        );
+
+        $scoreChange = ($voteType === 'positive' ? 1 : -1) * $multiplier;
+
+        $reputation->increment('total_score', $scoreChange);
+
+        if ($voteType === 'positive') {
+            $reputation->increment('positive_votes', $multiplier);
+        } else {
+            $reputation->increment('negative_votes', $multiplier);
+        }
+
+        // Update category count
+        if ($category !== 'general') {
+            $column = $category . '_count';
+            $reputation->increment($column, $multiplier);
+        }
+    }
+
+    /**
+     * Show player's reputation details
+     */
+    public function show(User $user)
+    {
+        $reputation = $user->reputation()->firstOrCreate([
+            'user_id' => $user->id,
+        ], [
+            'total_score' => 0,
+            'positive_votes' => 0,
+            'negative_votes' => 0,
+            'teamwork_count' => 0,
+            'leadership_count' => 0,
+            'sportsmanship_count' => 0,
+        ]);
+
+        $recentVotes = $user->receivedVotes()
+            ->with('voter')
+            ->orderBy('created_at', 'desc')
+            ->limit(20)
+            ->get();
+
+        $myVote = null;
+        if (auth()->check()) {
+            $myVote = ReputationVote::where('voter_id', auth()->id())
+                ->where('target_id', $user->id)
+                ->first();
+        }
+
+        return view('reputation.show', compact('user', 'reputation', 'recentVotes', 'myVote'));
+    }
+}
