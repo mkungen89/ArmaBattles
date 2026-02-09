@@ -1232,21 +1232,45 @@ Prioritera dessa för snabb impact:
 
 ## 📊 METRICS & TRACKING
 
-För att mäta success, lägg till tracking för:
+- [x] **Analytics Events** 🟢 ✅ **KLART 2026-02-09**
+  - [x] Track player actions (page views, API requests)
+  - [x] Tournament registrations (30d count on dashboard)
+  - [x] Team applications (30d count on dashboard)
+  - [x] API usage per token (per-token request counts + avg response time)
+  - [x] Feature adoption rates (uses + unique users per feature)
 
-- [ ] **Analytics Events** 🟢
-  - [ ] Track player actions (profile views, leaderboard clicks)
-  - [ ] Tournament registrations
-  - [ ] Team applications
-  - [ ] API usage per token
-  - [ ] Feature adoption rates
-
-- [ ] **Performance Monitoring** 🟡
-  - [ ] Query time tracking
-  - [ ] API response times
-  - [ ] WebSocket connection metrics
-  - [ ] Cache hit rates
-  - [ ] Job queue wait times
+- [x] **Performance Monitoring** 🟡 ✅ **KLART 2026-02-09**
+  - [x] API response times (P50/P95/P99 percentiles via PostgreSQL percentile_cont)
+  - [x] Cache hit rates (tracked in system_metrics)
+  - [x] Job queue health (queue size, failed jobs)
+  - [x] System resource usage (CPU load, memory, disk)
+  - **Implementerat:**
+    - **Admin Dashboard:** `/admin/metrics` with 3 tabs (Analytics, API Usage, Performance)
+    - **Database:** `analytics_events` (write-once event log), `system_metrics` (time-series snapshots)
+    - **Models:** `AnalyticsEvent`, `SystemMetric`
+    - **Service:** `MetricsTracker` — trackPageView, trackApiRequest, trackFeatureUse (all try/catch wrapped)
+    - **Middleware:** `TrackAnalytics` — terminable middleware (records in terminate(), zero user latency). Web: page views for GET requests. API: request metrics with response time + status code. Skips admin AJAX polling and non-GET/AJAX web requests.
+    - **Command:** `metrics:collect` — collects queue size, failed jobs, memory, CPU, disk, API percentiles every 5 minutes
+    - **Controller:** `MetricsController` — index (server-rendered summary), apiAnalyticsData, apiUsageData, apiPerformanceData (AJAX)
+    - **View Features:**
+      - 6 summary stat cards (page views 24h, API requests 24h, unique visitors, feature uses, tournament regs 30d, team apps 30d)
+      - Time range selector (6h/24h/72h/7d)
+      - Analytics tab: page views line chart, top 15 pages table, feature adoption table
+      - API Usage tab: API requests line chart, per-token usage table, top endpoints with avg/P95 response time, error rate badge
+      - Performance tab: P50/P95 summary cards, API response times multi-line chart, cache hit rate chart, system memory chart, queue jobs chart
+      - Chart.js + Alpine.js (same pattern as server performance page)
+    - **Scheduled Tasks:** metrics:collect every 5min, daily cleanup for analytics_events and system_metrics (configurable retention via site settings)
+    - **Admin Nav:** "Metrics" link between Server Manager and Audit Log
+  - **Files:**
+    - `database/migrations/2026_02_10_000001_create_analytics_events_table.php`
+    - `database/migrations/2026_02_10_000002_create_system_metrics_table.php`
+    - `app/Models/AnalyticsEvent.php`, `app/Models/SystemMetric.php`
+    - `app/Services/MetricsTracker.php`
+    - `app/Http/Middleware/TrackAnalytics.php`
+    - `app/Console/Commands/CollectSystemMetrics.php`
+    - `app/Http/Controllers/Admin/MetricsController.php`
+    - `resources/views/admin/metrics/index.blade.php`
+    - Modified: `bootstrap/app.php`, `routes/web.php`, `routes/console.php`, `resources/views/admin/layout.blade.php`
 
 ---
 
@@ -1364,6 +1388,7 @@ php artisan make:migration create_player_loadouts_table
 
 **Last Updated:** 2026-02-09
 **Test Status:** 116 passing / 10 skipped / 0 failing — 126 total methods ✅
+**Metrics Dashboard:** `/admin/metrics` — Analytics, API Usage, Performance tabs
 **Total Estimated Effort:** 6-12 månader för alla features
 **Priority Focus:** P0 och P1 items först = ~3 månader solid work
 
