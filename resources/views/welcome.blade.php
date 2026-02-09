@@ -32,7 +32,7 @@
                                         </svg>
                                     </div>
                                     <div class="text-left">
-                                        <a href="{{ route('servers.show', config('services.battlemetrics.server_id')) }}" id="server-name" class="text-sm font-bold text-white hover:text-green-400 transition-colors line-clamp-1">Loading...</a>
+                                        <a href="{{ route('servers.show', config('services.battlemetrics.server_id', '0')) }}" id="server-name" class="text-sm font-bold text-white hover:text-green-400 transition-colors line-clamp-1">Loading...</a>
                                         <p id="server-gamemode" class="text-xs text-gray-400">Loading...</p>
                                     </div>
                                 </div>
@@ -376,7 +376,7 @@
                 <span>Login with Steam</span>
             </a>
             @else
-            <a href="{{ route('servers.show', config('services.battlemetrics.server_id')) }}" class="inline-flex items-center space-x-3 px-8 py-4 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 rounded-xl text-lg font-semibold transition-all duration-300 shadow-lg shadow-green-500/25 hover:shadow-green-500/40 hover:scale-105">
+            <a href="{{ route('servers.show', config('services.battlemetrics.server_id', '0')) }}" class="inline-flex items-center space-x-3 px-8 py-4 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 rounded-xl text-lg font-semibold transition-all duration-300 shadow-lg shadow-green-500/25 hover:shadow-green-500/40 hover:scale-105">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2"/>
                 </svg>
