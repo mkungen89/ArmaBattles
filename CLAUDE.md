@@ -128,6 +128,7 @@ When displaying scenario names, always use `$server->scenario_display_name` (not
 - **PlayerHistoryService** — Queries `connections` table for player search and connection history. Uses PostgreSQL `string_agg(DISTINCT ...)` for alternative name aggregation (falls back to `GROUP_CONCAT` on MySQL/SQLite).
 - **ModUpdateCheckService** — Compares installed mod versions (from GameServerManager) against latest versions from ReforgerWorkshopService. Catches exceptions per-mod so one failure doesn't break the list.
 - **TournamentBracketService** — Bracket generation for single_elimination, double_elimination, round_robin, swiss.
+- **MetricsTracker** — Tracks page views, API requests, and feature usage. Methods: `trackPageView()`, `trackApiRequest()`, `trackFeatureUse()`. All wrapped in try/catch — never breaks requests on failure. Uses raw `DB::table('analytics_events')->insert()`.
 
 ### Game Statistics Tables
 
@@ -172,6 +173,8 @@ When displaying scenario names, always use `$server->scenario_display_name` (not
 - `vehicles` — Vehicle metadata with optional image_path for display (mirrors weapons pattern)
 - `anticheat_events` — Raven AC enforcement actions and flagged players (event_type: ENFORCEMENT_ACTION, ENFORCEMENT_SKIPPED, LIFESTATE, SPAWN_GRACE, OTHER, UNKNOWN)
 - `anticheat_stats` — Periodic AC snapshots every ~10s (online/active/registered players, potential_cheaters, banned/confirmed/potentials lists as JSON)
+- `analytics_events` — Write-once event log for page views, API requests, and feature usage. Columns: event_type (page_view/api_request/feature_use), event_name, user_id, token_id, ip_address, user_agent, response_time_ms, response_status, metadata (JSON), created_at. No `updated_at`. Indexed on (event_type, created_at), created_at, user_id, token_id.
+- `system_metrics` — Time-series system performance snapshots (every 5min via `metrics:collect`). Columns: cache_hits, cache_misses, jobs_processed, jobs_failed, queue_size, memory_usage_mb, cpu_load_1m, disk_usage_percent, api_requests_count, api_p50_ms, api_p95_ms, api_p99_ms, recorded_at.
 
 ### Core Domain Models
 
@@ -198,6 +201,8 @@ When displaying scenario names, always use `$server->scenario_display_name` (not
 **Users:** `User` — Steam-authenticated with roles (user/moderator/admin/gm/referee/observer/caster). Has `player_uuid` field to link to game stats. `$user->gameStats()` returns the linked `PlayerStat` record. Optional 2FA via TOTP. User settings: `profile_visibility` (public/private), `notification_preferences` (JSON), `social_links` (JSON — twitch, youtube, tiktok, kick, twitter, facebook, instagram). `last_seen_at` tracked via `TrackLastSeen` middleware (5-minute cache throttle).
 
 **Role helpers:** `isReferee()` (admin/moderator/referee), `isObserver()` (admin/moderator/referee/observer), `isCaster()` (admin/moderator/caster), `canManageTournaments()` (admin/moderator/referee).
+
+**Metrics:** `AnalyticsEvent`, `SystemMetric` — Page view/API/feature tracking and system performance snapshots. Both use `$timestamps = false`.
 
 **Audit:** `AdminAuditLog` — Tracks admin and security actions with the `LogsAdminActions` trait.
 
@@ -240,6 +245,7 @@ When displaying scenario names, always use `$server->scenario_display_name` (not
   - `/admin/vehicles/*` — Vehicle image management (mirrors weapons pattern)
   - `/admin/rcon/*` — RCON server commands (kick, ban, say). Separate from GameServerManager; uses `config('services.rcon.api_url/api_key')`
   - `/admin/reports/*` — Player conduct reports with status workflow (open/investigating/action_taken/dismissed)
+  - `/admin/metrics` — Metrics & Tracking dashboard (analytics, API usage, performance) with 3 tabs and Chart.js charts
   - `/admin/audit-log` — Enhanced audit log with user/date/search filters and CSV export
   - `/admin/news/*` — News article management
 - `/export/*` — Stats export: player CSV, match history CSV, leaderboard CSV/JSON (via `StatsExportController`)
@@ -285,6 +291,7 @@ TOTP-based 2FA (Google Authenticator, Authy). Opt-in per user from profile setti
 - `api.rate` — `ApiRateLimiter` — per-token rate limiting (standard 60/min, high-volume 180/min, premium 300/min). Returns `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Reset` headers.
 - `api.deprecation` — `ApiDeprecationWarning` — adds deprecation headers to legacy `/api/*` endpoints
 - `TrackLastSeen` — Web middleware (appended). Updates `last_seen_at` on user, cache-throttled to once per 5 minutes.
+- `TrackAnalytics` — Terminable middleware (appended to both web and api groups). Records `microtime(true)` start in `handle()`, inserts analytics event in `terminate()` (after response sent, zero user latency). Web: tracks `page_view` for GET requests (skips AJAX, admin polling). API: tracks `api_request` with response time and status code.
 - `MaintenanceModeMiddleware` — Web middleware (appended). Checks `maintenance_mode` site setting. Allows admins, login/auth routes, and API through. Returns 503 with configurable message.
 - CSRF is disabled for `api/*` routes in `bootstrap/app.php`
 - Default `throttle:api` is removed from the api middleware group (custom `api.rate` handles rate limiting instead)
@@ -336,6 +343,9 @@ Production uses PostgreSQL. Tests use in-memory SQLite. Uses database-backed cac
 - `achievements:check` — hourly
 - Scheduled restart processor — every minute (dispatches `ExecuteScheduledRestart` jobs for due restarts)
 - `leaderboards:warm-cache` — every 4 minutes (pre-warms 30 cache variants before 5min TTL expires)
+- `metrics:collect` — every 5 minutes (collects queue size, CPU, memory, disk, API percentiles into `system_metrics`)
+- Old analytics events cleanup — daily (configurable via `analytics_retention_days` setting, default 90 days)
+- Old system metrics cleanup — daily (configurable via `metrics_retention_days` setting, default 90 days)
 
 ### Profile System
 
@@ -496,6 +506,30 @@ Embeddable server status widget for external sites:
 - Leaderboard CSV and JSON with metadata
 - Streamed responses for large datasets
 - Export buttons on profile and leaderboard pages
+
+### Metrics & Tracking (`/admin/metrics`)
+
+`MetricsController` provides an admin dashboard for analytics, API usage, and system performance. Three tabs with AJAX-loaded Chart.js charts following the same pattern as the server performance page.
+
+**Architecture:**
+- `TrackAnalytics` terminable middleware inserts events into `analytics_events` after the response is sent (zero latency impact)
+- `MetricsTracker` service provides `trackPageView()`, `trackApiRequest()`, `trackFeatureUse()` — all try/catch wrapped
+- `CollectSystemMetrics` command (`metrics:collect`) runs every 5 minutes, inserting system snapshots into `system_metrics`
+- API percentiles computed via PostgreSQL `percentile_cont()` (same PostgreSQL-only pattern as other admin features)
+
+**Controller methods:**
+- `index()` — Server-rendered summary stats (page views 24h, API requests 24h, unique visitors, feature uses, tournament regs 30d, team apps 30d)
+- `apiAnalyticsData(Request)` — AJAX: page views over time (hourly via `date_trunc`), top 15 pages, feature adoption
+- `apiUsageData(Request)` — AJAX: per-token requests (joined with `personal_access_tokens`), top endpoints with avg/P95 response time, error rate
+- `apiPerformanceData(Request)` — AJAX: time-series from `system_metrics` (P50/P95/P99, memory, CPU, cache hit rate, queue size/jobs)
+
+**Time ranges:** 6h, 24h, 72h, 7d (parsed via `parseRange()` helper)
+
+**View (`resources/views/admin/metrics/index.blade.php`):**
+- 6 summary stat cards (server-rendered)
+- Alpine.js tabs: Analytics, API Usage, Performance
+- Charts: page views line, API requests line, API response times multi-line (P50/P95/P99), cache hit rate, system memory, queue jobs
+- Follows `admin/server/performance.blade.php` pattern exactly
 
 ## Terminology
 
