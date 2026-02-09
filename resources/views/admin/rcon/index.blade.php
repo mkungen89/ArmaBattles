@@ -368,8 +368,21 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('broadcast-form').addEventListener('submit', broadcastMessage);
     document.getElementById('action-form').addEventListener('submit', submitAction);
 
-    setInterval(checkStatus, 30000);
-    setInterval(refreshPlayers, 30000);
+    let statusPollMs = 30000, playerPollMs = 30000;
+    if (window.Echo) {
+        const serverId = '{{ config("services.battlemetrics.server_id", 1) }}';
+        window.Echo.channel('server.' + serverId)
+            .listen('.player.connected', () => {
+                refreshPlayers();
+                playerPollMs = 60000;
+            })
+            .listen('.status.updated', () => {
+                checkStatus();
+                statusPollMs = 60000;
+            });
+    }
+    setInterval(checkStatus, statusPollMs);
+    setInterval(refreshPlayers, playerPollMs);
 });
 </script>
 @endpush

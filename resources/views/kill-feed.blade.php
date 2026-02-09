@@ -89,7 +89,13 @@ function killFeed() {
             });
         },
         init() {
-            setInterval(() => this.fetchNew(), 12000);
+            this.pollTimer = setInterval(() => this.fetchNew(), 12000);
+            if (window.Echo) {
+                window.Echo.channel('server.global')
+                    .listen('.activity.new', (e) => {
+                        if (e.type === 'kill') { this.fetchNew(); }
+                    });
+            }
         },
         async fetchNew() {
             if (this.kills.length === 0) return;

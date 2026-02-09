@@ -316,20 +316,47 @@
 
 ### A. Real-Time & Live Features
 
-- [ ] **WebSocket Integration** 🟣
-  - [ ] Installera Laravel WebSockets eller Pusher
-  - [ ] Replace Alpine.js polling med WebSocket listeners
-  - [ ] Live kill feed utan polling
-  - [ ] Real-time server status updates
-  - [ ] Live match score updates
-  - [ ] Player "online now" presence indicator
-  - **Commands:**
-    ```bash
-    composer require beyondcode/laravel-websockets
-    php artisan websockets:serve
-    npm install --save laravel-echo pusher-js
-    ```
-  - **Files:** `resources/js/echo.js`, `config/broadcasting.php`
+- [x] **WebSocket Integration (Laravel Reverb)** 🟣 ✅ **KLART 2026-02-09**
+  - [x] Installera Laravel Reverb (v1.7.1) + Laravel Echo + Pusher.js
+  - [x] Replace Alpine.js polling med WebSocket listeners (9 views)
+  - [x] Live kill feed utan polling (KillFeedUpdated event)
+  - [x] Real-time server status updates (ServerStatusUpdated event)
+  - [x] Real-time player connections (PlayerConnected event)
+  - [x] Real-time activity feed (ActivityFeedUpdated event)
+  - [x] Real-time base capture events (BaseEventOccurred event)
+  - [x] Real-time notifications (NewNotification event)
+  - [ ] Live match score updates - Future enhancement
+  - [ ] Player "online now" presence indicator - Future enhancement
+  - **Implementerat:**
+    - **Backend:**
+      - 6 Event classes i `app/Events/`: KillFeedUpdated, PlayerConnected, ServerStatusUpdated, ActivityFeedUpdated, BaseEventOccurred, NewNotification
+      - `BroadcastNotificationCreated` listener (auto-discovered, fires on database notifications)
+      - Channel auth i `routes/channels.php` (public: server.{id}, server.global; private: User.{id}, admin.server.{id}, heatmap.{id})
+      - Dispatches i StatsController: storeKill, storeConnection, storeServerStatus, storeBaseEvent
+      - Dispatch i TrackServerStatus command
+    - **Frontend:**
+      - Echo initialized i `resources/js/bootstrap.js`
+      - 9 views med Echo listeners + polling fallback (slowed 2-5x when WS connected):
+        - `servers/show.blade.php` — kill feed + status
+        - `layouts/app.blade.php` — notification dropdown + desktop notifications
+        - `kill-feed.blade.php` — auto-refresh on kills
+        - `partials/_activity-feed.blade.php` — real-time activity prepend
+        - `admin/server/dashboard.blade.php` — status + player updates
+        - `admin/server/players.blade.php` — player connected
+        - `admin/rcon/index.blade.php` — player + status
+        - `admin/server/compare.blade.php` — per-server status
+    - **Infrastructure:**
+      - Reverb systemd service on port 8085 (~37MB RAM)
+      - Nginx WSS proxy at `/app` and `/apps` locations
+      - SSL via existing Let's Encrypt cert
+  - **Files:**
+    - `app/Events/KillFeedUpdated.php`, `PlayerConnected.php`, `ServerStatusUpdated.php`, `ActivityFeedUpdated.php`, `BaseEventOccurred.php`, `NewNotification.php`
+    - `app/Listeners/BroadcastNotificationCreated.php`
+    - `routes/channels.php`, `config/reverb.php`, `config/broadcasting.php`
+    - `resources/js/bootstrap.js`, `bootstrap/app.php`
+    - `app/Http/Controllers/Api/StatsController.php` (dispatches)
+    - `app/Console/Commands/TrackServerStatus.php` (dispatch)
+    - `/etc/systemd/system/reverb.service`, nginx config
 
 - [ ] **Live Match Spectator Mode** 🔴
   - [ ] Embed Twitch/YouTube streams på match-sidor

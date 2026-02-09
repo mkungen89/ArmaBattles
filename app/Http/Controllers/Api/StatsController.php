@@ -2,6 +2,11 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Events\ActivityFeedUpdated;
+use App\Events\BaseEventOccurred;
+use App\Events\KillFeedUpdated;
+use App\Events\PlayerConnected;
+use App\Events\ServerStatusUpdated;
 use App\Http\Controllers\Controller;
 use App\Jobs\SendDiscordNotification;
 use App\Models\DamageEvent;
@@ -42,6 +47,14 @@ class StatsController extends Controller
                 'recorded_at' => now(),
                 'last_updated' => now(),
             ]
+        );
+
+        ServerStatusUpdated::dispatch(
+            $validated['server_id'],
+            $validated['players'] ?? 0,
+            $validated['max_players'] ?? 64,
+            $validated['map'] ?? null,
+            $validated['server_name'] ?? null,
         );
 
         return response()->json(['success' => true]);
@@ -94,6 +107,27 @@ class StatsController extends Controller
         ]);
 
         $this->updatePlayerKillStats($validated);
+
+        KillFeedUpdated::dispatch(
+            $validated['server_id'],
+            $validated['killer_name'] ?? 'Unknown',
+            $validated['victim_name'] ?? null,
+            $validated['weapon_name'] ?? null,
+            (float) ($validated['kill_distance'] ?? 0),
+            !empty($validated['is_headshot']),
+            !empty($validated['is_team_kill']),
+            !empty($validated['is_roadkill']),
+            $validated['victim_type'] ?? 'PLAYER',
+            $id,
+        );
+
+        ActivityFeedUpdated::dispatch('kill', [
+            'server_id' => $validated['server_id'],
+            'killer_name' => $validated['killer_name'] ?? 'Unknown',
+            'victim_name' => $validated['victim_name'] ?? null,
+            'weapon_name' => $validated['weapon_name'] ?? null,
+            'is_headshot' => !empty($validated['is_headshot']),
+        ]);
 
         // Discord notable kill notification
         $killDistance = $validated['kill_distance'] ?? 0;
@@ -194,6 +228,22 @@ class StatsController extends Controller
 
         $this->updatePlayerOnlineStatus($validated);
 
+        PlayerConnected::dispatch(
+            $validated['server_id'],
+            $validated['event_type'],
+            $validated['player_name'],
+            $validated['player_uuid'] ?? null,
+            $validated['player_faction'] ?? null,
+        );
+
+        if ($validated['event_type'] === 'CONNECT') {
+            ActivityFeedUpdated::dispatch('connection', [
+                'server_id' => $validated['server_id'],
+                'player_name' => $validated['player_name'],
+                'event_type' => $validated['event_type'],
+            ]);
+        }
+
         return response()->json(['success' => true, 'id' => $id]);
     }
 
@@ -229,8 +279,25 @@ class StatsController extends Controller
             'updated_at' => now(),
         ]);
 
-        // Update bases_captured counter
+        BaseEventOccurred::dispatch(
+            $validated['server_id'],
+            $validated['event_type'],
+            $validated['base_name'] ?? null,
+            $validated['player_name'] ?? null,
+            $validated['capturing_faction'] ?? null,
+        );
+
         $captureTypes = ['CAPTURED', 'CAPTURE', 'BASE_SEIZED', 'BASE_CAPTURE'];
+        if (in_array(strtoupper($validated['event_type']), $captureTypes)) {
+            ActivityFeedUpdated::dispatch('base_capture', [
+                'server_id' => $validated['server_id'],
+                'base_name' => $validated['base_name'] ?? null,
+                'player_name' => $validated['player_name'] ?? null,
+                'capturing_faction' => $validated['capturing_faction'] ?? null,
+            ]);
+        }
+
+        // Update bases_captured counter
         if (!empty($validated['player_uuid']) && in_array(strtoupper($validated['event_type']), $captureTypes)) {
             $serverId = $validated['server_id'] ?? 1;
             $this->getOrCreatePlayerStat($validated['player_uuid'], $validated['player_name'] ?? 'Unknown', $serverId);

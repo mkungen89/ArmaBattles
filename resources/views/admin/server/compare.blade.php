@@ -188,11 +188,21 @@ function serverCompare() {
             if (this.pollInterval) {
                 clearInterval(this.pollInterval);
             }
+            let pollMs = 30000;
+            if (window.Echo) {
+                this.selectedIds.forEach(id => {
+                    window.Echo.channel('server.' + id)
+                        .listen('.status.updated', () => {
+                            this.fetchData();
+                            pollMs = 60000;
+                        });
+                });
+            }
             this.pollInterval = setInterval(() => {
                 if (this.results.length > 0) {
                     this.fetchData();
                 }
-            }, 30000);
+            }, pollMs);
         },
 
         formatUptime(seconds) {

@@ -81,12 +81,29 @@ function activityFeed() {
                 const res = await fetch('/api/activity-feed');
                 this.events = await res.json();
             } catch(e) {} finally { this.loading = false; }
+            let pollMs = 20000;
+            if (window.Echo) {
+                window.Echo.channel('server.global')
+                    .listen('.activity.new', (e) => {
+                        this.events.unshift({
+                            type: e.type,
+                            actor: e.data.killer_name || e.data.player_name || 'Unknown',
+                            target: e.data.victim_name || e.data.base_name || null,
+                            detail: e.data.base_name || e.data.weapon_name || null,
+                            victim_type: e.data.victim_type || null,
+                            is_headshot: e.data.is_headshot || false,
+                            occurred_at: e.timestamp,
+                        });
+                        this.events = this.events.slice(0, 50);
+                        pollMs = 60000;
+                    });
+            }
             setInterval(async () => {
                 try {
                     const res = await fetch('/api/activity-feed');
                     this.events = await res.json();
                 } catch(e) {}
-            }, 20000);
+            }, pollMs);
         },
         timeAgo(dateStr) {
             if (!dateStr) return '';

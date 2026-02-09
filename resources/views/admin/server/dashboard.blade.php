@@ -277,12 +277,33 @@ function serverDashboard() {
         updateStatus: null,
         logLines: [],
 
+        wsConnected: false,
         async startPolling() {
             await this.fetchAll();
-            setInterval(() => this.fetchHealth(), 10000);
-            setInterval(() => this.fetchStatus(), 30000);
-            setInterval(() => this.fetchAnticheat(), 30000);
-            setInterval(() => this.fetchLogs(), 30000);
+            let healthMs = 10000, statusMs = 30000, acMs = 30000, logsMs = 30000;
+
+            if (window.Echo) {
+                window.Echo.channel('server.{{ config("services.battlemetrics.server_id", 1) }}')
+                    .listen('.status.updated', () => {
+                        this.fetchStatus();
+                        this.fetchHealth();
+                        if (!this.wsConnected) {
+                            this.wsConnected = true;
+                            healthMs = 60000;
+                            statusMs = 60000;
+                            acMs = 60000;
+                            logsMs = 60000;
+                        }
+                    })
+                    .listen('.player.connected', () => {
+                        this.fetchStatus();
+                    });
+            }
+
+            setInterval(() => this.fetchHealth(), healthMs);
+            setInterval(() => this.fetchStatus(), statusMs);
+            setInterval(() => this.fetchAnticheat(), acMs);
+            setInterval(() => this.fetchLogs(), logsMs);
             setInterval(() => this.fetchUpdateStatus(), 5000);
         },
 

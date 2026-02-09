@@ -221,7 +221,15 @@ function playerManager() {
 
         async startPolling() {
             await this.fetchPlayers();
-            setInterval(() => this.fetchPlayers(), 30000);
+            let pollMs = 30000;
+            if (window.Echo) {
+                window.Echo.channel('server.{{ config("services.battlemetrics.server_id", 1) }}')
+                    .listen('.player.connected', () => {
+                        this.fetchPlayers();
+                        pollMs = 60000;
+                    });
+            }
+            setInterval(() => this.fetchPlayers(), pollMs);
             this.$watch('showBans', (val) => { if (val && !this.banList) this.fetchBans(); });
         },
 

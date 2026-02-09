@@ -424,7 +424,22 @@
                                 }
                                 return null;
                             }
-                        }" x-init="fetchUnread(); setInterval(() => fetchUnread(), 60000); enableDesktop()">
+                        }" x-init="
+                            fetchUnread();
+                            let notifPollMs = 60000;
+                            setInterval(() => fetchUnread(), notifPollMs);
+                            enableDesktop();
+                            if (window.Echo) {
+                                window.Echo.private('App.Models.User.{{ auth()->id() }}')
+                                    .listen('.notification.new', (e) => {
+                                        this.unread++;
+                                        if (Notification.permission === 'granted') {
+                                            new Notification('{{ site_setting('site_name', config('app.name')) }}', { body: e.message || 'New notification', icon: '/favicon-32x32.png' });
+                                        }
+                                        if (this.open) { this.fetchNotifications(); }
+                                    });
+                            }
+                        ">
                             <button @click="open = !open; if(open) fetchNotifications()"
                                     class="relative p-2 text-gray-400 hover:text-white transition">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

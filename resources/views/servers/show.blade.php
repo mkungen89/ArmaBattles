@@ -908,6 +908,26 @@
 
     // Auto refresh
     function startAutoRefresh() {
+        let statusWsConnected = false;
+        let statusPollInterval = 60000;
+
+        if (window.Echo) {
+            window.Echo.channel('server.{{ $server->id }}')
+                .listen('.status.updated', (e) => {
+                    if (e.players !== undefined && e.max_players !== undefined) {
+                        document.getElementById('hero-player-count').textContent = `${e.players} / ${e.max_players}`;
+                        const percentage = Math.round((e.players / e.max_players) * 100);
+                        document.getElementById('hero-player-bar').style.width = `${percentage}%`;
+                        document.getElementById('hero-percentage').textContent = percentage;
+                        document.getElementById('last-updated').textContent = 'Just now';
+                    }
+                    if (!statusWsConnected) {
+                        statusWsConnected = true;
+                        statusPollInterval = 120000;
+                    }
+                });
+        }
+
         setInterval(async () => {
             try {
                 const response = await fetch(`/servers/${serverId}/status`);
@@ -935,7 +955,7 @@
             } catch (error) {
                 console.error('Error refreshing status:', error);
             }
-        }, 60000);
+        }, statusPollInterval);
     }
 </script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
@@ -952,8 +972,33 @@
                     return true;
                 });
             },
+            wsConnected: false,
             init() {
-                setInterval(() => this.refresh(), 12000);
+                this.pollTimer = setInterval(() => this.refresh(), 12000);
+                if (window.Echo) {
+                    const serverId = '{{ $server->id }}';
+                    window.Echo.channel('server.' + serverId)
+                        .listen('.kill.new', (e) => {
+                            this.kills.unshift({
+                                id: e.id,
+                                killer_name: e.killer_name,
+                                victim_name: e.victim_name,
+                                weapon_name: e.weapon_name,
+                                kill_distance: e.distance,
+                                is_headshot: e.is_headshot,
+                                is_team_kill: e.is_team_kill,
+                                is_roadkill: e.is_roadkill,
+                                victim_type: e.victim_type,
+                                killed_at: e.timestamp,
+                            });
+                            this.kills = this.kills.slice(0, 50);
+                            if (!this.wsConnected) {
+                                this.wsConnected = true;
+                                clearInterval(this.pollTimer);
+                                this.pollTimer = setInterval(() => this.refresh(), 60000);
+                            }
+                        });
+                }
             },
             async refresh() {
                 try {

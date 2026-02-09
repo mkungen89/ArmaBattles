@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Events\ServerStatusUpdated;
 use App\Models\Server;
 use App\Models\ServerSession;
 use App\Models\ServerStatistic;
@@ -104,6 +105,14 @@ class TrackServerStatus extends Command
             'max_players' => $maxPlayers,
             'last_updated_at' => now(),
         ]);
+
+        ServerStatusUpdated::dispatch(
+            $server->id,
+            $playerCount,
+            $maxPlayers,
+            null,
+            $server->name,
+        );
 
         // Save statistic snapshot
         $this->saveStatistic($server, $playerCount, $maxPlayers, $newStatus);
