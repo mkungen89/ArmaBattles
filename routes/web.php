@@ -70,6 +70,7 @@ Route::get('/terms', function () {
 })->name('terms');
 
 // Player search & comparison (must be before /players/{user})
+Route::get('/players/compare/head-to-head', [PlayerComparisonController::class, 'headToHead'])->name('players.compare.h2h');
 Route::get('/players/compare', [PlayerComparisonController::class, 'index'])->name('players.compare');
 Route::get('/players', [PlayerSearchController::class, 'search'])->name('players.search');
 

@@ -768,13 +768,30 @@
     - `resources/views/profile/show.blade.php` (export dropdown)
     - `resources/views/leaderboard.blade.php` (export buttons)
 
-- [ ] **Player Comparison Tool 2.0** 🟡
-  - [ ] Side-by-side visualization med radar charts
-  - [ ] Head-to-head matchup history
-  - [ ] "Who would win?" ML predictor
-  - [ ] Weapon preference comparison
-  - [ ] Compare up to 4 players simultaneously
-  - **Package:** `chartjs` för radar charts
+- [x] **Player Comparison Tool 2.0** 🟡 ✅ **KLART 2026-02-09**
+  - [x] Side-by-side visualization med radar charts (Chart.js, 8-axis normalized to 0-100)
+  - [x] Head-to-head matchup history (AJAX-loaded kill counts, top weapons, last 10 encounters)
+  - [ ] "Who would win?" ML predictor - Future enhancement
+  - [x] Weapon preference comparison (horizontal grouped bar chart)
+  - [x] Compare up to 4 players simultaneously (p1-p4 query params, togglable slots 3-4)
+  - **Implementerat:**
+    - **Controller:** `PlayerComparisonController` extended:
+      - `index()` — supports p1-p4 query params, builds dynamic player/weapon arrays
+      - `headToHead()` — new AJAX endpoint returning kill counts both ways, top matchup weapons, last 10 encounters
+    - **View:** Full rewrite of `compare.blade.php`:
+      - 4 player search slots (2 always visible, 2 toggleable with Add/Remove buttons)
+      - Radar chart (Chart.js): 8 axes (Kills, Deaths, K/D, Headshots, Playtime, Distance, Heals, XP), normalized 0-100%
+      - 14 stat bars (added: team kills, roadkills, shots fired, grenades thrown), color-coded per player, winner highlighted
+      - Head-to-head section (2 players only): kill counts, favorite weapons in matchup, recent encounters table
+      - Weapon preference chart: horizontal grouped bar chart across all selected players
+      - Per-player top 10 weapons lists with color coding
+    - **Color scheme:** Green (#22c55e), Blue (#3b82f6), Orange (#f97316), Purple (#a855f7)
+    - **Route:** `GET /players/compare/head-to-head` added
+    - **Responsive:** Stacks properly on mobile, 2x2 grid on desktop
+  - **Files:**
+    - `app/Http/Controllers/PlayerComparisonController.php` (extended)
+    - `resources/views/players/compare.blade.php` (rewritten)
+    - `routes/web.php` (H2H route added)
 
 - [x] **Heatmaps & Visualization** 🔴 ✅ **KLART 2026-02-09**
   - [x] Kill heatmap på kartor (overlay på map images)

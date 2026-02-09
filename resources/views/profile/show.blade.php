@@ -11,9 +11,9 @@
         <div class="relative p-6 sm:p-8">
             <div class="flex flex-col sm:flex-row items-center sm:items-start gap-6">
                 {{-- Avatar --}}
-                <img src="{{ $user->avatar_display }}"
+                <x-blur-image src="{{ $user->avatar_display }}"
                      alt="{{ $user->name }}"
-                     class="w-28 h-28 rounded-full ring-4 ring-green-500/50 shadow-lg shadow-green-500/20 flex-shrink-0">
+                     class="w-28 h-28 rounded-full ring-4 ring-green-500/50 shadow-lg shadow-green-500/20 flex-shrink-0" />
 
                 {{-- Info --}}
                 <div class="flex-1 text-center sm:text-left">
@@ -158,7 +158,7 @@
                     </svg>
                 </div>
             </div>
-            <p class="text-4xl font-black text-green-400 mb-1">{{ number_format($gameStats->kills) }}</p>
+            <p class="text-4xl font-black text-green-400 mb-1" data-countup="{{ $gameStats->kills }}">{{ number_format($gameStats->kills) }}</p>
             <p class="text-sm text-gray-400">Kills</p>
             @if($killsByVictimType->count() > 0 || ($gameStats->total_roadkills ?? 0) > 0)
             <div class="mt-3 flex flex-wrap gap-2">
@@ -185,7 +185,7 @@
                     </svg>
                 </div>
             </div>
-            <p class="text-4xl font-black text-red-400 mb-1">{{ number_format($gameStats->deaths) }}</p>
+            <p class="text-4xl font-black text-red-400 mb-1" data-countup="{{ $gameStats->deaths }}">{{ number_format($gameStats->deaths) }}</p>
             <p class="text-sm text-gray-400">Deaths</p>
         </div>
 
@@ -198,7 +198,7 @@
                     </svg>
                 </div>
             </div>
-            <p class="text-4xl font-black text-yellow-400 mb-1">
+            <p class="text-4xl font-black text-yellow-400 mb-1" data-countup="{{ $gameStats->deaths > 0 ? round($gameStats->player_kills_count / $gameStats->deaths, 2) : $gameStats->player_kills_count }}" data-countup-decimals="2">
                 {{ $gameStats->deaths > 0 ? number_format($gameStats->player_kills_count / $gameStats->deaths, 2) : $gameStats->player_kills_count }}
             </p>
             <p class="text-sm text-gray-400">K/D Ratio</p>
@@ -213,7 +213,7 @@
                     </svg>
                 </div>
             </div>
-            <p class="text-4xl font-black text-amber-400 mb-1">{{ number_format($gameStats->headshots) }}</p>
+            <p class="text-4xl font-black text-amber-400 mb-1" data-countup="{{ $gameStats->headshots }}">{{ number_format($gameStats->headshots) }}</p>
             <p class="text-sm text-gray-400">Headshots</p>
             @if($gameStats->kills > 0)
             <p class="text-xs text-gray-500 mt-1">{{ number_format(($gameStats->headshots / $gameStats->kills) * 100, 1) }}% of kills</p>
@@ -247,7 +247,7 @@
                                 $hours = floor($gameStats->playtime_seconds / 3600);
                                 $minutes = floor(($gameStats->playtime_seconds % 3600) / 60);
                             @endphp
-                            <p class="text-lg font-bold text-blue-400">{{ $hours }}h {{ $minutes }}m</p>
+                            <p class="text-lg font-bold text-blue-400" data-countup-playtime="{{ $gameStats->playtime_seconds }}">{{ $hours }}h {{ $minutes }}m</p>
                             <p class="text-xs text-gray-400">Playtime</p>
                         </div>
                     </div>
@@ -259,7 +259,7 @@
                             </svg>
                         </div>
                         <div>
-                            <p class="text-lg font-bold text-purple-400">{{ number_format($gameStats->total_distance / 1000, 1) }}km</p>
+                            <p class="text-lg font-bold text-purple-400" data-countup="{{ round($gameStats->total_distance / 1000, 1) }}" data-countup-decimals="1" data-countup-suffix="km">{{ number_format($gameStats->total_distance / 1000, 1) }}km</p>
                             <p class="text-xs text-gray-400">Distance</p>
                         </div>
                     </div>
@@ -271,7 +271,7 @@
                             </svg>
                         </div>
                         <div>
-                            <p class="text-lg font-bold text-cyan-400">{{ number_format($gameStats->shots_fired) }}</p>
+                            <p class="text-lg font-bold text-cyan-400" data-countup="{{ $gameStats->shots_fired }}">{{ number_format($gameStats->shots_fired) }}</p>
                             <p class="text-xs text-gray-400">Shots Fired</p>
                         </div>
                     </div>
@@ -283,7 +283,7 @@
                             </svg>
                         </div>
                         <div>
-                            <p class="text-lg font-bold text-orange-400">{{ number_format($gameStats->grenades_thrown) }}</p>
+                            <p class="text-lg font-bold text-orange-400" data-countup="{{ $gameStats->grenades_thrown }}">{{ number_format($gameStats->grenades_thrown) }}</p>
                             <p class="text-xs text-gray-400">Grenades</p>
                         </div>
                     </div>
@@ -443,7 +443,7 @@
                         @endif
                         <div class="h-16 flex items-center justify-center mb-3">
                             @if(isset($weaponImages[$weapon->weapon_name]))
-                            <img src="{{ Storage::url($weaponImages[$weapon->weapon_name]) }}" alt="{{ $weapon->weapon_name }}" class="max-h-16 max-w-full object-contain">
+                            <x-blur-image src="{{ Storage::url($weaponImages[$weapon->weapon_name]) }}" alt="{{ $weapon->weapon_name }}" class="max-h-16 max-w-full object-contain" />
                             @else
                             <div class="w-12 h-12 bg-gray-600/50 rounded-lg flex items-center justify-center">
                                 <svg class="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">

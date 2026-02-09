@@ -1,8 +1,7 @@
 @extends('layouts.app')
 @section('title', 'Discord Rich Presence Settings')
 @section('content')
-<div class="py-12">
-    
+<div class="py-12 space-y-6">
         {{-- Header --}}
         <div class="flex items-center justify-between">
             <div>

@@ -53,7 +53,7 @@
                         $isRare = $rarity < 1.0;
                         $isUltraRare = $rarity < 0.1;
                     @endphp
-                    <div class="bg-gray-800/50 backdrop-blur border {{ $isEarned ? 'border-green-500/30' : 'border-gray-700' }} rounded-xl p-6 relative overflow-hidden group hover:border-green-500/30 transition"
+                    <div class="achievement-card bg-gray-800/50 backdrop-blur border {{ $isEarned ? 'border-green-500/30 achievement-earned' : 'border-gray-700' }} rounded-xl p-6 relative overflow-hidden group hover:border-green-500/30 transition"
                          x-data="{ showDetails: false }">
                         {{-- Rare Badge --}}
                         @if($isEarned && ($isRare || $isUltraRare))
@@ -74,9 +74,9 @@
                         {{-- Icon --}}
                         <div class="flex items-center justify-center mb-4">
                             @if($achievement->badge_path && $isEarned)
-                                <img src="{{ asset('storage/' . $achievement->badge_path) }}"
+                                <x-blur-image src="{{ asset('storage/' . $achievement->badge_path) }}"
                                      alt="{{ $achievement->name }}"
-                                     class="w-24 h-24 object-contain {{ !$isEarned ? 'opacity-30 grayscale' : '' }}">
+                                     class="w-24 h-24 object-contain {{ !$isEarned ? 'opacity-30 grayscale' : '' }}" />
                             @else
                                 <div class="w-24 h-24 rounded-full flex items-center justify-center {{ !$isEarned ? 'opacity-30 grayscale' : '' }}"
                                      style="background-color: {{ $achievement->color }}20;">

@@ -63,7 +63,7 @@
     </div>
 
     {{-- Leaderboard Table --}}
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl overflow-hidden">
+    <div class="bg-gray-800/50 border border-gray-700 rounded-xl overflow-hidden" x-data="leaderboardScroll()" x-init="init()">
         <div class="overflow-x-auto">
         <table class="w-full">
             <thead class="bg-gray-700/50">
@@ -100,7 +100,7 @@
                     </th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-gray-700/50">
+            <tbody x-ref="tableBody" class="divide-y divide-gray-700/50">
                 @forelse($players as $index => $player)
                 @php
                     $rank = ($players->currentPage() - 1) * $players->perPage() + $index + 1;
@@ -122,7 +122,7 @@
                     <td class="px-4 py-3">
                         <div class="flex items-center gap-3">
                             @if($user)
-                                <img src="{{ $user->avatar_display }}" alt="{{ $player->player_name }}" class="w-8 h-8 rounded-full">
+                                <x-blur-image src="{{ $user->avatar_display }}" alt="{{ $player->player_name }}" class="w-8 h-8 rounded-full" />
                                 <a href="{{ route('players.show', $user->id) }}" class="text-white font-medium hover:text-green-400 transition">
                                     {{ $player->player_name }}
                                 </a>
@@ -159,13 +159,136 @@
             </tbody>
         </table>
         </div>
-    </div>
 
-    {{-- Pagination --}}
-    @if($players->hasPages())
-    <div class="flex justify-center">
-        {{ $players->appends(['sort' => $sort, 'period' => $period ?? 'all'])->links() }}
+        {{-- Skeleton loading rows --}}
+        <div x-show="loadingMore" class="divide-y divide-gray-700/50">
+            <template x-for="i in 5" :key="'lb-skel-'+i">
+                <div class="flex items-center px-4 py-3 gap-4">
+                    <div class="skeleton w-8 h-8 rounded-full flex-shrink-0"></div>
+                    <div class="flex-1 flex items-center gap-3">
+                        <div class="skeleton skeleton-circle w-8 h-8 flex-shrink-0"></div>
+                        <div class="skeleton skeleton-text w-32"></div>
+                    </div>
+                    <div class="skeleton skeleton-text w-12"></div>
+                    <div class="skeleton skeleton-text w-12"></div>
+                    <div class="skeleton skeleton-text w-12"></div>
+                    <div class="skeleton skeleton-text w-10"></div>
+                    <div class="skeleton skeleton-text w-16"></div>
+                    <div class="skeleton skeleton-text w-14"></div>
+                    <div class="skeleton skeleton-text w-10"></div>
+                    <div class="skeleton skeleton-text w-10"></div>
+                    <div class="skeleton skeleton-text w-10"></div>
+                    <div class="skeleton skeleton-text w-12"></div>
+                </div>
+            </template>
+        </div>
+
+        {{-- Infinite scroll sentinel --}}
+        <div x-ref="sentinel" class="h-1"></div>
+
+        {{-- End state --}}
+        <div x-show="!hasMore && page > 1" class="py-4 text-center text-gray-500 text-sm">
+            All players loaded
+        </div>
     </div>
-    @endif
 </div>
 @endsection
+
+@push('scripts')
+<script>
+function leaderboardScroll() {
+    return {
+        page: {{ $players->currentPage() }},
+        hasMore: {{ $players->hasMorePages() ? 'true' : 'false' }},
+        loadingMore: false,
+        sort: '{{ $sort }}',
+        period: '{{ $period ?? 'all' }}',
+        rowCount: {{ count($players) }},
+
+        init() {
+            if (!this.hasMore) return;
+
+            const observer = new IntersectionObserver((entries) => {
+                if (entries[0].isIntersecting && this.hasMore && !this.loadingMore) {
+                    this.loadNext();
+                }
+            }, { rootMargin: '200px' });
+
+            observer.observe(this.$refs.sentinel);
+        },
+
+        async loadNext() {
+            this.loadingMore = true;
+            const nextPage = this.page + 1;
+
+            try {
+                const url = '/leaderboard?sort=' + encodeURIComponent(this.sort) +
+                            '&period=' + encodeURIComponent(this.period) +
+                            '&page=' + nextPage;
+
+                const res = await fetch(url, {
+                    headers: { 'Accept': 'application/json' }
+                });
+                const json = await res.json();
+
+                json.data.forEach((p) => {
+                    this.rowCount++;
+                    const tr = document.createElement('tr');
+                    tr.className = (this.rowCount % 2 === 1 ? 'bg-gray-800/30' : 'bg-gray-800/10') + ' hover:bg-gray-700/30 transition-colors';
+                    tr.innerHTML = this.buildRowHTML(p);
+                    this.$refs.tableBody.appendChild(tr);
+                });
+
+                this.page = json.current_page;
+                this.hasMore = json.next_page !== null;
+            } catch (e) {
+                console.error('Leaderboard load error:', e);
+            } finally {
+                this.loadingMore = false;
+            }
+        },
+
+        buildRowHTML(p) {
+            const sort = this.sort;
+            const rankHtml = p.rank <= 3
+                ? '<span class="inline-flex items-center justify-center w-8 h-8 rounded-full ' +
+                  (p.rank === 1 ? 'bg-yellow-500/20 text-yellow-400' : p.rank === 2 ? 'bg-gray-400/20 text-gray-300' : 'bg-amber-700/20 text-amber-600') +
+                  ' font-bold text-sm">' + p.rank + '</span>'
+                : '<span class="text-gray-500 text-sm pl-2">' + p.rank + '</span>';
+
+            const avatarHtml = p.avatar
+                ? '<img src="' + this.escapeHtml(p.avatar) + '" alt="" class="w-8 h-8 rounded-full blur-up loaded" loading="lazy">'
+                : '<div class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center"><svg class="w-4 h-4 text-gray-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/></svg></div>';
+
+            const nameHtml = p.profile_url
+                ? '<a href="' + this.escapeHtml(p.profile_url) + '" class="text-white font-medium hover:text-green-400 transition">' + this.escapeHtml(p.player_name) + '</a>'
+                : '<span class="text-white font-medium">' + this.escapeHtml(p.player_name) + '</span>';
+
+            const playtimeH = Math.floor(p.playtime_seconds / 3600);
+            const playtimeM = Math.floor((p.playtime_seconds % 3600) / 60);
+
+            const sc = (col, val) => sort === col ? 'text-white font-bold' : 'text-gray-400';
+
+            return '<td class="px-4 py-3">' + rankHtml + '</td>' +
+                '<td class="px-4 py-3"><div class="flex items-center gap-3">' + avatarHtml + nameHtml + '</div></td>' +
+                '<td class="px-4 py-3 text-right text-sm ' + (sort === 'kills' ? 'text-green-400 font-bold' : 'text-green-400/70') + '">' + p.kills.toLocaleString() + '</td>' +
+                '<td class="px-4 py-3 text-right text-sm ' + (sort === 'deaths' ? 'text-red-400 font-bold' : 'text-red-400/70') + '">' + p.deaths.toLocaleString() + '</td>' +
+                '<td class="px-4 py-3 text-right text-sm text-yellow-400 font-medium">' + p.kd.toFixed(2) + '</td>' +
+                '<td class="px-4 py-3 text-right text-sm ' + sc('headshots') + '">' + p.headshots.toLocaleString() + '</td>' +
+                '<td class="px-4 py-3 text-right text-sm ' + sc('playtime_seconds') + '">' + playtimeH + 'h ' + playtimeM + 'm</td>' +
+                '<td class="px-4 py-3 text-right text-sm ' + sc('total_distance') + '">' + (p.total_distance / 1000).toFixed(1) + 'km</td>' +
+                '<td class="px-4 py-3 text-right text-sm ' + sc('bases_captured') + '">' + p.bases_captured.toLocaleString() + '</td>' +
+                '<td class="px-4 py-3 text-right text-sm ' + sc('heals_given') + '">' + p.heals_given.toLocaleString() + '</td>' +
+                '<td class="px-4 py-3 text-right text-sm ' + sc('supplies_delivered') + '">' + p.supplies_delivered.toLocaleString() + '</td>' +
+                '<td class="px-4 py-3 text-right text-sm ' + sc('xp_total') + '">' + p.xp_total.toLocaleString() + '</td>';
+        },
+
+        escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+    };
+}
+</script>
+@endpush

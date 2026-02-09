@@ -43,6 +43,42 @@ class LeaderboardController extends Controller
             ->get(['id', 'player_uuid', 'avatar'])
             ->keyBy('player_uuid');
 
+        if ($request->wantsJson()) {
+            $perPage = $players->perPage();
+            $currentPage = $players->currentPage();
+            $data = $players->getCollection()->map(function ($player, $index) use ($linkedUsers, $sort, $currentPage, $perPage) {
+                $rank = ($currentPage - 1) * $perPage + $index + 1;
+                $user = $linkedUsers[$player->player_uuid] ?? null;
+                $kd = $player->deaths > 0 ? round($player->kills / $player->deaths, 2) : $player->kills;
+
+                return [
+                    'rank' => $rank,
+                    'player_name' => $player->player_name,
+                    'player_uuid' => $player->player_uuid,
+                    'avatar' => $user?->avatar_display ?? null,
+                    'profile_url' => $user ? route('players.show', $user->id) : null,
+                    'kills' => (int) $player->kills,
+                    'deaths' => (int) $player->deaths,
+                    'kd' => $kd,
+                    'headshots' => (int) $player->headshots,
+                    'playtime_seconds' => (int) $player->playtime_seconds,
+                    'total_distance' => (int) $player->total_distance,
+                    'bases_captured' => (int) $player->bases_captured,
+                    'heals_given' => (int) $player->heals_given,
+                    'supplies_delivered' => (int) $player->supplies_delivered,
+                    'xp_total' => (int) $player->xp_total,
+                    'sort_active' => $sort,
+                ];
+            });
+
+            return response()->json([
+                'data' => $data,
+                'current_page' => $currentPage,
+                'next_page' => $players->hasMorePages() ? $currentPage + 1 : null,
+                'total' => $players->total(),
+            ]);
+        }
+
         return view('leaderboard', [
             'players' => $players,
             'sort' => $sort,

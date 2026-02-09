@@ -206,10 +206,17 @@ When displaying scenario names, always use `$server->scenario_display_name` (not
 - `/` — Public pages (home, rules, news)
 - `/profile` — Logged-in user's profile with game stats (kills, weapons, hit zones, XP, etc.)
 - `/players` — Player search with autocomplete (recent searches via localStorage)
+- `/players/compare` — Player comparison tool (up to 4 players, radar chart, stat bars, weapon charts)
+- `/players/compare/head-to-head` — AJAX endpoint for H2H matchup data between 2 players
+- `/kill-feed` — Public kill feed with weapon images
+- `/weapons` — Public weapon stats leaderboard (headshot %, distances)
 - `/servers/{serverId}/*` — Server detail pages, AJAX endpoints, embeddable widget
+- `/servers/{serverId}/stats` — Server-specific performance stats with Chart.js
+- `/servers/{serverId}/heatmap` — Kill/death heatmap on Leaflet.js map (admin/gm/mod see live player positions)
 - `/servers/{serverId}/widget` — Standalone embeddable status widget (public, no auth)
 - `/servers/{serverId}/widget/api` — Public JSON API for server status
 - `/servers/{serverId}/embed` — Embed code generator with live preview
+- `/achievements` — Public achievement catalog with progress tracking
 - `/two-factor-challenge` — 2FA login challenge (guest with session)
 - `/profile/two-factor/*` — 2FA setup, confirm, disable, recovery codes (auth)
 - `/auth/steam/*` — Steam OAuth flow
@@ -231,9 +238,11 @@ When displaying scenario names, always use `$server->scenario_display_name` (not
   - `/admin/anticheat/*` — Raven Anti-Cheat dashboard, events log, stats history
   - `/admin/weapons/*` — Weapon image management
   - `/admin/vehicles/*` — Vehicle image management (mirrors weapons pattern)
-  - `/admin/rcon/*` — RCON server commands (kick, ban, say)
+  - `/admin/rcon/*` — RCON server commands (kick, ban, say). Separate from GameServerManager; uses `config('services.rcon.api_url/api_key')`
+  - `/admin/reports/*` — Player conduct reports with status workflow (open/investigating/action_taken/dismissed)
   - `/admin/audit-log` — Enhanced audit log with user/date/search filters and CSV export
   - `/admin/news/*` — News article management
+- `/export/*` — Stats export: player CSV, match history CSV, leaderboard CSV/JSON (via `StatsExportController`)
 - `/gm/*` — GM/Moderator routes (gm_sessions, editor_actions)
 - `/api/*` — Sanctum-authenticated Stats API
 - `/api/legacy/*` — Legacy token-authenticated GameEvent API
@@ -342,6 +351,16 @@ Both controllers must pass the same variables to their views. When adding new st
 Profile views display data from two sources:
 1. `$gameStats` (PlayerStat model) — aggregated counters from `player_stats` table
 2. Raw queries to event tables — top weapons, recent kills, hit zones, XP breakdown, etc.
+
+### Player Comparison Tool
+
+`PlayerComparisonController` supports comparing up to 4 players via query params (`?p1=uuid&p2=uuid&p3=uuid&p4=uuid`). The view uses Chart.js for:
+- **Radar chart** — 8 axes (Kills, Deaths, K/D, Headshots, Playtime, Distance, Heals, XP), normalized to 0-100% relative to max
+- **Stat bars** — 14 stats with color-coded bars per player, winner highlighted
+- **Weapon preference chart** — Horizontal grouped bar chart of top weapons across all players
+- **Head-to-head section** — Only shown with exactly 2 players, AJAX-loaded from `/players/compare/head-to-head`
+
+Player colors: P1 green (#22c55e), P2 blue (#3b82f6), P3 orange (#f97316), P4 purple (#a855f7).
 
 ### Admin Image Management Pattern
 

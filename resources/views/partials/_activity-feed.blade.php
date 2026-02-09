@@ -1,15 +1,20 @@
-<div class="activity-feed-wrapper bg-gray-800/50 border border-gray-700 rounded-xl p-6" x-data="activityFeed()" x-init="fetchEvents()">
+<div class="activity-feed-wrapper glass rounded-xl p-6" x-data="activityFeed()" x-init="fetchEvents()">
     <div class="flex items-center gap-3 mb-4 flex-shrink-0">
-        <h3 class="text-lg font-semibold text-white">Live Activity</h3>
-        <span class="relative flex h-2 w-2">
+        <h3 class="text-lg font-semibold text-white neon-text-sm">Live Activity</h3>
+        <span class="relative flex h-2.5 w-2.5">
             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-            <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500 animate-live-glow"></span>
         </span>
-        <div class="flex-1 h-px bg-gray-700"></div>
+        <div class="flex-1 glow-line"></div>
     </div>
     <div class="activity-feed-scroll space-y-2 max-h-96 overflow-y-auto">
         <template x-for="event in events" :key="event.occurred_at + event.actor + event.type">
-            <div class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-gray-700/30 transition">
+            <div class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-white/5 transition-all duration-200"
+                 :class="{
+                     'border-l-2 border-l-red-500/40 hover:border-l-red-400': event.type === 'kill',
+                     'border-l-2 border-l-amber-500/40 hover:border-l-amber-400': event.type === 'base_capture',
+                     'border-l-2 border-l-green-500/40 hover:border-l-green-400': event.type === 'connection'
+                 }">
                 {{-- Icon --}}
                 <template x-if="event.type === 'kill'">
                     <div class="w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center flex-shrink-0">
@@ -61,13 +66,24 @@
                     </template>
                 </div>
                 {{-- Time --}}
-                <span class="text-xs text-gray-600 flex-shrink-0" x-text="timeAgo(event.occurred_at)"></span>
+                <span class="text-xs text-gray-500 flex-shrink-0 bg-gray-900/50 px-1.5 py-0.5 rounded" x-text="timeAgo(event.occurred_at)"></span>
             </div>
         </template>
-        <div x-show="events.length === 0 && !loading" class="text-center text-gray-500 py-4 text-sm">
+        <div x-show="events.length === 0 && !loading" class="text-center text-gray-500 py-6 text-sm glass rounded-lg">
             No recent activity
         </div>
-        <div x-show="loading" class="text-center text-gray-500 py-4 text-sm">Loading...</div>
+        <div x-show="loading" class="space-y-3">
+            <template x-for="i in 5" :key="'skel-'+i">
+                <div class="flex items-center gap-3 py-2 px-3">
+                    <div class="skeleton skeleton-circle w-8 h-8 flex-shrink-0"></div>
+                    <div class="flex-1 space-y-2">
+                        <div class="skeleton skeleton-text w-3/4"></div>
+                        <div class="skeleton skeleton-text w-1/2" style="height:0.625rem"></div>
+                    </div>
+                    <div class="skeleton w-10 h-5 rounded"></div>
+                </div>
+            </template>
+        </div>
     </div>
 </div>
 

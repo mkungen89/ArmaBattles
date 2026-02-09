@@ -37,8 +37,11 @@
                           class="relative inline-flex rounded-full h-3 w-3"></span>
                 </span>
             </div>
-            <p class="text-lg font-semibold" :class="health.services?.arma === 'running' ? 'text-green-400' : 'text-red-400'"
-               x-text="health.services?.arma === 'running' ? 'Running' : (health.status === 'unreachable' ? 'Unreachable' : 'Stopped')">Loading...</p>
+            <template x-if="!health.status">
+                <div class="skeleton skeleton-text-lg w-24"></div>
+            </template>
+            <p x-show="health.status" class="text-lg font-semibold" :class="health.services?.arma === 'running' ? 'text-green-400' : 'text-red-400'"
+               x-text="health.services?.arma === 'running' ? 'Running' : (health.status === 'unreachable' ? 'Unreachable' : 'Stopped')"></p>
         </div>
 
         {{-- Stats Collector --}}
@@ -52,8 +55,11 @@
                           class="relative inline-flex rounded-full h-3 w-3"></span>
                 </span>
             </div>
-            <p class="text-lg font-semibold" :class="health.services?.stats === 'running' ? 'text-green-400' : 'text-red-400'"
-               x-text="health.services?.stats === 'running' ? 'Running' : 'Stopped'">Loading...</p>
+            <template x-if="!health.status">
+                <div class="skeleton skeleton-text-lg w-24"></div>
+            </template>
+            <p x-show="health.status" class="text-lg font-semibold" :class="health.services?.stats === 'running' ? 'text-green-400' : 'text-red-400'"
+               x-text="health.services?.stats === 'running' ? 'Running' : 'Stopped'"></p>
         </div>
 
         {{-- RCON --}}
@@ -67,8 +73,11 @@
                           class="relative inline-flex rounded-full h-3 w-3"></span>
                 </span>
             </div>
-            <p class="text-lg font-semibold" :class="health.rcon === 'connected' ? 'text-green-400' : 'text-red-400'"
-               x-text="health.rcon === 'connected' ? 'Connected' : 'Disconnected'">Loading...</p>
+            <template x-if="!health.status">
+                <div class="skeleton skeleton-text-lg w-24"></div>
+            </template>
+            <p x-show="health.status" class="text-lg font-semibold" :class="health.rcon === 'connected' ? 'text-green-400' : 'text-red-400'"
+               x-text="health.rcon === 'connected' ? 'Connected' : 'Disconnected'"></p>
         </div>
 
         {{-- Players --}}

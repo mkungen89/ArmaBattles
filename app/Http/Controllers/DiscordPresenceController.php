@@ -10,9 +10,7 @@ class DiscordPresenceController extends Controller
 {
     public function __construct(
         private DiscordPresenceService $presenceService
-    ) {
-        $this->middleware('auth');
-    }
+    ) {}
 
     /**
      * Show Discord presence settings

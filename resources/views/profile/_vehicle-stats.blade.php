@@ -102,7 +102,7 @@
             @endif
             <div class="h-12 flex items-center justify-center mb-2">
                 @if(isset($vs['vehicleImages'][$vehicle['name']]))
-                <img src="{{ Storage::url($vs['vehicleImages'][$vehicle['name']]) }}" alt="{{ $vehicle['name'] }}" class="max-h-12 max-w-full object-contain">
+                <x-blur-image src="{{ Storage::url($vs['vehicleImages'][$vehicle['name']]) }}" alt="{{ $vehicle['name'] }}" class="max-h-12 max-w-full object-contain" />
                 @else
                 <div class="w-10 h-10 bg-gray-600/50 rounded-lg flex items-center justify-center">
                     <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
