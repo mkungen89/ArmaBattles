@@ -749,13 +749,32 @@
   - [ ] Compare up to 4 players simultaneously
   - **Package:** `chartjs` för radar charts
 
-- [ ] **Heatmaps & Visualization** 🔴
-  - [ ] Kill heatmap på kartor (overlay på map images)
-  - [ ] Death locations heatmap
-  - [ ] Movement pattern tracking
-  - [ ] Weapon effectiveness per map zone
-  - [ ] Time-of-day activity graphs
-  - **Package:** `leaflet.js` eller `deck.gl` för heatmaps
+- [x] **Heatmaps & Visualization** 🔴 ✅ **KLART 2026-02-09**
+  - [x] Kill heatmap på kartor (overlay på map images)
+  - [x] Death locations heatmap
+  - [x] GM/Admin live player positions on map
+  - [ ] Movement pattern tracking - Future enhancement
+  - [ ] Weapon effectiveness per map zone - Future enhancement
+  - [ ] Time-of-day activity graphs - Future enhancement
+  - **Implementerat:**
+    - **Map:** Leaflet.js med iZurvive tile service (`L.CRS.Simple`, zoom 0-7)
+    - **Heatmap:** leaflet-heat plugin med kill/death overlay
+    - **City names:** Downloaded from iZurvive, WGS84→CRS.Simple conversion, zoom-dependent visibility
+    - **Filters:** Period (24h/7d/30d/all), type (kills/deaths/both), radius slider
+    - **Fullscreen:** Browser Fullscreen API med toggle button
+    - **Player tracking:** GM/Admin/Moderator can see online players' last known positions (green pulsing markers, 30s polling)
+    - **Coordinate system:** 12800 game units = 256 CRS units (scale 1/50), `gameToLatLng(x, z) = [(z - 12800) / 50, x / 50]`
+    - **Attribution:** iZurvive credited as map tile source
+    - **API:** `/api/v1/heatmap-data` for kill data, `/servers/{id}/heatmap/players` for live player positions
+  - **Files:**
+    - `resources/views/servers/heatmap.blade.php` (ny view)
+    - `app/Http/Controllers/ServerDetailController.php` (heatmap + heatmapPlayers methods)
+    - `app/Http/Controllers/Api/StatsController.php` (getHeatmapData method)
+    - `app/Console/Commands/GenerateMapTiles.php` (ny command, för offline tiles)
+    - `public/data/everon-citynames.json` (city name data)
+    - `resources/views/servers/show.blade.php` (heatmap button)
+    - `routes/web.php` (heatmap routes)
+    - `routes/api_v1.php` (heatmap API route)
 
 ---
 
@@ -1294,3 +1313,4 @@ php artisan make:migration create_player_loadouts_table
 **Priority Focus:** P0 och P1 items först = ~3 månader solid work
 
 🚀 **LET'S BUILD SOMETHING AWESOME!**
+

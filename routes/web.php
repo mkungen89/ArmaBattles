@@ -241,6 +241,8 @@ Route::prefix('servers')->group(function () {
     Route::get('/{serverId}/status', [ServerDetailController::class, 'status'])->name('servers.status');
     Route::get('/{serverId}/mods/json', [ServerDetailController::class, 'modsJson'])->name('servers.mods.json');
     Route::get('/{serverId}/mods/download', [ServerDetailController::class, 'downloadMods'])->name('servers.mods.download');
+    Route::get('/{serverId}/heatmap', [ServerDetailController::class, 'heatmap'])->name('servers.heatmap');
+    Route::get('/{serverId}/heatmap/players', [ServerDetailController::class, 'heatmapPlayers'])->name('servers.heatmap.players');
     Route::get('/{serverId}/debug', [ServerDetailController::class, 'debug'])->name('servers.debug');
     Route::get('/{server}/widget', [ServerWidgetController::class, 'widget'])->name('servers.widget');
     Route::get('/{server}/widget/api', [ServerWidgetController::class, 'api'])->name('servers.widget.api');

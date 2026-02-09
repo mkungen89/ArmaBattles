@@ -19,6 +19,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+// === PUBLIC ENDPOINTS (no auth) ===
+Route::get('/heatmap', [StatsController::class, 'getHeatmapData'])
+    ->name('api.v1.heatmap');
+
 Route::middleware(['auth:sanctum', 'api.rate'])->group(function () {
 
     // === WRITE ENDPOINTS (from game server) ===

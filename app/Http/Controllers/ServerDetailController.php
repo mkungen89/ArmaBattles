@@ -261,6 +261,147 @@ class ServerDetailController extends Controller
     }
 
     /**
+     * Display the kill heatmap page
+     */
+    public function heatmap(string $serverId)
+    {
+        $bmServer = $this->battleMetrics->getServer($serverId);
+
+        if (!$bmServer) {
+            abort(404, 'Server not found');
+        }
+
+        $server = Server::syncFromBattleMetrics($bmServer);
+
+        $killCount = DB::table('player_kills')
+            ->where('server_id', $server->id)
+            ->whereNotNull('killer_position')
+            ->count();
+
+        $user = auth()->user();
+        $canViewPlayers = $user && ($user->isAdmin() || $user->role === 'gm' || $user->role === 'moderator');
+
+        return view('servers.heatmap', [
+            'server' => $server,
+            'serverId' => $serverId,
+            'killCount' => $killCount,
+            'canViewPlayers' => $canViewPlayers,
+        ]);
+    }
+
+    /**
+     * API: Get online players' last known positions (GM/Admin only)
+     */
+    public function heatmapPlayers(string $serverId): JsonResponse
+    {
+        $user = auth()->user();
+        if (!$user || !($user->isAdmin() || $user->role === 'gm' || $user->role === 'moderator')) {
+            return response()->json(['error' => 'Forbidden'], 403);
+        }
+
+        $server = Server::where('battlemetrics_id', $serverId)->first();
+        if (!$server) {
+            return response()->json(['error' => 'Server not found'], 404);
+        }
+
+        // Get currently online players (latest event is CONNECT)
+        $onlinePlayers = DB::table('connections')
+            ->select('player_uuid', 'player_name', 'occurred_at')
+            ->whereIn('id', function ($q) use ($server) {
+                $q->select(DB::raw('MAX(id)'))
+                    ->from('connections')
+                    ->where('server_id', $server->id)
+                    ->whereNotNull('player_uuid')
+                    ->groupBy('player_uuid');
+            })
+            ->where('event_type', 'CONNECT')
+            ->get();
+
+        if ($onlinePlayers->isEmpty()) {
+            return response()->json(['players' => []]);
+        }
+
+        $uuids = $onlinePlayers->pluck('player_uuid')->toArray();
+        $playerMap = $onlinePlayers->keyBy('player_uuid');
+
+        // Find last known position per player from position-bearing tables.
+        // Query each table separately, collect in PHP (simpler, avoids complex UNION).
+        $candidates = collect();
+
+        // Kills (as killer)
+        DB::table('player_kills')
+            ->select('killer_uuid as player_uuid', 'killer_position as position', 'killed_at as ts')
+            ->where('server_id', $server->id)
+            ->whereIn('killer_uuid', $uuids)
+            ->whereNotNull('killer_position')
+            ->orderByDesc('killed_at')
+            ->get()
+            ->each(fn ($r) => $candidates->push($r));
+
+        // Deaths (as victim)
+        DB::table('player_kills')
+            ->select('victim_uuid as player_uuid', 'victim_position as position', 'killed_at as ts')
+            ->where('server_id', $server->id)
+            ->whereIn('victim_uuid', $uuids)
+            ->whereNotNull('victim_position')
+            ->orderByDesc('killed_at')
+            ->get()
+            ->each(fn ($r) => $candidates->push($r));
+
+        // Consciousness events
+        DB::table('consciousness_events')
+            ->select('player_uuid', 'position', 'occurred_at as ts')
+            ->where('server_id', $server->id)
+            ->whereIn('player_uuid', $uuids)
+            ->whereNotNull('position')
+            ->orderByDesc('occurred_at')
+            ->get()
+            ->each(fn ($r) => $candidates->push($r));
+
+        // Grenades
+        DB::table('player_grenades')
+            ->select('player_uuid', 'position', 'occurred_at as ts')
+            ->where('server_id', $server->id)
+            ->whereIn('player_uuid', $uuids)
+            ->whereNotNull('position')
+            ->orderByDesc('occurred_at')
+            ->get()
+            ->each(fn ($r) => $candidates->push($r));
+
+        // Building events
+        DB::table('building_events')
+            ->select('player_uuid', 'position', 'occurred_at as ts')
+            ->where('server_id', $server->id)
+            ->whereIn('player_uuid', $uuids)
+            ->whereNotNull('position')
+            ->orderByDesc('occurred_at')
+            ->get()
+            ->each(fn ($r) => $candidates->push($r));
+
+        // Keep only the most recent position per player
+        $latest = $candidates
+            ->groupBy('player_uuid')
+            ->map(fn ($group) => $group->sortByDesc('ts')->first());
+
+        $result = [];
+        foreach ($latest as $uuid => $row) {
+            $pos = json_decode($row->position, true);
+            if (!$pos || count($pos) < 2) continue;
+
+            $player = $playerMap[$uuid] ?? null;
+            $result[] = [
+                'uuid' => $uuid,
+                'name' => $player->player_name ?? 'Unknown',
+                'x' => (float) $pos[0],
+                'z' => (float) ($pos[2] ?? $pos[1]),
+                'updated' => $row->ts,
+            ];
+        }
+
+        return response()->json(['players' => $result]);
+    }
+
+    /**
      * Debug endpoint to see raw BattleMetrics data
      */
     public function debug(string $serverId): JsonResponse

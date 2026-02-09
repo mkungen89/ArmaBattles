@@ -65,6 +65,10 @@ class StatsController extends Controller
             'is_roadkill' => 'nullable|boolean',
             'event_type' => 'nullable|string|max:50',
             'timestamp' => 'nullable|string',
+            'killer_position' => 'nullable|array',
+            'killer_position.*' => 'numeric',
+            'victim_position' => 'nullable|array',
+            'victim_position.*' => 'numeric',
         ]);
 
         $id = DB::table('player_kills')->insertGetId([
@@ -83,6 +87,8 @@ class StatsController extends Controller
             'is_roadkill' => $validated['is_roadkill'] ?? false,
             'event_type' => $validated['event_type'] ?? 'KILL',
             'killed_at' => $validated['timestamp'] ?? now(),
+            'killer_position' => isset($validated['killer_position']) ? json_encode($validated['killer_position']) : null,
+            'victim_position' => isset($validated['victim_position']) ? json_encode($validated['victim_position']) : null,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -1052,6 +1058,79 @@ class StatsController extends Controller
             ->get();
 
         return response()->json($bases);
+    }
+
+    // ========================================
+    // PUBLIC READ ENDPOINTS (no auth)
+    // ========================================
+
+    public function getHeatmapData(Request $request): JsonResponse
+    {
+        $request->validate([
+            'server_id' => 'required|integer',
+            'period' => 'nullable|string|in:24h,7d,30d,all',
+            'type' => 'nullable|string|in:kills,deaths,both',
+        ]);
+
+        $serverId = $request->input('server_id');
+        $period = $request->input('period', 'all');
+        $type = $request->input('type', 'both');
+
+        $query = DB::table('player_kills')
+            ->where('server_id', $serverId)
+            ->whereNotNull('killer_position')
+            ->whereNotNull('victim_position');
+
+        if ($period !== 'all') {
+            $since = match ($period) {
+                '24h' => now()->subHours(24),
+                '7d' => now()->subDays(7),
+                '30d' => now()->subDays(30),
+            };
+            $query->where('killed_at', '>=', $since);
+        }
+
+        $kills = $query->orderByDesc('killed_at')
+            ->limit(5000)
+            ->get(['killer_position', 'victim_position', 'weapon_name', 'is_headshot', 'killed_at', 'killer_name', 'victim_name']);
+
+        $points = [];
+
+        foreach ($kills as $kill) {
+            $killerPos = json_decode($kill->killer_position, true);
+            $victimPos = json_decode($kill->victim_position, true);
+
+            if ($type !== 'deaths' && $killerPos && count($killerPos) >= 2) {
+                $points[] = [
+                    'type' => 'kill',
+                    'x' => (float) $killerPos[0],
+                    'z' => (float) ($killerPos[2] ?? $killerPos[1]),
+                    'weapon' => $kill->weapon_name,
+                    'headshot' => (bool) $kill->is_headshot,
+                    'player' => $kill->killer_name,
+                    'time' => $kill->killed_at,
+                ];
+            }
+
+            if ($type !== 'kills' && $victimPos && count($victimPos) >= 2) {
+                $points[] = [
+                    'type' => 'death',
+                    'x' => (float) $victimPos[0],
+                    'z' => (float) ($victimPos[2] ?? $victimPos[1]),
+                    'weapon' => $kill->weapon_name,
+                    'headshot' => (bool) $kill->is_headshot,
+                    'player' => $kill->victim_name,
+                    'time' => $kill->killed_at,
+                ];
+            }
+        }
+
+        return response()->json([
+            'points' => $points,
+            'total' => count($points),
+            'period' => $period,
+            'type' => $type,
+        ]);
     }
 
     // ========================================
