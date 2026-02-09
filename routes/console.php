@@ -51,3 +51,23 @@ Schedule::command('leaderboards:warm-cache')
     ->everyFourMinutes()
     ->withoutOverlapping()
     ->name('warm:leaderboard-caches');
+
+// Collect system metrics every 5 minutes
+Schedule::command('metrics:collect')
+    ->everyFiveMinutes()
+    ->withoutOverlapping()
+    ->name('collect:system-metrics');
+
+// Clean up old analytics events
+Schedule::call(function () {
+    \Illuminate\Support\Facades\DB::table('analytics_events')
+        ->where('created_at', '<', now()->subDays(site_setting('analytics_retention_days', 90)))
+        ->delete();
+})->daily()->name('cleanup:old-analytics-events');
+
+// Clean up old system metrics
+Schedule::call(function () {
+    \Illuminate\Support\Facades\DB::table('system_metrics')
+        ->where('recorded_at', '<', now()->subDays(site_setting('metrics_retention_days', 90)))
+        ->delete();
+})->daily()->name('cleanup:old-system-metrics');

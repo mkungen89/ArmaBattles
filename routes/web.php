@@ -28,6 +28,7 @@ use App\Http\Controllers\Admin\TournamentAdminController;
 use App\Http\Controllers\Admin\AdminReportController;
 use App\Http\Controllers\Admin\TeamAdminController;
 use App\Http\Controllers\Admin\ServerManagerController;
+use App\Http\Controllers\Admin\MetricsController;
 use App\Http\Controllers\Admin\NewsAdminController;
 use App\Http\Controllers\NewsController;
 use Illuminate\Support\Facades\Route;
@@ -440,6 +441,12 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
         Route::get('/{report}', [AdminReportController::class, 'show'])->name('admin.reports.show');
         Route::put('/{report}', [AdminReportController::class, 'update'])->name('admin.reports.update');
     });
+
+    // Metrics & Tracking
+    Route::get('/metrics', [MetricsController::class, 'index'])->name('admin.metrics');
+    Route::get('/metrics/api/analytics-data', [MetricsController::class, 'apiAnalyticsData'])->name('admin.metrics.analytics-data');
+    Route::get('/metrics/api/usage-data', [MetricsController::class, 'apiUsageData'])->name('admin.metrics.usage-data');
+    Route::get('/metrics/api/performance-data', [MetricsController::class, 'apiPerformanceData'])->name('admin.metrics.performance-data');
 });
 
 // Admin News Routes (accessible to GM, Moderator, and Admin roles)

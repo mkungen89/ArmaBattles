@@ -32,11 +32,16 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(append: [
             \App\Http\Middleware\TrackLastSeen::class,
             \App\Http\Middleware\MaintenanceModeMiddleware::class,
+            \App\Http\Middleware\TrackAnalytics::class,
         ]);
 
         // Remove default throttle:api since we use custom per-token rate limiting (api.rate)
         $middleware->api(remove: [
             \Illuminate\Routing\Middleware\ThrottleRequests::class.':api',
+        ]);
+
+        $middleware->api(append: [
+            \App\Http\Middleware\TrackAnalytics::class,
         ]);
 
         $middleware->alias([
