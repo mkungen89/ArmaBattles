@@ -12,7 +12,7 @@ Reforger Community is a Laravel 12 web application for tracking Arma Reforger ga
 # Full project setup (install deps, migrate, build)
 composer setup
 
-# Start all dev services concurrently (server, queue, logs, vite)
+# Start all dev services concurrently (server, queue, logs, vite, reverb)
 composer dev
 
 # Run tests
@@ -306,9 +306,17 @@ BATTLEMETRICS_SERVER_ID    # Default server to track
 STEAM_CLIENT_SECRET        # Steam OAuth secret
 GAMESERVER_URL             # Node.js server manager API URL (services.gameserver.url)
 GAMESERVER_KEY             # Server manager API bearer token (services.gameserver.key)
+REVERB_APP_ID              # Reverb application ID (e.g. armabattles)
+REVERB_APP_KEY             # Reverb app key (hex string)
+REVERB_APP_SECRET          # Reverb app secret (hex string)
+REVERB_SERVER_HOST         # Reverb bind address (127.0.0.1)
+REVERB_SERVER_PORT         # Reverb internal port (8085)
+REVERB_HOST                # Public hostname for WS connections (armabattles.com)
+REVERB_PORT                # Public port (443 via nginx proxy)
+REVERB_SCHEME              # https
 ```
 
-Production uses PostgreSQL. Tests use in-memory SQLite. Uses database-backed cache, sessions, queues, and notifications.
+Production uses PostgreSQL. Tests use in-memory SQLite. Uses database-backed cache, sessions, queues, broadcasting (Reverb), and notifications.
 
 ### Scheduled Tasks (`routes/console.php`)
 
@@ -391,8 +399,69 @@ Laravel database notifications with Alpine.js dropdown in the navbar. Categories
 - Category-based filtering with icons (team=blue, match=orange, achievement=yellow)
 - Desktop notifications via browser Notification API (auto-prompts permission)
 - Mark all as read, individual mark-as-read on click
-- Auto-refresh unread count every 60 seconds
+- Real-time via WebSocket (NewNotification event on private channel), fallback polling every 60s
 - Controller: `NotificationController` with category filtering support
+
+### Real-Time Broadcasting (Laravel Reverb)
+
+WebSocket-based real-time updates via Laravel Reverb. Replaces HTTP polling with instant event delivery, keeping polling as fallback with slowed intervals when WS is connected.
+
+**Stack:** Laravel Reverb (server) + Laravel Echo + Pusher.js (client). Reverb runs as a systemd service on port 8085, proxied via nginx at `/app` and `/apps` paths over WSS (port 443).
+
+**Configuration:**
+- `config/reverb.php` — Reverb server config (reads from env)
+- `config/broadcasting.php` — Broadcasting driver config
+- `bootstrap/app.php` — `withBroadcasting()` registers channel auth routes
+- `resources/js/bootstrap.js` — Echo client initialization
+- `routes/channels.php` — Channel authorization rules
+- `.env` — `BROADCAST_CONNECTION=reverb`, `REVERB_SERVER_PORT=8085`, `VITE_REVERB_*` vars
+
+**Channels (`routes/channels.php`):**
+
+| Channel | Type | Auth | Used For |
+|---------|------|------|----------|
+| `server.{serverId}` | Public | None | Kill feed, status, player connections, base events |
+| `server.global` | Public | None | Activity feed (kills, connections, captures) |
+| `App.Models.User.{id}` | Private | `$user->id === $id` | Notifications |
+| `admin.server.{serverId}` | Private | admin/moderator | Admin dashboard events |
+| `heatmap.{serverId}` | Private | admin/gm/moderator | Player tracking |
+
+**Events (`app/Events/`):**
+
+| Event | Channel | Broadcast As | Queue |
+|-------|---------|-------------|-------|
+| `KillFeedUpdated` | `server.{id}` | `.kill.new` | ShouldBroadcastNow |
+| `PlayerConnected` | `server.{id}` | `.player.connected` | ShouldBroadcastNow |
+| `ServerStatusUpdated` | `server.{id}` | `.status.updated` | ShouldBroadcast (queued) |
+| `ActivityFeedUpdated` | `server.global` | `.activity.new` | ShouldBroadcastNow |
+| `BaseEventOccurred` | `server.{id}` | `.base.event` | ShouldBroadcastNow |
+| `NewNotification` | private `App.Models.User.{id}` | `.notification.new` | ShouldBroadcast (queued) |
+
+**Dispatch points in StatsController:**
+- `storeKill()` → `KillFeedUpdated` + `ActivityFeedUpdated`
+- `storeConnection()` → `PlayerConnected` + `ActivityFeedUpdated` (on CONNECT)
+- `storeServerStatus()` → `ServerStatusUpdated`
+- `storeBaseEvent()` → `BaseEventOccurred` + `ActivityFeedUpdated` (on capture)
+- `TrackServerStatus` command → `ServerStatusUpdated`
+
+**Notification listener:** `app/Listeners/BroadcastNotificationCreated.php` listens on Laravel's `NotificationSent` event (auto-discovered). Broadcasts `NewNotification` when a database notification is sent.
+
+**Frontend pattern (9 views modified):** Each view adds Echo listeners alongside existing polling. When WS connects, polling intervals are slowed 2-5x. Example:
+```javascript
+if (window.Echo) {
+    window.Echo.channel('server.' + serverId)
+        .listen('.kill.new', (e) => { /* prepend kill */ });
+    pollInterval = 60000; // slow from 12s to 60s
+}
+```
+
+**Critical:** `Event::dispatch()` does NOT support PHP named parameters. Always use positional arguments matching the constructor order. Named params like `KillFeedUpdated::dispatch(serverId: $id)` will throw `Unknown named parameter` errors.
+
+**Infrastructure:**
+- Systemd: `/etc/systemd/system/reverb.service` — `php artisan reverb:start --host=127.0.0.1 --port=8085`
+- Nginx: WSS proxy at `/app` and `/apps` → `http://127.0.0.1:8085`
+- Memory: ~37MB RAM for the Reverb process
+- Management: `systemctl start/stop/restart reverb`, logs at `/var/log/reverb.log`
 
 ### Server Status Widget
 
