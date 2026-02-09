@@ -46,7 +46,7 @@ return [
 
     'battlemetrics' => [
         'token' => env('BATTLEMETRICS_API_TOKEN'),
-        'server_id' => env('BATTLEMETRICS_SERVER_ID'),
+        'server_id' => env('BATTLEMETRICS_SERVER_ID', '0'),
     ],
 
     'armabattles' => [
