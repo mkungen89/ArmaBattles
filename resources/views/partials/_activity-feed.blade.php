@@ -1,86 +1,134 @@
-<div class="activity-feed-wrapper glass rounded-xl p-6" x-data="activityFeed()" x-init="fetchEvents()">
-    <div class="flex items-center gap-3 mb-4 flex-shrink-0">
-        <h3 class="text-lg font-semibold text-white neon-text-sm">Live Activity</h3>
-        <span class="relative flex h-2.5 w-2.5">
-            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500 animate-live-glow"></span>
-        </span>
+<div class="activity-feed-wrapper glass rounded-xl p-5" x-data="activityFeed()" x-init="fetchEvents()">
+    {{-- Header --}}
+    <div class="flex items-center gap-3 mb-5 flex-shrink-0">
+        <div class="flex items-center gap-2.5">
+            <span class="relative flex h-2 w-2">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500 animate-live-glow"></span>
+            </span>
+            <h3 class="text-sm font-semibold text-gray-300 uppercase tracking-wider">Live Activity</h3>
+        </div>
         <div class="flex-1 glow-line"></div>
+        <span class="text-[10px] text-gray-600 font-medium tabular-nums" x-text="events.length + ' events'"></span>
     </div>
-    <div class="activity-feed-scroll space-y-2 max-h-96 overflow-y-auto">
+
+    {{-- Event list --}}
+    <div class="activity-feed-scroll space-y-1 max-h-96 overflow-y-auto">
         <template x-for="event in events" :key="event.occurred_at + event.actor + event.type">
-            <div class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-white/5 transition-all duration-200"
-                 :class="{
-                     'border-l-2 border-l-red-500/40 hover:border-l-red-400': event.type === 'kill',
-                     'border-l-2 border-l-amber-500/40 hover:border-l-amber-400': event.type === 'base_capture',
-                     'border-l-2 border-l-green-500/40 hover:border-l-green-400': event.type === 'connection'
-                 }">
-                {{-- Icon --}}
-                <template x-if="event.type === 'kill'">
-                    <div class="w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center flex-shrink-0">
-                        <svg class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>
-                        </svg>
-                    </div>
-                </template>
-                <template x-if="event.type === 'base_capture'">
-                    <div class="w-8 h-8 rounded-full bg-amber-500/20 flex items-center justify-center flex-shrink-0">
-                        <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"/>
-                        </svg>
-                    </div>
-                </template>
-                <template x-if="event.type === 'connection'">
-                    <div class="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center flex-shrink-0">
-                        <svg class="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
-                        </svg>
-                    </div>
-                </template>
-                {{-- Text --}}
-                <div class="flex-1 min-w-0">
+            <div class="group relative flex items-start gap-3 py-2.5 px-3 rounded-lg hover:bg-white/[0.03] transition-all duration-200">
+                {{-- Left accent + icon --}}
+                <div class="flex flex-col items-center flex-shrink-0 pt-0.5">
+                    {{-- Kill icon --}}
                     <template x-if="event.type === 'kill'">
-                        <p class="text-sm truncate">
-                            <span class="text-green-400 font-medium" x-text="event.actor"></span>
-                            <span class="text-gray-500">killed</span>
-                            <span :class="event.victim_type === 'AI' ? 'text-yellow-400' : 'text-red-400'" x-text="event.victim_type === 'AI' ? 'AI' : event.target"></span>
-                            <template x-if="event.is_headshot">
-                                <svg class="w-3 h-3 text-yellow-400 inline ml-1" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                                </svg>
-                            </template>
-                        </p>
+                        <div class="w-7 h-7 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center justify-center group-hover:bg-red-500/20 group-hover:border-red-500/30 transition-all">
+                            <svg class="w-3.5 h-3.5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2a4 4 0 014 4c0 2-2 4-4 6-2-2-4-4-4-6a4 4 0 014-4zM5 21l2-6 5 4 5-4 2 6H5z"/>
+                            </svg>
+                        </div>
                     </template>
+                    {{-- Base capture icon --}}
                     <template x-if="event.type === 'base_capture'">
-                        <p class="text-sm truncate">
-                            <span class="text-amber-400 font-medium" x-text="event.actor"></span>
-                            <span class="text-gray-500">captured</span>
-                            <span class="text-white" x-text="event.detail || 'a base'"></span>
-                        </p>
+                        <div class="w-7 h-7 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center group-hover:bg-amber-500/20 group-hover:border-amber-500/30 transition-all">
+                            <svg class="w-3.5 h-3.5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"/>
+                            </svg>
+                        </div>
                     </template>
+                    {{-- Connection icon --}}
                     <template x-if="event.type === 'connection'">
-                        <p class="text-sm truncate">
-                            <span class="text-green-400 font-medium" x-text="event.actor"></span>
-                            <span class="text-gray-500">joined the server</span>
-                        </p>
+                        <div class="w-7 h-7 rounded-lg bg-green-500/10 border border-green-500/20 flex items-center justify-center group-hover:bg-green-500/20 group-hover:border-green-500/30 transition-all">
+                            <svg class="w-3.5 h-3.5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
+                            </svg>
+                        </div>
                     </template>
                 </div>
-                {{-- Time --}}
-                <span class="text-xs text-gray-500 flex-shrink-0 bg-gray-900/50 px-1.5 py-0.5 rounded" x-text="timeAgo(event.occurred_at)"></span>
+
+                {{-- Content --}}
+                <div class="flex-1 min-w-0">
+                    {{-- Kill event --}}
+                    <template x-if="event.type === 'kill'">
+                        <div>
+                            <p class="text-[13px] leading-snug">
+                                <template x-if="event.actor_profile_url">
+                                    <a :href="event.actor_profile_url" class="text-green-400 font-medium hover:text-green-300 hover:underline transition" x-text="event.actor" @click.stop></a>
+                                </template>
+                                <template x-if="!event.actor_profile_url">
+                                    <span class="text-gray-300 font-medium" x-text="event.actor"></span>
+                                </template>
+                                <span class="text-gray-600 mx-0.5">killed</span>
+                                <template x-if="event.victim_type === 'AI'">
+                                    <span class="text-yellow-500/80 font-medium">AI</span>
+                                </template>
+                                <template x-if="event.victim_type !== 'AI' && event.target_profile_url">
+                                    <a :href="event.target_profile_url" class="text-red-400 font-medium hover:text-red-300 hover:underline transition" x-text="event.target" @click.stop></a>
+                                </template>
+                                <template x-if="event.victim_type !== 'AI' && !event.target_profile_url">
+                                    <span class="text-gray-300 font-medium" x-text="event.target"></span>
+                                </template>
+                                <template x-if="event.is_headshot">
+                                    <span class="inline-flex items-center ml-1 px-1 py-0.5 rounded bg-yellow-500/10 border border-yellow-500/20 text-yellow-400 text-[9px] font-bold uppercase">HS</span>
+                                </template>
+                            </p>
+                            <p class="text-[11px] text-gray-600 mt-0.5" x-show="event.detail" x-text="event.detail"></p>
+                        </div>
+                    </template>
+
+                    {{-- Base capture event --}}
+                    <template x-if="event.type === 'base_capture'">
+                        <div>
+                            <p class="text-[13px] leading-snug">
+                                <template x-if="event.actor_profile_url">
+                                    <a :href="event.actor_profile_url" class="text-amber-400 font-medium hover:text-amber-300 hover:underline transition" x-text="event.actor" @click.stop></a>
+                                </template>
+                                <template x-if="!event.actor_profile_url">
+                                    <span class="text-gray-300 font-medium" x-text="event.actor"></span>
+                                </template>
+                                <span class="text-gray-600 mx-0.5">captured</span>
+                                <span class="text-amber-200/70" x-text="event.detail || 'a base'"></span>
+                            </p>
+                        </div>
+                    </template>
+
+                    {{-- Connection event --}}
+                    <template x-if="event.type === 'connection'">
+                        <div>
+                            <p class="text-[13px] leading-snug">
+                                <template x-if="event.actor_profile_url">
+                                    <a :href="event.actor_profile_url" class="text-green-400 font-medium hover:text-green-300 hover:underline transition" x-text="event.actor" @click.stop></a>
+                                </template>
+                                <template x-if="!event.actor_profile_url">
+                                    <span class="text-gray-300 font-medium" x-text="event.actor"></span>
+                                </template>
+                                <span class="text-gray-600 mx-0.5">joined the server</span>
+                            </p>
+                        </div>
+                    </template>
+                </div>
+
+                {{-- Timestamp --}}
+                <span class="text-[10px] text-gray-600 flex-shrink-0 tabular-nums pt-0.5" x-text="timeAgo(event.occurred_at)"></span>
             </div>
         </template>
-        <div x-show="events.length === 0 && !loading" class="text-center text-gray-500 py-6 text-sm glass rounded-lg">
-            No recent activity
+
+        {{-- Empty state --}}
+        <div x-show="events.length === 0 && !loading" class="text-center py-10">
+            <svg class="w-8 h-8 text-gray-700 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+            <p class="text-gray-600 text-xs">No recent activity</p>
         </div>
-        <div x-show="loading" class="space-y-3">
-            <template x-for="i in 5" :key="'skel-'+i">
-                <div class="flex items-center gap-3 py-2 px-3">
-                    <div class="skeleton skeleton-circle w-8 h-8 flex-shrink-0"></div>
-                    <div class="flex-1 space-y-2">
-                        <div class="skeleton skeleton-text w-3/4"></div>
-                        <div class="skeleton skeleton-text w-1/2" style="height:0.625rem"></div>
+
+        {{-- Loading skeleton --}}
+        <div x-show="loading" class="space-y-1">
+            <template x-for="i in 8" :key="'skel-'+i">
+                <div class="flex items-start gap-3 py-2.5 px-3">
+                    <div class="skeleton w-7 h-7 rounded-lg flex-shrink-0"></div>
+                    <div class="flex-1 space-y-1.5 pt-0.5">
+                        <div class="skeleton skeleton-text w-4/5"></div>
+                        <div class="skeleton skeleton-text w-2/5" style="height:0.5rem"></div>
                     </div>
-                    <div class="skeleton w-10 h-5 rounded"></div>
+                    <div class="skeleton w-8 h-3 rounded mt-1"></div>
                 </div>
             </template>
         </div>
@@ -109,6 +157,8 @@ function activityFeed() {
                             victim_type: e.data.victim_type || null,
                             is_headshot: e.data.is_headshot || false,
                             occurred_at: e.timestamp,
+                            actor_profile_url: e.data.actor_profile_url || null,
+                            target_profile_url: e.data.target_profile_url || null,
                         });
                         this.events = this.events.slice(0, 50);
                         pollMs = 60000;
@@ -126,10 +176,10 @@ function activityFeed() {
             const date = new Date(dateStr);
             const now = new Date();
             const seconds = Math.floor((now - date) / 1000);
-            if (seconds < 60) return seconds + 's ago';
-            if (seconds < 3600) return Math.floor(seconds / 60) + 'm ago';
-            if (seconds < 86400) return Math.floor(seconds / 3600) + 'h ago';
-            return Math.floor(seconds / 86400) + 'd ago';
+            if (seconds < 60) return seconds + 's';
+            if (seconds < 3600) return Math.floor(seconds / 60) + 'm';
+            if (seconds < 86400) return Math.floor(seconds / 3600) + 'h';
+            return Math.floor(seconds / 86400) + 'd';
         }
     };
 }

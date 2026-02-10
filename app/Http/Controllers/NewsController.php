@@ -4,12 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Models\NewsArticle;
 use App\Models\NewsComment;
+use App\Services\ArmaNewsService;
 use Illuminate\Http\Request;
 
 class NewsController extends Controller
 {
-    public function index()
+    public function index(ArmaNewsService $armaNewsService)
     {
+        // Sync official news into DB (cached fetch, fast upsert)
+        $armaNewsService->syncNews();
+
         $articles = NewsArticle::published()
             ->pinnedFirst()
             ->orderByDesc('published_at')
@@ -29,7 +33,10 @@ class NewsController extends Controller
             }
         }
 
-        $article->load(['author', 'comments.user']);
+        $article->load(['comments.user']);
+        if ($article->author_id) {
+            $article->load('author');
+        }
         $article->loadCount('hoorahs');
 
         $hasHoorahed = $article->isHoorahedBy(auth()->user());

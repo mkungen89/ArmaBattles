@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class ActivityFeedController extends Controller
@@ -12,7 +14,9 @@ class ActivityFeedController extends Controller
             ->select(
                 DB::raw("'kill' as type"),
                 'killer_name as actor',
+                'killer_uuid as actor_uuid',
                 'victim_name as target',
+                'victim_uuid as target_uuid',
                 'weapon_name as detail',
                 'is_headshot',
                 'victim_type',
@@ -26,7 +30,9 @@ class ActivityFeedController extends Controller
             ->select(
                 DB::raw("'base_capture' as type"),
                 'player_name as actor',
+                'player_uuid as actor_uuid',
                 DB::raw('NULL as target'),
+                DB::raw('NULL as target_uuid'),
                 'base_name as detail',
                 DB::raw('false as is_headshot'),
                 DB::raw("'Player' as victim_type"),
@@ -40,7 +46,9 @@ class ActivityFeedController extends Controller
             ->select(
                 DB::raw("'connection' as type"),
                 'player_name as actor',
+                'player_uuid as actor_uuid',
                 DB::raw('NULL as target'),
+                DB::raw('NULL as target_uuid'),
                 'event_type as detail',
                 DB::raw('false as is_headshot'),
                 DB::raw("'Player' as victim_type"),
@@ -59,6 +67,53 @@ class ActivityFeedController extends Controller
             ->limit(20)
             ->get();
 
+        // Collect all unique UUIDs from events
+        $uuids = $events->pluck('actor_uuid')
+            ->merge($events->pluck('target_uuid'))
+            ->filter()
+            ->unique()
+            ->values();
+
+        // Look up registered users by player_uuid (cached 5 min)
+        $userMap = $this->resolveUserProfiles($uuids);
+
+        // Attach profile URLs to events
+        $events->transform(function ($event) use ($userMap) {
+            $event->actor_profile_url = $userMap[$event->actor_uuid] ?? null;
+            $event->target_profile_url = $userMap[$event->target_uuid] ?? null;
+            unset($event->actor_uuid, $event->target_uuid);
+            return $event;
+        });
+
         return response()->json($events);
+    }
+
+    /**
+     * Resolve player UUIDs to profile URLs for registered users.
+     * Cached for 5 minutes to avoid repeated lookups.
+     */
+    private function resolveUserProfiles($uuids): array
+    {
+        if ($uuids->isEmpty()) {
+            return [];
+        }
+
+        $cacheKey = 'activity_feed_user_map';
+
+        $userMap = Cache::remember($cacheKey, 300, function () {
+            return User::whereNotNull('player_uuid')
+                ->where('player_uuid', '!=', '')
+                ->pluck('id', 'player_uuid')
+                ->toArray();
+        });
+
+        $result = [];
+        foreach ($uuids as $uuid) {
+            if (isset($userMap[$uuid])) {
+                $result[$uuid] = route('players.show', $userMap[$uuid]);
+            }
+        }
+
+        return $result;
     }
 }

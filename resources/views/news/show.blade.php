@@ -16,19 +16,43 @@
     @endif
     {{-- Article Header --}}
     <div class="mb-8">
-        @if($article->is_pinned)
-            <span class="inline-flex items-center px-2 py-1 bg-yellow-500/20 text-yellow-400 rounded text-xs font-bold uppercase mb-3">Pinned</span>
-        @endif
+        <div class="flex items-center gap-2 mb-3">
+            @if($article->is_pinned)
+                <span class="inline-flex items-center px-2 py-1 bg-yellow-500/20 text-yellow-400 rounded text-xs font-bold uppercase">Pinned</span>
+            @endif
+            @if($article->isOfficial())
+                <span class="inline-flex items-center px-2 py-1 bg-blue-500/20 text-blue-400 rounded text-xs font-bold uppercase">Official</span>
+                @if($article->category)
+                    <span class="inline-flex items-center px-2 py-1 bg-gray-700 text-gray-300 rounded text-xs font-medium uppercase">{{ $article->category }}</span>
+                @endif
+            @else
+                <span class="inline-flex items-center px-2 py-1 bg-green-500/15 text-green-400 rounded text-xs font-bold uppercase">Community</span>
+            @endif
+        </div>
         <h1 class="text-3xl md:text-4xl font-bold text-white mb-4">{{ $article->title }}</h1>
         <div class="flex items-center gap-4 text-sm text-gray-400">
-            <div class="flex items-center gap-2">
-                <img src="{{ $article->author->avatar_display }}" alt="" class="w-8 h-8 rounded-full">
-                <span>{{ $article->author->name }}</span>
-            </div>
+            @if($article->author)
+                <div class="flex items-center gap-2">
+                    <img src="{{ $article->author->avatar_display }}" alt="" class="w-8 h-8 rounded-full">
+                    <span>{{ $article->author->name }}</span>
+                </div>
+            @elseif($article->isOfficial())
+                <span class="text-blue-400">Arma Platform</span>
+            @endif
             <span>{{ $article->published_at?->format('M j, Y') ?? $article->created_at->format('M j, Y') }}</span>
             <span>{{ $article->reading_time }} min read</span>
         </div>
     </div>
+    {{-- External link for official articles --}}
+    @if($article->isOfficial() && $article->external_url)
+        <div class="mb-6 p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg flex items-center justify-between">
+            <span class="text-sm text-blue-300">This article is sourced from the official Arma Platform.</span>
+            <a href="{{ $article->external_url }}" target="_blank" rel="noopener" class="text-sm text-blue-400 hover:text-blue-300 font-medium flex items-center gap-1 transition">
+                View original
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+            </a>
+        </div>
+    @endif
     {{-- Article Content --}}
     <div class="article-content mb-8 bg-gray-800/30 border border-gray-700/50 rounded-xl p-6 md:p-8">
         {!! $article->content !!}

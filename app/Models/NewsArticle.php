@@ -11,10 +11,14 @@ class NewsArticle extends Model
 {
     protected $fillable = [
         'slug',
+        'source',
         'title',
         'content',
         'excerpt',
         'featured_image',
+        'external_url',
+        'external_slug',
+        'category',
         'author_id',
         'status',
         'is_pinned',
@@ -73,17 +77,38 @@ class NewsArticle extends Model
         return $query->orderByDesc('is_pinned');
     }
 
+    public function scopeOfficial($query)
+    {
+        return $query->where('source', 'armaplatform');
+    }
+
+    public function scopeCommunity($query)
+    {
+        return $query->where('source', 'community');
+    }
+
+    public function isOfficial(): bool
+    {
+        return $this->source === 'armaplatform';
+    }
+
     public function getFeaturedImageUrlAttribute(): ?string
     {
         if (!$this->featured_image) {
             return null;
         }
+
+        // External URLs (official articles) are stored as full URLs
+        if (str_starts_with($this->featured_image, 'http')) {
+            return $this->featured_image;
+        }
+
         return \Illuminate\Support\Facades\Storage::url($this->featured_image);
     }
 
     public function getReadingTimeAttribute(): int
     {
-        $wordCount = str_word_count(strip_tags($this->content));
+        $wordCount = str_word_count(strip_tags($this->content ?? ''));
         return max(1, (int) ceil($wordCount / 200));
     }
 

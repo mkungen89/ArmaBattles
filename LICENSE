@@ -1,41 +1,157 @@
-PROPRIETARY LICENSE
+================================================================================
 
-Copyright (c) 2026 ArmaBattles.com. All rights reserved.
+                         PROPRIETARY SOFTWARE LICENSE
 
-This software and its source code are the exclusive property of
-ArmaBattles.com. No part of this software may be reproduced,
-distributed, transmitted, displayed, published, or broadcast in any
-form or by any means without the prior written permission of
-ArmaBattles.com.
+                            ArmaBattles.com
+                       Copyright (c) 2026 ArmaBattles
+                          All Rights Reserved.
 
-TERMS AND CONDITIONS
+================================================================================
 
-1. GRANT OF USE
-   This software is licensed exclusively for use by ArmaBattles.com
-   and its authorized operators. No other individual, organization,
-   or entity is permitted to use, deploy, or run this software.
 
-2. RESTRICTIONS
-   You may NOT, without prior written consent from ArmaBattles.com:
-   - Copy, modify, merge, or create derivative works of this software
-   - Distribute, sublicense, sell, lease, or transfer this software
-   - Use this software to operate any service other than ArmaBattles.com
-   - Reverse engineer, decompile, or disassemble this software
-   - Remove or alter any proprietary notices or labels
+NOTICE: This software is protected by copyright law and international treaties.
+Unauthorized reproduction or distribution of this software, or any portion of
+it, may result in severe civil and criminal penalties, and will be prosecuted
+to the maximum extent possible under law.
 
-3. NO WARRANTY
-   THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND,
-   EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-   MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND
-   NONINFRINGEMENT.
 
-4. LIMITATION OF LIABILITY
-   IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR
-   ANY CLAIM, DAMAGES, OR OTHER LIABILITY ARISING FROM THE USE OF
-   THIS SOFTWARE.
+--------------------------------------------------------------------------------
+  1. DEFINITIONS
+--------------------------------------------------------------------------------
 
-5. TERMINATION
-   Any unauthorized use of this software automatically terminates any
-   rights granted under this license and may result in legal action.
+  "Software"    means the ArmaBattles platform, including all source code,
+                object code, documentation, assets, configuration files, and
+                any associated materials contained in this repository.
 
-For licensing inquiries, contact the owner of ArmaBattles.com.
+  "Licensor"    means ArmaBattles.com and its owner(s).
+
+  "Authorized
+   Operator"    means any individual or entity that has received explicit
+                written authorization from the Licensor to access, deploy,
+                or operate the Software.
+
+
+--------------------------------------------------------------------------------
+  2. GRANT OF LICENSE
+--------------------------------------------------------------------------------
+
+  Subject to the terms and conditions of this License, the Licensor grants
+  Authorized Operators a limited, non-exclusive, non-transferable, revocable
+  license to use the Software solely for the purpose of operating the
+  ArmaBattles.com platform and its associated services.
+
+  This license does not constitute a transfer of ownership. All intellectual
+  property rights in and to the Software remain with the Licensor.
+
+
+--------------------------------------------------------------------------------
+  3. RESTRICTIONS
+--------------------------------------------------------------------------------
+
+  Unless expressly authorized in writing by the Licensor, you may NOT:
+
+    (a)  Copy, reproduce, or duplicate the Software or any portion thereof;
+    (b)  Modify, adapt, translate, or create derivative works based on
+         the Software;
+    (c)  Distribute, sublicense, lease, rent, sell, or otherwise transfer
+         the Software or access thereto to any third party;
+    (d)  Use the Software to operate any service, platform, or product
+         other than ArmaBattles.com;
+    (e)  Reverse engineer, decompile, disassemble, or otherwise attempt to
+         derive the source code of the Software;
+    (f)  Remove, obscure, or alter any proprietary notices, labels,
+         watermarks, or branding contained in the Software;
+    (g)  Use the Software for any unlawful purpose or in violation of any
+         applicable laws or regulations;
+    (h)  Permit any unauthorized third party to access the Software.
+
+
+--------------------------------------------------------------------------------
+  4. CONFIDENTIALITY
+--------------------------------------------------------------------------------
+
+  The Software, its source code, architecture, and all related documentation
+  are confidential and proprietary information of the Licensor. Authorized
+  Operators agree to maintain the confidentiality of the Software and to not
+  disclose any part of it to unauthorized third parties.
+
+
+--------------------------------------------------------------------------------
+  5. DISCLAIMER OF WARRANTIES
+--------------------------------------------------------------------------------
+
+  THE SOFTWARE IS PROVIDED "AS IS" AND "AS AVAILABLE" WITHOUT WARRANTY OF
+  ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+  OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND
+  NONINFRINGEMENT.
+
+  THE LICENSOR DOES NOT WARRANT THAT THE SOFTWARE WILL BE UNINTERRUPTED,
+  ERROR-FREE, SECURE, OR FREE OF VIRUSES OR OTHER HARMFUL COMPONENTS.
+
+
+--------------------------------------------------------------------------------
+  6. LIMITATION OF LIABILITY
+--------------------------------------------------------------------------------
+
+  TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, IN NO EVENT SHALL THE
+  LICENSOR, ITS OFFICERS, DIRECTORS, EMPLOYEES, AGENTS, OR AFFILIATES BE
+  LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE
+  DAMAGES, OR ANY LOSS OF PROFITS, DATA, USE, GOODWILL, OR OTHER INTANGIBLE
+  LOSSES, ARISING OUT OF OR IN CONNECTION WITH:
+
+    (a)  Your use of or inability to use the Software;
+    (b)  Any unauthorized access to or alteration of the Software;
+    (c)  Any third-party conduct related to the Software;
+    (d)  Any other matter relating to the Software.
+
+
+--------------------------------------------------------------------------------
+  7. TERMINATION
+--------------------------------------------------------------------------------
+
+  This License is effective until terminated. The Licensor may terminate this
+  License at any time, with or without cause, upon written notice. Any breach
+  of this License will result in automatic and immediate termination of all
+  rights granted herein.
+
+  Upon termination, you must immediately cease all use of the Software and
+  destroy all copies in your possession or control.
+
+
+--------------------------------------------------------------------------------
+  8. GOVERNING LAW
+--------------------------------------------------------------------------------
+
+  This License shall be governed by and construed in accordance with the laws
+  of Sweden, without regard to its conflict of law provisions. Any disputes
+  arising under this License shall be subject to the exclusive jurisdiction
+  of the courts of Sweden.
+
+
+--------------------------------------------------------------------------------
+  9. ENTIRE AGREEMENT
+--------------------------------------------------------------------------------
+
+  This License constitutes the entire agreement between the parties with
+  respect to the Software and supersedes all prior or contemporaneous
+  understandings, agreements, or representations, whether written or oral.
+
+  If any provision of this License is held to be unenforceable, such
+  provision shall be reformed only to the extent necessary to make it
+  enforceable, and the remaining provisions shall continue in full force
+  and effect.
+
+
+--------------------------------------------------------------------------------
+  CONTACT
+--------------------------------------------------------------------------------
+
+  For licensing inquiries, partnership requests, or authorization:
+
+    ArmaBattles.com
+    https://armabattles.com
+
+
+================================================================================
+              (c) 2026 ArmaBattles.com  --  All Rights Reserved.
+================================================================================
