@@ -165,10 +165,10 @@
     @auth
         @if(auth()->user()->player_uuid)
             <div x-show="showcaseOpen"
+                 x-teleport="body"
                  @click.self="showcaseOpen = false"
                  @keydown.escape.window="showcaseOpen = false"
-                 class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50"
-                 style="position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important;">
+                 class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
                 <div @click.stop
                      class="bg-gray-900 border border-white/5 rounded-2xl p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto relative">
                     <div class="flex items-center justify-between mb-4">
