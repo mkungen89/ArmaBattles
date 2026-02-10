@@ -9,10 +9,10 @@
         <p class="text-gray-400 text-sm">{{ $weapons->count() }} weapons tracked</p>
     </div>
 
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl overflow-hidden">
+    <div class="glass-card rounded-xl overflow-hidden">
         <div class="overflow-x-auto">
         <table class="w-full">
-            <thead class="bg-gray-700/50">
+            <thead class="bg-white/3">
                 <tr>
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase w-16">#</th>
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Weapon</th>
@@ -23,9 +23,9 @@
                     <th class="px-4 py-3 text-right text-xs font-medium text-gray-400 uppercase">Longest Kill</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-gray-700/50">
+            <tbody class="divide-y divide-white/5">
                 @forelse($weapons as $index => $weapon)
-                <tr class="{{ $loop->odd ? 'bg-gray-800/30' : 'bg-gray-800/10' }} hover:bg-gray-700/30 transition-colors">
+                <tr class="{{ $loop->odd ? 'bg-white/3' : 'bg-white/[0.01]' }} hover:bg-white/5 transition-colors">
                     <td class="px-4 py-3">
                         @if($index === 0)
                         <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-yellow-500/20 text-yellow-400 font-bold text-sm">1</span>
@@ -42,7 +42,7 @@
                             @if(isset($weaponImages[$weapon->weapon_name]))
                             <img src="{{ Storage::url($weaponImages[$weapon->weapon_name]) }}" alt="{{ $weapon->weapon_name }}" class="h-8 w-auto object-contain max-w-[80px]">
                             @else
-                            <div class="w-10 h-8 bg-gray-700/50 rounded flex items-center justify-center">
+                            <div class="w-10 h-8 bg-white/3 rounded flex items-center justify-center">
                                 <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14"/>
                                 </svg>

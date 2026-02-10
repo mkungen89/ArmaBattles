@@ -18,6 +18,7 @@ use App\Http\Controllers\TournamentController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\TeamComparisonController;
 use App\Http\Controllers\LeaderboardController;
+use App\Http\Controllers\RankedController;
 use App\Http\Controllers\WeaponStatsController;
 use App\Http\Controllers\KillFeedController;
 use App\Http\Controllers\ActivityFeedController;
@@ -29,6 +30,7 @@ use App\Http\Controllers\Admin\AdminReportController;
 use App\Http\Controllers\Admin\TeamAdminController;
 use App\Http\Controllers\Admin\ServerManagerController;
 use App\Http\Controllers\Admin\MetricsController;
+use App\Http\Controllers\Admin\RankedAdminController;
 use App\Http\Controllers\Admin\ContentCreatorAdminController;
 use App\Http\Controllers\Admin\HighlightClipAdminController;
 use App\Http\Controllers\Admin\AchievementAdminController;
@@ -55,7 +57,14 @@ Route::get('/', function () {
     } catch (\Exception $e) {
         $latestNews = collect();
     }
-    return view('welcome', compact('latestNews'));
+
+    try {
+        $armaNews = app(\App\Services\ArmaNewsService::class)->fetchNews()->take(3);
+    } catch (\Exception $e) {
+        $armaNews = collect();
+    }
+
+    return view('welcome', compact('latestNews', 'armaNews'));
 })->name('home');
 
 Route::get('/rules', function () {
@@ -97,6 +106,19 @@ Route::get('/reputation', [\App\Http\Controllers\ReputationController::class, 'i
 Route::get('/reputation/{user}', [\App\Http\Controllers\ReputationController::class, 'show'])->name('reputation.show');
 Route::post('/reputation/{user}/vote', [\App\Http\Controllers\ReputationController::class, 'vote'])->middleware('auth')->name('reputation.vote');
 Route::delete('/reputation/{user}/vote', [\App\Http\Controllers\ReputationController::class, 'removeVote'])->middleware('auth')->name('reputation.remove-vote');
+
+// Ranked (Competitive Ratings)
+Route::prefix('ranked')->name('ranked.')->group(function () {
+    Route::get('/', [RankedController::class, 'index'])->name('index');
+    Route::get('/about', [RankedController::class, 'about'])->name('about');
+    Route::get('/player/{user}', [RankedController::class, 'show'])->name('show');
+    Route::get('/player/{user}/history', [RankedController::class, 'history'])->name('history');
+
+    Route::middleware('auth')->group(function () {
+        Route::post('/opt-in', [RankedController::class, 'optIn'])->name('opt-in');
+        Route::post('/opt-out', [RankedController::class, 'optOut'])->name('opt-out');
+    });
+});
 
 // Scrims (Practice Matches)
 Route::middleware('auth')->prefix('scrims')->name('scrims.')->group(function () {
@@ -480,6 +502,12 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
         Route::get('/', [ReputationAdminController::class, 'index'])->name('admin.reputation.index');
         Route::post('/{reputation}/reset', [ReputationAdminController::class, 'resetReputation'])->name('admin.reputation.reset');
         Route::delete('/{reputation}', [ReputationAdminController::class, 'destroy'])->name('admin.reputation.destroy');
+    });
+
+    // Ranked Ratings Admin
+    Route::prefix('ranked')->group(function () {
+        Route::get('/', [RankedAdminController::class, 'index'])->name('admin.ranked.index');
+        Route::post('/{rating}/reset', [RankedAdminController::class, 'reset'])->name('admin.ranked.reset');
     });
 
     // Scrims Admin

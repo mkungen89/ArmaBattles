@@ -9,27 +9,27 @@
     </div>
 
     {{-- Filters --}}
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-4">
+    <div class="glass-card rounded-xl p-4">
         <form action="{{ route('admin.users') }}" method="GET" class="flex flex-wrap gap-4">
             <div class="flex-1 min-w-[200px]">
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by name or Steam ID..." class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by name or Steam ID..." class="w-full bg-white/5 border-white/10 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
             </div>
-            <select name="role" class="bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
+            <select name="role" class="bg-white/5 border-white/10 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
                 <option value="">All Roles</option>
                 <option value="user" {{ request('role') === 'user' ? 'selected' : '' }}>User</option>
                 <option value="moderator" {{ request('role') === 'moderator' ? 'selected' : '' }}>Moderator</option>
                 <option value="admin" {{ request('role') === 'admin' ? 'selected' : '' }}>Admin</option>
             </select>
-            <select name="banned" class="bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
+            <select name="banned" class="bg-white/5 border-white/10 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
                 <option value="">All Status</option>
                 <option value="no" {{ request('banned') === 'no' ? 'selected' : '' }}>Active</option>
                 <option value="yes" {{ request('banned') === 'yes' ? 'selected' : '' }}>Banned</option>
             </select>
-            <button type="submit" class="px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg transition">
+            <button type="submit" class="px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-xl transition">
                 Filter
             </button>
             @if(request()->hasAny(['search', 'role', 'banned']))
-            <a href="{{ route('admin.users') }}" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition">
+            <a href="{{ route('admin.users') }}" class="px-4 py-2 bg-white/5 hover:bg-white/10 text-white rounded-xl transition">
                 Clear
             </a>
             @endif
@@ -37,9 +37,9 @@
     </div>
 
     {{-- Users Table --}}
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl overflow-hidden">
+    <div class="glass-card rounded-xl overflow-hidden">
         <table class="w-full">
-            <thead class="bg-gray-700/50">
+            <thead class="bg-white/3">
                 <tr>
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">User</th>
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Steam ID</th>
@@ -49,9 +49,9 @@
                     <th class="px-4 py-3 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-gray-700">
+            <tbody class="divide-y divide-white/5">
                 @forelse($users as $user)
-                <tr class="hover:bg-gray-700/30">
+                <tr class="hover:bg-white/3">
                     <td class="px-4 py-3">
                         <div class="flex items-center gap-3">
                             <img src="{{ $user->avatar_display }}" alt="{{ $user->name }}" class="w-8 h-8 rounded-full">
@@ -62,7 +62,7 @@
                         <code class="text-sm text-gray-400">{{ $user->steam_id }}</code>
                     </td>
                     <td class="px-4 py-3">
-                        <span class="px-2 py-1 text-xs rounded-full {{ $user->role === 'admin' ? 'bg-green-500/20 text-green-400' : ($user->role === 'moderator' ? 'bg-blue-500/20 text-blue-400' : 'bg-gray-700 text-gray-400') }}">
+                        <span class="px-2 py-1 text-xs rounded-full {{ $user->role === 'admin' ? 'bg-green-500/20 text-green-400' : ($user->role === 'moderator' ? 'bg-blue-500/20 text-blue-400' : 'bg-white/5 text-gray-400') }}">
                             {{ ucfirst($user->role ?? 'user') }}
                         </span>
                     </td>
@@ -83,7 +83,7 @@
                     </td>
                     <td class="px-4 py-3 text-right">
                         <div class="flex items-center justify-end gap-2">
-                            <a href="{{ route('admin.users.edit', $user) }}" class="p-2 text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition" title="Edit">
+                            <a href="{{ route('admin.users.edit', $user) }}" class="p-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition" title="Edit">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                 </svg>

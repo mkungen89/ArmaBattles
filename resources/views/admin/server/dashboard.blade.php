@@ -11,23 +11,23 @@
             <p class="text-sm text-gray-500 mt-1">Real-time monitoring and control</p>
         </div>
         <div class="flex items-center gap-2 flex-wrap">
-            <a href="{{ route('admin.server.players') }}" class="px-3 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm transition">Players</a>
-            <a href="{{ route('admin.server.logs') }}" class="px-3 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm transition">Logs</a>
-            <a href="{{ route('admin.server.mods') }}" class="px-3 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm transition">Mods</a>
-            <a href="{{ route('admin.server.config') }}" class="px-3 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm transition">Config</a>
-            <a href="{{ route('admin.server.player-history') }}" class="px-3 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm transition">Player History</a>
-            <a href="{{ route('admin.server.performance') }}" class="px-3 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm transition">Performance</a>
-            <a href="{{ route('admin.server.scheduled-restarts') }}" class="px-3 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm transition">Restarts</a>
-            <a href="{{ route('admin.server.quick-messages') }}" class="px-3 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm transition">Messages</a>
-            <a href="{{ route('admin.server.mod-updates') }}" class="px-3 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm transition">Mod Updates</a>
-            <a href="{{ route('admin.server.compare') }}" class="px-3 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm transition">Compare</a>
+            <a href="{{ route('admin.server.players') }}" class="px-3 py-2 bg-white/5 hover:bg-white/10 text-white rounded-xl text-sm transition">Players</a>
+            <a href="{{ route('admin.server.logs') }}" class="px-3 py-2 bg-white/5 hover:bg-white/10 text-white rounded-xl text-sm transition">Logs</a>
+            <a href="{{ route('admin.server.mods') }}" class="px-3 py-2 bg-white/5 hover:bg-white/10 text-white rounded-xl text-sm transition">Mods</a>
+            <a href="{{ route('admin.server.config') }}" class="px-3 py-2 bg-white/5 hover:bg-white/10 text-white rounded-xl text-sm transition">Config</a>
+            <a href="{{ route('admin.server.player-history') }}" class="px-3 py-2 bg-white/5 hover:bg-white/10 text-white rounded-xl text-sm transition">Player History</a>
+            <a href="{{ route('admin.server.performance') }}" class="px-3 py-2 bg-white/5 hover:bg-white/10 text-white rounded-xl text-sm transition">Performance</a>
+            <a href="{{ route('admin.server.scheduled-restarts') }}" class="px-3 py-2 bg-white/5 hover:bg-white/10 text-white rounded-xl text-sm transition">Restarts</a>
+            <a href="{{ route('admin.server.quick-messages') }}" class="px-3 py-2 bg-white/5 hover:bg-white/10 text-white rounded-xl text-sm transition">Messages</a>
+            <a href="{{ route('admin.server.mod-updates') }}" class="px-3 py-2 bg-white/5 hover:bg-white/10 text-white rounded-xl text-sm transition">Mod Updates</a>
+            <a href="{{ route('admin.server.compare') }}" class="px-3 py-2 bg-white/5 hover:bg-white/10 text-white rounded-xl text-sm transition">Compare</a>
         </div>
     </div>
 
     {{-- Status Cards --}}
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {{-- Arma Server --}}
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-4">
+        <div class="glass-card rounded-xl p-4">
             <div class="flex items-center justify-between mb-2">
                 <span class="text-xs text-gray-500 uppercase tracking-wider">Arma Server</span>
                 <span class="relative flex h-3 w-3">
@@ -45,7 +45,7 @@
         </div>
 
         {{-- Stats Collector --}}
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-4">
+        <div class="glass-card rounded-xl p-4">
             <div class="flex items-center justify-between mb-2">
                 <span class="text-xs text-gray-500 uppercase tracking-wider">Stats Collector</span>
                 <span class="relative flex h-3 w-3">
@@ -63,7 +63,7 @@
         </div>
 
         {{-- RCON --}}
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-4">
+        <div class="glass-card rounded-xl p-4">
             <div class="flex items-center justify-between mb-2">
                 <span class="text-xs text-gray-500 uppercase tracking-wider">RCON</span>
                 <span class="relative flex h-3 w-3">
@@ -81,14 +81,14 @@
         </div>
 
         {{-- Players --}}
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-4">
+        <div class="glass-card rounded-xl p-4">
             <div class="flex items-center justify-between mb-2">
                 <span class="text-xs text-gray-500 uppercase tracking-wider">Players Online</span>
                 <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
                 </svg>
             </div>
-            <p class="text-lg font-semibold text-white" x-text="statusData?.players?.count ?? '—'">—</p>
+            <p class="text-sm font-semibold text-white uppercase tracking-wider" x-text="statusData?.players?.count ?? '—'">—</p>
         </div>
     </div>
 
@@ -96,8 +96,8 @@
         {{-- Service Controls --}}
         <div class="lg:col-span-2 space-y-6">
             {{-- Quick Actions --}}
-            <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
-                <h2 class="text-lg font-semibold text-white mb-4">Service Controls</h2>
+            <div class="glass-card rounded-xl p-6">
+                <h2 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">Service Controls</h2>
                 <div class="grid grid-cols-2 lg:grid-cols-3 gap-3">
                     <form method="POST" action="{{ route('admin.server.service', ['arma', 'restart']) }}"
                           onsubmit="return confirm('Restart the Arma server? Players will be disconnected.')">
@@ -160,8 +160,8 @@
             </div>
 
             {{-- System Info --}}
-            <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
-                <h2 class="text-lg font-semibold text-white mb-4">System Resources</h2>
+            <div class="glass-card rounded-xl p-6">
+                <h2 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">System Resources</h2>
                 <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
                     <div>
                         <p class="text-xs text-gray-500 uppercase tracking-wider mb-1">CPU Load (1m)</p>
@@ -188,9 +188,9 @@
             </div>
 
             {{-- Recent Logs --}}
-            <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
+            <div class="glass-card rounded-xl p-6">
                 <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-lg font-semibold text-white">Recent Log</h2>
+                    <h2 class="text-sm font-semibold text-white uppercase tracking-wider">Recent Log</h2>
                     <a href="{{ route('admin.server.logs') }}" class="text-xs text-green-400 hover:text-green-300 transition">View all</a>
                 </div>
                 <div class="bg-gray-900/50 rounded-lg p-3 max-h-48 overflow-y-auto font-mono text-xs text-gray-400 space-y-0.5">
@@ -205,8 +205,8 @@
         {{-- Right Column --}}
         <div class="space-y-6">
             {{-- Anticheat Panel --}}
-            <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
-                <h2 class="text-lg font-semibold text-white mb-4">Raven Anti-Cheat</h2>
+            <div class="glass-card rounded-xl p-6">
+                <h2 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">Raven Anti-Cheat</h2>
                 <div class="space-y-3">
                     <div class="flex items-center justify-between">
                         <span class="text-sm text-gray-400">Active Players</span>
@@ -234,8 +234,8 @@
             </div>
 
             {{-- Server Info --}}
-            <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
-                <h2 class="text-lg font-semibold text-white mb-4">Server Info</h2>
+            <div class="glass-card rounded-xl p-6">
+                <h2 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">Server Info</h2>
                 <div class="space-y-3 text-sm">
                     <div class="flex items-center justify-between">
                         <span class="text-gray-400">Name</span>
@@ -257,9 +257,9 @@
             </div>
 
             {{-- Online Players Quick List --}}
-            <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
+            <div class="glass-card rounded-xl p-6">
                 <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-lg font-semibold text-white">Online Players</h2>
+                    <h2 class="text-sm font-semibold text-white uppercase tracking-wider">Online Players</h2>
                     <a href="{{ route('admin.server.players') }}" class="text-xs text-green-400 hover:text-green-300 transition">Manage</a>
                 </div>
                 <div class="space-y-2 max-h-48 overflow-y-auto">

@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="max-w-md mx-auto mt-8">
-    <div class="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-8">
+    <div class="glass-card rounded-xl p-8">
         <h1 class="text-2xl font-bold text-white text-center mb-6">Create an Account</h1>
 
         <form method="POST" action="{{ route('register') }}" class="space-y-5">
@@ -13,7 +13,7 @@
             <div>
                 <label for="name" class="block text-sm font-medium text-gray-300 mb-1">Name</label>
                 <input type="text" name="name" id="name" value="{{ old('name') }}" required autofocus
-                       class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                       class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
                 @error('name')
                     <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
                 @enderror
@@ -22,7 +22,7 @@
             <div>
                 <label for="email" class="block text-sm font-medium text-gray-300 mb-1">Email</label>
                 <input type="email" name="email" id="email" value="{{ old('email') }}" required
-                       class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                       class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
                 @error('email')
                     <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
                 @enderror
@@ -31,7 +31,7 @@
             <div>
                 <label for="password" class="block text-sm font-medium text-gray-300 mb-1">Password</label>
                 <input type="password" name="password" id="password" required
-                       class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                       class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
                 @error('password')
                     <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
                 @enderror
@@ -40,24 +40,24 @@
             <div>
                 <label for="password_confirmation" class="block text-sm font-medium text-gray-300 mb-1">Confirm Password</label>
                 <input type="password" name="password_confirmation" id="password_confirmation" required
-                       class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                       class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
             </div>
 
-            <button type="submit" class="w-full py-2.5 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition">
+            <button type="submit" class="w-full py-2.5 bg-green-600 hover:bg-green-500 text-white font-semibold rounded-xl transition">
                 Register
             </button>
         </form>
 
         <div class="relative my-6">
             <div class="absolute inset-0 flex items-center">
-                <div class="w-full border-t border-gray-600"></div>
+                <div class="w-full border-t border-white/5"></div>
             </div>
             <div class="relative flex justify-center text-sm">
-                <span class="px-3 bg-gray-800/50 text-gray-400">or</span>
+                <span class="px-3 bg-[#0d1117] text-gray-400">or</span>
             </div>
         </div>
 
-        <a href="{{ route('auth.steam') }}" class="flex items-center justify-center space-x-2 w-full py-2.5 bg-gray-700 hover:bg-gray-600 rounded-lg transition">
+        <a href="{{ route('auth.steam') }}" class="flex items-center justify-center space-x-2 w-full py-2.5 bg-white/5 hover:bg-white/10 rounded-xl transition">
             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 0C5.373 0 0 5.373 0 12c0 5.084 3.163 9.426 7.627 11.174l2.896-4.143c-.468-.116-.91-.293-1.317-.525L4.5 21.75c-.913-.288-1.772-.684-2.563-1.176l4.707-3.308c-.155-.369-.277-.758-.359-1.162L0 19.293V12C0 5.373 5.373 0 12 0zm0 4.5c-4.136 0-7.5 3.364-7.5 7.5 0 .768.115 1.509.328 2.206l3.908-2.745c.493-2.293 2.535-4.011 4.997-4.011 2.795 0 5.067 2.272 5.067 5.067 0 2.462-1.758 4.514-4.089 4.977l-2.725 3.896C9.788 22.285 10.869 22.5 12 22.5c6.627 0 12-5.373 12-12S18.627 0 12 0z"/>
             </svg>

@@ -108,6 +108,8 @@ class StatsController extends Controller
 
         $this->updatePlayerKillStats($validated);
 
+        $this->queueRatedKillIfEligible($id, $validated);
+
         KillFeedUpdated::dispatch(
             $validated['server_id'],
             $validated['killer_name'] ?? 'Unknown',
@@ -305,6 +307,12 @@ class StatsController extends Controller
 
             // Bases captured doesn't affect leaderboards directly, but clear cache for consistency
             $this->clearLeaderboardCaches();
+
+            $this->queueRatedObjectiveIfEligible('base_capture', $validated['player_uuid'], [
+                'event_id' => $id,
+                'server_id' => $validated['server_id'],
+                'timestamp' => $validated['timestamp'] ?? now(),
+            ]);
         }
 
         return response()->json(['success' => true, 'id' => $id]);
@@ -337,6 +345,16 @@ class StatsController extends Controller
             'created_at' => now(),
             'updated_at' => now(),
         ]);
+
+        // Building placed = engineer role reward for rating
+        $buildTypes = ['BUILDING_PLACED', 'BUILD', 'PLACED'];
+        if (in_array(strtoupper($validated['event_type']), $buildTypes)) {
+            $this->queueRatedObjectiveIfEligible('building', $validated['player_uuid'] ?? null, [
+                'event_id' => $id,
+                'server_id' => $validated['server_id'],
+                'timestamp' => $validated['timestamp'] ?? now(),
+            ]);
+        }
 
         return response()->json(['success' => true, 'id' => $id]);
     }
@@ -418,6 +436,16 @@ class StatsController extends Controller
 
         $this->updatePlayerXp($data);
 
+        // Vehicle destruction = high-value tactical event for rating
+        $rewardType = $data['xp_type'] ?? $data['reward_type'] ?? null;
+        if ($rewardType && strtoupper($rewardType) === 'ENEMY_KILL_VEH') {
+            $this->queueRatedObjectiveIfEligible('vehicle_destroy', $data['player_uuid'] ?? null, [
+                'event_id' => $event->id,
+                'server_id' => $data['server_id'] ?? null,
+                'timestamp' => $data['timestamp'] ?? now(),
+            ]);
+        }
+
         return response()->json(['success' => true, 'id' => $event->id]);
     }
 
@@ -466,6 +494,15 @@ class StatsController extends Controller
             ]);
 
             $this->updateHitZoneStats($event);
+
+            // Friendly fire damage = rating penalty (less severe than team kill)
+            if (!empty($event['is_friendly_fire']) && !empty($event['killer_uuid'])) {
+                $this->queueRatedObjectiveIfEligible('friendly_fire', $event['killer_uuid'], [
+                    'server_id' => $event['server_id'],
+                    'timestamp' => $event['timestamp'] ?? now(),
+                ]);
+            }
+
             $inserted++;
         }
 
@@ -643,6 +680,15 @@ class StatsController extends Controller
 
         $this->updatePlayerHealingStats($validated);
 
+        // Only non-self heals count for rating (rewarding teamplay)
+        if (empty($validated['is_self'])) {
+            $this->queueRatedObjectiveIfEligible('heal', $validated['healer_uuid'] ?? null, [
+                'event_id' => $id,
+                'server_id' => $validated['server_id'],
+                'timestamp' => $validated['timestamp'] ?? now(),
+            ]);
+        }
+
         return response()->json(['success' => true, 'id' => $id]);
     }
 
@@ -705,6 +751,12 @@ class StatsController extends Controller
         ]);
 
         $this->updatePlayerSupplyStats($validated);
+
+        $this->queueRatedObjectiveIfEligible('supply', $validated['player_uuid'] ?? null, [
+            'event_id' => $id,
+            'server_id' => $validated['server_id'],
+            'timestamp' => $validated['timestamp'] ?? now(),
+        ]);
 
         return response()->json(['success' => true, 'id' => $id]);
     }
@@ -1235,6 +1287,68 @@ class StatsController extends Controller
         }
 
         return $stat;
+    }
+
+    private function queueRatedKillIfEligible(int $killId, array $data): void
+    {
+        try {
+            $killerUuid = $data['killer_uuid'] ?? null;
+            $victimUuid = $data['victim_uuid'] ?? null;
+            $isTeamKill = !empty($data['is_team_kill']);
+
+            if (!$killerUuid) {
+                return;
+            }
+
+            // Regular kills require victim UUID; team kills only need the killer
+            if (!$isTeamKill && !$victimUuid) {
+                return;
+            }
+
+            $victimType = $data['victim_type'] ?? 'PLAYER';
+
+            $ratingService = app(\App\Services\RatingCalculationService::class);
+
+            if ($ratingService->isRatedKill($killerUuid, $victimUuid, $victimType, $isTeamKill)) {
+                $ratingService->queueRatedKill($killId, [
+                    'killer_uuid' => $killerUuid,
+                    'victim_uuid' => $victimUuid,
+                    'is_headshot' => !empty($data['is_headshot']),
+                    'is_team_kill' => $isTeamKill,
+                    'kill_distance' => $data['kill_distance'] ?? 0,
+                    'weapon_name' => $data['weapon_name'] ?? null,
+                    'server_id' => $data['server_id'] ?? null,
+                    'killed_at' => $data['timestamp'] ?? now(),
+                ]);
+            }
+        } catch (\Throwable $e) {
+            // Never break the kill endpoint
+            \Illuminate\Support\Facades\Log::warning('Failed to queue rated kill', [
+                'kill_id' => $killId,
+                'error' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    private function queueRatedObjectiveIfEligible(string $eventType, ?string $playerUuid, array $data = []): void
+    {
+        try {
+            if (!$playerUuid) {
+                return;
+            }
+
+            $ratingService = app(\App\Services\RatingCalculationService::class);
+
+            if ($ratingService->isCompetitivePlayer($playerUuid)) {
+                $ratingService->queueRatedObjective($eventType, $playerUuid, $data);
+            }
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('Failed to queue rated objective', [
+                'event_type' => $eventType,
+                'player_uuid' => $playerUuid,
+                'error' => $e->getMessage(),
+            ]);
+        }
     }
 
     private function updatePlayerKillStats(array $data): void

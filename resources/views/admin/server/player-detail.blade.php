@@ -15,7 +15,7 @@
     </div>
 
     {{-- Player Info Card --}}
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
+    <div class="glass-card rounded-xl p-6">
         <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
             <div>
                 <p class="text-sm text-gray-400">UUID</p>
@@ -47,12 +47,12 @@
     </div>
 
     {{-- Alternative Names --}}
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
-        <h2 class="text-lg font-semibold text-white mb-4">Alternative Names</h2>
+    <div class="glass-card rounded-xl p-6">
+        <h2 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">Alternative Names</h2>
         @if(!empty($player['alt_names']) && count($player['alt_names']) > 0)
         <div class="flex flex-wrap gap-2">
             @foreach($player['alt_names'] as $altName)
-            <span class="inline-flex items-center px-3 py-1 bg-gray-700/50 border border-gray-600 text-gray-300 text-sm rounded-full">
+            <span class="inline-flex items-center px-3 py-1 bg-white/3 border border-white/10 text-gray-300 text-sm rounded-full">
                 {{ $altName }}
             </span>
             @endforeach
@@ -63,15 +63,15 @@
     </div>
 
     {{-- Connection Log --}}
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl overflow-hidden">
-        <div class="px-4 py-3 border-b border-gray-700">
-            <h2 class="text-lg font-semibold text-white">Connection Log</h2>
+    <div class="glass-card rounded-xl overflow-hidden">
+        <div class="px-4 py-3 border-b border-white/5">
+            <h2 class="text-sm font-semibold text-white uppercase tracking-wider">Connection Log</h2>
         </div>
 
         @if(!empty($player['connections']) && count($player['connections']) > 0)
         <div class="overflow-x-auto">
             <table class="w-full">
-                <thead class="bg-gray-700/50">
+                <thead class="bg-white/3">
                     <tr>
                         <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Event Type</th>
                         <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Time</th>
@@ -79,12 +79,12 @@
                         <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Platform</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-700">
+                <tbody class="divide-y divide-white/5">
                     @foreach($player['connections'] as $connection)
                     @php
                         $occurredAt = !empty($connection->occurred_at) ? \Carbon\Carbon::parse($connection->occurred_at) : null;
                     @endphp
-                    <tr class="hover:bg-gray-700/30 transition">
+                    <tr class="hover:bg-white/3 transition">
                         <td class="px-4 py-3">
                             @if(strtoupper($connection->event_type) === 'CONNECT')
                             <span class="inline-flex items-center px-2 py-0.5 bg-green-500/20 text-green-400 text-xs font-medium rounded-full">
@@ -123,25 +123,25 @@
     </div>
 
     {{-- Quick Action: Ban this GUID --}}
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
-        <h2 class="text-lg font-semibold text-white mb-4">Ban this GUID</h2>
+    <div class="glass-card rounded-xl p-6">
+        <h2 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">Ban this GUID</h2>
         <form method="POST" action="{{ route('admin.server.players.ban-guid') }}" class="flex items-end gap-4 flex-wrap">
             @csrf
             <input type="hidden" name="guid" value="{{ $player['uuid'] ?? '' }}">
             <div>
                 <label class="block text-sm text-gray-400 mb-1">GUID</label>
-                <code class="inline-block px-3 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-sm text-gray-300 font-mono">{{ $player['uuid'] ?? 'N/A' }}</code>
+                <code class="inline-block px-3 py-2 bg-gray-900/50 border border-white/10 rounded-lg text-sm text-gray-300 font-mono">{{ $player['uuid'] ?? 'N/A' }}</code>
             </div>
             <div>
                 <label for="ban-minutes" class="block text-sm text-gray-400 mb-1">Duration (minutes)</label>
                 <input type="number" name="minutes" id="ban-minutes" value="0" min="0"
-                       class="w-32 px-3 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-sm text-white focus:outline-none focus:border-green-500/50">
+                       class="w-32 px-3 py-2 bg-gray-900/50 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-green-500/50">
                 <p class="text-xs text-gray-600 mt-1">0 = permanent</p>
             </div>
             <div class="flex-1 min-w-[200px]">
                 <label for="ban-reason" class="block text-sm text-gray-400 mb-1">Reason</label>
                 <input type="text" name="reason" id="ban-reason" value="Banned by admin" placeholder="Ban reason..."
-                       class="w-full px-3 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-sm text-white placeholder-gray-600 focus:outline-none focus:border-green-500/50">
+                       class="w-full px-3 py-2 bg-gray-900/50 border border-white/10 rounded-lg text-sm text-white placeholder-gray-600 focus:outline-none focus:border-green-500/50">
             </div>
             <button type="submit" class="px-6 py-2 bg-red-600/20 border border-red-500/30 hover:bg-red-600/30 text-red-400 rounded-lg text-sm font-medium transition"
                     onclick="return confirm('Are you sure you want to ban this GUID?')">

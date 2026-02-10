@@ -15,6 +15,7 @@ class NewNotification implements ShouldBroadcast
         public string $message,
         public string $category,
         public ?string $actionUrl = null,
+        public array $metadata = [],
     ) {}
 
     public function broadcastOn(): PrivateChannel
@@ -33,6 +34,7 @@ class NewNotification implements ShouldBroadcast
             'message' => $this->message,
             'category' => $this->category,
             'action_url' => $this->actionUrl,
+            'metadata' => $this->metadata,
             'timestamp' => now()->toIso8601String(),
         ];
     }

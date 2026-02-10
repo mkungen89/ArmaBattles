@@ -20,8 +20,8 @@ class AchievementProgress extends Model
     protected function casts(): array
     {
         return [
-            'current_value' => 'integer',
-            'target_value' => 'integer',
+            'current_value' => 'decimal:2',
+            'target_value' => 'decimal:2',
             'percentage' => 'decimal:2',
         ];
     }

@@ -15,7 +15,7 @@
                 @if($key === 't1' && $t2)<input type="hidden" name="t2" value="{{ $t2 }}">@endif
                 @if($key === 't2' && $t1)<input type="hidden" name="t1" value="{{ $t1 }}">@endif
                 <select name="{{ $key }}" onchange="this.form.submit()"
-                        class="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-xl text-white focus:outline-none focus:border-green-500">
+                        class="w-full px-4 py-3 glass-card rounded-xl text-white focus:outline-none focus:border-green-500">
                     <option value="">Select a platoon...</option>
                     @foreach($teams as $t)
                     <option value="{{ $t->id }}" {{ ${$key} == $t->id ? 'selected' : '' }}>
@@ -62,7 +62,7 @@
         </div>
     </div>
 
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6 space-y-4">
+    <div class="glass-card rounded-xl p-6 space-y-4">
         @foreach($comparisons as $c)
         @php
             $v1 = $stats1[$c['k']] ?? 0;
@@ -77,8 +77,8 @@
             <div class="grid grid-cols-[1fr_auto_1fr] gap-3 items-center">
                 <div class="flex items-center justify-end gap-2">
                     <span class="text-sm font-bold {{ $v1 >= $v2 ? 'text-green-400' : 'text-gray-400' }}">{{ number_format($v1, $dec) }}</span>
-                    <div class="w-full max-w-[200px] bg-gray-700 rounded-full h-3">
-                        <div class="h-3 rounded-full transition-all {{ $v1 >= $v2 ? 'bg-green-500' : 'bg-gray-600' }}" style="width: {{ $p1Pct }}%; margin-left: auto;"></div>
+                    <div class="w-full max-w-[200px] bg-white/5 rounded-full h-3">
+                        <div class="h-3 rounded-full transition-all {{ $v1 >= $v2 ? 'bg-green-500' : 'bg-white/5' }}" style="width: {{ $p1Pct }}%; margin-left: auto;"></div>
                     </div>
                 </div>
                 <div class="w-8 text-center">
@@ -87,8 +87,8 @@
                     @else<span class="text-gray-500 text-xs">=</span>@endif
                 </div>
                 <div class="flex items-center gap-2">
-                    <div class="w-full max-w-[200px] bg-gray-700 rounded-full h-3">
-                        <div class="h-3 rounded-full transition-all {{ $v2 >= $v1 ? 'bg-green-500' : 'bg-gray-600' }}" style="width: {{ $p2Pct }}%;"></div>
+                    <div class="w-full max-w-[200px] bg-white/5 rounded-full h-3">
+                        <div class="h-3 rounded-full transition-all {{ $v2 >= $v1 ? 'bg-green-500' : 'bg-white/5' }}" style="width: {{ $p2Pct }}%;"></div>
                     </div>
                     <span class="text-sm font-bold {{ $v2 >= $v1 ? 'text-green-400' : 'text-gray-400' }}">{{ number_format($v2, $dec) }}</span>
                 </div>

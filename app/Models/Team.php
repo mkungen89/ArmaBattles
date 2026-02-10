@@ -225,6 +225,40 @@ class Team extends Model
         ];
     }
 
+    // ==================== Competitive Rating ====================
+
+    public function getTeamRating(): array
+    {
+        $memberIds = $this->activeMembers()->pluck('users.id')->toArray();
+
+        if (empty($memberIds)) {
+            return ['avg_rating' => 0, 'rated_members' => 0, 'total_members' => 0, 'tier' => 'unranked'];
+        }
+
+        $ratings = \Illuminate\Support\Facades\DB::table('player_ratings')
+            ->whereIn('user_id', $memberIds)
+            ->whereNotNull('opted_in_at')
+            ->where('is_placed', true)
+            ->get(['rating']);
+
+        $totalMembers = count($memberIds);
+        $ratedMembers = $ratings->count();
+
+        if ($ratedMembers === 0) {
+            return ['avg_rating' => 0, 'rated_members' => 0, 'total_members' => $totalMembers, 'tier' => 'unranked'];
+        }
+
+        $avgRating = round($ratings->avg('rating'), 0);
+        $tier = PlayerRating::calculateTier($avgRating, true);
+
+        return [
+            'avg_rating' => $avgRating,
+            'rated_members' => $ratedMembers,
+            'total_members' => $totalMembers,
+            'tier' => $tier,
+        ];
+    }
+
     // ==================== Tournament Statistics ====================
 
     public function getStatistics(): array

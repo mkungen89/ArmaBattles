@@ -18,7 +18,7 @@
                 <div>
                     <label for="title" class="block text-sm font-medium text-gray-300 mb-1">Title</label>
                     <input type="text" name="title" id="title" value="{{ old('title') }}" required
-                        class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white focus:border-green-500 focus:ring-1 focus:ring-green-500">
+                        class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-green-500 focus:ring-1 focus:ring-green-500">
                     @error('title')
                         <p class="text-red-400 text-sm mt-1">{{ $message }}</p>
                     @enderror
@@ -35,7 +35,7 @@
                 <div>
                     <label for="excerpt" class="block text-sm font-medium text-gray-300 mb-1">Excerpt <span class="text-gray-500">(optional)</span></label>
                     <textarea name="excerpt" id="excerpt" rows="2" maxlength="500"
-                        class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white focus:border-green-500 focus:ring-1 focus:ring-green-500 resize-none"
+                        class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-green-500 focus:ring-1 focus:ring-green-500 resize-none"
                         placeholder="Short summary shown on cards...">{{ old('excerpt') }}</textarea>
                     @error('excerpt')
                         <p class="text-red-400 text-sm mt-1">{{ $message }}</p>
@@ -45,12 +45,12 @@
 
             {{-- Sidebar --}}
             <div class="space-y-4">
-                <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-4 space-y-4">
+                <div class="glass-card rounded-xl p-4 space-y-4">
                     <div>
                         <label for="featured_image" class="block text-sm font-medium text-gray-300 mb-1">Featured Image</label>
                         <p class="text-xs text-gray-500 mb-2">Recommended: 1200 x 630 px (16:9). Max 2 MB.</p>
                         <input type="file" name="featured_image" id="featured_image" accept="image/*"
-                            class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white file:mr-3 file:px-3 file:py-1 file:rounded file:border-0 file:bg-green-600 file:text-white file:text-sm file:cursor-pointer">
+                            class="w-full bg-white/5 border-white/10 rounded-lg px-3 py-2 text-sm text-white file:mr-3 file:px-3 file:py-1 file:rounded file:border-0 file:bg-green-600 file:text-white file:text-sm file:cursor-pointer">
                         @error('featured_image')
                             <p class="text-red-400 text-sm mt-1">{{ $message }}</p>
                         @enderror
@@ -58,7 +58,7 @@
 
                     <div>
                         <label for="status" class="block text-sm font-medium text-gray-300 mb-1">Status</label>
-                        <select name="status" id="status" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white">
+                        <select name="status" id="status" class="w-full bg-white/5 border-white/10 rounded-lg px-3 py-2 text-sm text-white">
                             <option value="draft" {{ old('status') === 'draft' ? 'selected' : '' }}>Draft</option>
                             <option value="published" {{ old('status') === 'published' ? 'selected' : '' }}>Published</option>
                         </select>
@@ -66,16 +66,16 @@
 
                     <div class="flex items-center gap-2">
                         <input type="checkbox" name="is_pinned" id="is_pinned" value="1" {{ old('is_pinned') ? 'checked' : '' }}
-                            class="rounded bg-gray-700 border-gray-600 text-green-500 focus:ring-green-500">
+                            class="rounded bg-white/5 border-white/10 text-green-500 focus:ring-green-500">
                         <label for="is_pinned" class="text-sm text-gray-300">Pin article</label>
                     </div>
                 </div>
 
                 <div class="flex gap-3">
-                    <button type="submit" class="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium transition">
+                    <button type="submit" class="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-xl text-sm font-medium transition">
                         Create Article
                     </button>
-                    <a href="{{ route('admin.news.index') }}" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm transition">
+                    <a href="{{ route('admin.news.index') }}" class="px-4 py-2 bg-white/5 hover:bg-white/10 text-white rounded-xl text-sm transition">
                         Cancel
                     </a>
                 </div>

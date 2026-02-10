@@ -16,7 +16,7 @@
                 <p class="text-gray-400">{{ $match->tournament->name }} - {{ $match->round_label }}</p>
             </div>
             {{-- Match Info Card --}}
-            <div class="bg-gray-800/50 backdrop-blur border border-gray-700 rounded-xl p-6 mb-6">
+            <div class="glass-card rounded-xl p-6 mb-6">
                 <div class="flex items-center justify-between mb-4">
                     <h2 class="text-xl font-bold text-white">Match Details</h2>
                     <span class="text-xs font-semibold px-3 py-1 rounded {{ $match->status_badge }}">
@@ -39,7 +39,7 @@
                         @endif
                     </div>
                 </div>
-                <div class="mt-4 pt-4 border-t border-gray-700">
+                <div class="mt-4 pt-4 border-t border-white/5">
                     <p class="text-sm text-gray-400">
                         Scheduled: {{ $match->scheduled_at->format('F j, Y @ g:i A') }}
                     </p>
@@ -48,12 +48,12 @@
             {{-- Report Form --}}
             <form action="{{ route('referee.match.submit-report', $match->id) }}" method="POST">
                 @csrf
-                <div class="bg-gray-800/50 backdrop-blur border border-gray-700 rounded-xl p-6 space-y-6">
+                <div class="glass-card rounded-xl p-6 space-y-6">
                     {{-- Winner Selection --}}
                     <div>
                         <label class="block text-sm font-medium text-gray-300 mb-2">Winning Team *</label>
                         <select name="winning_team_id"
-                                class="w-full px-4 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition"
+                                class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition"
                                 required>
                             <option value="">Select Winner</option>
                             <option value="{{ $match->team1_id }}">{{ $match->team1->name }}</option>
@@ -72,7 +72,7 @@
                             <input type="number"
                                    name="team1_score"
                                    min="0"
-                                   class="w-full px-4 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition"
+                                   class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition"
                                    required>
                             @error('team1_score')
                                 <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
@@ -85,7 +85,7 @@
                             <input type="number"
                                    name="team2_score"
                                    min="0"
-                                   class="w-full px-4 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition"
+                                   class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition"
                                    required>
                             @error('team2_score')
                                 <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
@@ -98,7 +98,7 @@
                         <textarea name="notes"
                                   rows="4"
                                   placeholder="Add any relevant notes about the match (optional)"
-                                  class="w-full px-4 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition"></textarea>
+                                  class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition"></textarea>
                         @error('notes')
                             <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
                         @enderror
@@ -137,7 +137,7 @@
                                             <label class="block text-xs text-gray-400 mb-1">Type *</label>
                                             <select x-model="incident.type"
                                                     :name="'incidents[' + index + '][type]'"
-                                                    class="w-full px-3 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-white text-sm focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/20 transition"
+                                                    class="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/20 transition"
                                                     required>
                                                 <option value="">Select Type</option>
                                                 <option value="rule_violation">Rule Violation</option>
@@ -153,7 +153,7 @@
                                                    x-model="incident.player_name"
                                                    :name="'incidents[' + index + '][player_name]'"
                                                    placeholder="Player name"
-                                                   class="w-full px-3 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-white text-sm placeholder-gray-500 focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/20 transition">
+                                                   class="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm placeholder-gray-500 focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/20 transition">
                                         </div>
                                         <div class="md:col-span-2">
                                             <label class="block text-xs text-gray-400 mb-1">Description *</label>
@@ -161,7 +161,7 @@
                                                       :name="'incidents[' + index + '][description]'"
                                                       rows="2"
                                                       placeholder="Describe what happened"
-                                                      class="w-full px-3 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-white text-sm placeholder-gray-500 focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/20 transition"
+                                                      class="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm placeholder-gray-500 focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/20 transition"
                                                       required></textarea>
                                         </div>
                                         <div class="md:col-span-2">
@@ -170,7 +170,7 @@
                                                    x-model="incident.timestamp"
                                                    :name="'incidents[' + index + '][timestamp]'"
                                                    placeholder="e.g., Round 2, 5:30 remaining"
-                                                   class="w-full px-3 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-white text-sm placeholder-gray-500 focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/20 transition">
+                                                   class="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm placeholder-gray-500 focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/20 transition">
                                         </div>
                                     </div>
                                 </div>
@@ -178,13 +178,13 @@
                         </div>
                     </div>
                     {{-- Submit Button --}}
-                    <div class="flex justify-end gap-3 pt-4 border-t border-gray-700">
+                    <div class="flex justify-end gap-3 pt-4 border-t border-white/5">
                         <a href="{{ route('referee.dashboard') }}"
-                           class="px-6 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition">
+                           class="px-6 py-2 bg-white/5 hover:bg-white/10 text-white rounded-xl transition">
                             Cancel
                         </a>
                         <button type="submit"
-                                class="px-6 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition flex items-center gap-2">
+                                class="px-6 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl transition flex items-center gap-2">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                             </svg>

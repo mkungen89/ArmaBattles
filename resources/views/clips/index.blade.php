@@ -11,7 +11,7 @@
                     <p class="text-gray-400">Best moments from our community</p>
                 </div>
                 @auth
-                <a href="{{ route('clips.create') }}" class="px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg transition">
+                <a href="{{ route('clips.create') }}" class="px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-xl transition">
                     Submit Clip
                 </a>
                 @endauth
@@ -40,42 +40,42 @@
         @endif
         {{-- Stats --}}
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-4">
+            <div class="glass-card rounded-xl p-4">
                 <div class="text-3xl font-bold text-white">{{ $stats['total'] }}</div>
                 <div class="text-sm text-gray-400">Total Clips</div>
             </div>
-            <div class="bg-gray-800/50 border border-blue-500/30 rounded-xl p-4">
+            <div class="glass-card border border-blue-500/30 rounded-xl p-4">
                 <div class="text-3xl font-bold text-blue-400">{{ $stats['this_week'] }}</div>
                 <div class="text-sm text-gray-400">This Week</div>
             </div>
-            <div class="bg-gray-800/50 border border-yellow-500/30 rounded-xl p-4">
+            <div class="glass-card border border-yellow-500/30 rounded-xl p-4">
                 <div class="text-3xl font-bold text-yellow-400">{{ $stats['featured'] }}</div>
                 <div class="text-sm text-gray-400">Featured</div>
             </div>
         </div>
         {{-- Filters --}}
         <div class="flex flex-wrap gap-3">
-            <a href="{{ route('clips.index', ['sort' => 'popular']) }}" class="px-4 py-2 rounded-lg {{ request('sort', 'popular') === 'popular' ? 'bg-green-600 text-white' : 'bg-gray-800 text-gray-300 hover:bg-gray-700' }}">
+            <a href="{{ route('clips.index', ['sort' => 'popular']) }}" class="px-4 py-2 rounded-xl {{ request('sort', 'popular') === 'popular' ? 'bg-green-600 text-white' : 'bg-white/3 text-gray-300 hover:bg-white/5' }}">
                 Popular
             </a>
-            <a href="{{ route('clips.index', ['sort' => 'recent']) }}" class="px-4 py-2 rounded-lg {{ request('sort') === 'recent' ? 'bg-green-600 text-white' : 'bg-gray-800 text-gray-300 hover:bg-gray-700' }}">
+            <a href="{{ route('clips.index', ['sort' => 'recent']) }}" class="px-4 py-2 rounded-xl {{ request('sort') === 'recent' ? 'bg-green-600 text-white' : 'bg-white/3 text-gray-300 hover:bg-white/5' }}">
                 Recent
             </a>
-            <a href="{{ route('clips.index', ['sort' => 'featured']) }}" class="px-4 py-2 rounded-lg {{ request('sort') === 'featured' ? 'bg-yellow-600 text-white' : 'bg-gray-800 text-gray-300 hover:bg-gray-700' }}">
+            <a href="{{ route('clips.index', ['sort' => 'featured']) }}" class="px-4 py-2 rounded-xl {{ request('sort') === 'featured' ? 'bg-yellow-600 text-white' : 'bg-white/3 text-gray-300 hover:bg-white/5' }}">
                 Featured
             </a>
             <span class="text-gray-500">|</span>
-            <a href="{{ route('clips.index', ['platform' => 'youtube']) }}" class="px-4 py-2 rounded-lg {{ request('platform') === 'youtube' ? 'bg-green-600 text-white' : 'bg-gray-800 text-gray-300 hover:bg-gray-700' }}">
+            <a href="{{ route('clips.index', ['platform' => 'youtube']) }}" class="px-4 py-2 rounded-xl {{ request('platform') === 'youtube' ? 'bg-green-600 text-white' : 'bg-white/3 text-gray-300 hover:bg-white/5' }}">
                 YouTube
             </a>
-            <a href="{{ route('clips.index', ['platform' => 'twitch']) }}" class="px-4 py-2 rounded-lg {{ request('platform') === 'twitch' ? 'bg-green-600 text-white' : 'bg-gray-800 text-gray-300 hover:bg-gray-700' }}">
+            <a href="{{ route('clips.index', ['platform' => 'twitch']) }}" class="px-4 py-2 rounded-xl {{ request('platform') === 'twitch' ? 'bg-green-600 text-white' : 'bg-white/3 text-gray-300 hover:bg-white/5' }}">
                 Twitch
             </a>
         </div>
         {{-- Clips Grid --}}
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             @forelse($clips as $clip)
-            <a href="{{ route('clips.show', $clip) }}" class="bg-gray-800/50 border border-gray-700 hover:border-green-500/50 rounded-xl overflow-hidden transition group">
+            <a href="{{ route('clips.show', $clip) }}" class="glass-card hover:border-green-500/50 rounded-xl overflow-hidden transition group">
                 <div class="aspect-video bg-gray-900 flex items-center justify-center relative">
                     <svg class="w-16 h-16 text-gray-600 group-hover:text-green-500 transition" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"/>

@@ -26,44 +26,111 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script>
         // Simple sidebar toggle without Alpine store
-        function toggleSidebar() {
-            console.log('toggleSidebar called');
+        function setSidebarOpen(isOpen, options = {}) {
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('sidebar-overlay');
             const hamburger = document.getElementById('hamburger-icon');
+            const isDesktop = window.innerWidth >= 1024;
+            const silent = options.silent === true;
 
-            console.log('sidebar:', sidebar);
-            console.log('overlay:', overlay);
-            console.log('hamburger:', hamburger);
+            if (!sidebar) return;
 
-            if (sidebar) {
-                sidebar.classList.toggle('translate-x-0');
-                sidebar.classList.toggle('-translate-x-full');
-                console.log('Sidebar classes after toggle:', sidebar.className);
-            }
+            sidebar.dataset.open = isOpen ? 'true' : 'false';
+            sidebar.classList.remove('translate-x-0', '-translate-x-full');
+            sidebar.classList.add(isOpen ? 'translate-x-0' : '-translate-x-full');
 
             if (overlay) {
-                overlay.classList.toggle('hidden');
+                if (silent || isDesktop) {
+                    overlay.classList.add('hidden');
+                } else {
+                    overlay.classList.toggle('hidden', !isOpen);
+                }
             }
 
-            // Toggle hamburger icon
             if (hamburger) {
                 const openIcon = hamburger.querySelector('[data-icon="open"]');
                 const closeIcon = hamburger.querySelector('[data-icon="close"]');
                 if (openIcon && closeIcon) {
-                    openIcon.classList.toggle('hidden');
-                    closeIcon.classList.toggle('hidden');
+                    openIcon.classList.toggle('hidden', isOpen);
+                    closeIcon.classList.toggle('hidden', !isOpen);
+                }
+                hamburger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+            }
+        }
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const isOpen = sidebar?.dataset.open === 'true';
+            setSidebarOpen(!isOpen);
+        }
+
+        function setRightSidebarOpen(isOpen, options = {}) {
+            const sidebar = document.getElementById('right-sidebar');
+            const overlay = document.getElementById('right-sidebar-overlay');
+            const toggle = document.getElementById('right-sidebar-toggle');
+            const spacer = document.getElementById('right-sidebar-spacer');
+            const isWide = window.innerWidth >= 1280;
+            const silent = options.silent === true;
+
+            if (!sidebar) return;
+
+            sidebar.dataset.open = isOpen ? 'true' : 'false';
+            sidebar.classList.remove('translate-x-0', 'translate-x-full');
+            sidebar.classList.add(isOpen ? 'translate-x-0' : 'translate-x-full');
+            sidebar.classList.toggle('hidden', !isOpen);
+
+            if (overlay) {
+                if (silent || isWide) {
+                    overlay.classList.add('hidden');
+                } else {
+                    overlay.classList.toggle('hidden', !isOpen);
                 }
             }
+
+            if (spacer) {
+                if (isOpen && isWide) {
+                    spacer.classList.remove('hidden');
+                    spacer.classList.add('block');
+                } else {
+                    spacer.classList.add('hidden');
+                    spacer.classList.remove('block');
+                }
+            }
+
+            if (toggle) {
+                toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+            }
+        }
+
+        function toggleRightSidebar() {
+            const sidebar = document.getElementById('right-sidebar');
+            const isOpen = sidebar?.dataset.open === 'true';
+            setRightSidebarOpen(!isOpen);
         }
 
         // Initialize sidebar state on page load
         document.addEventListener('DOMContentLoaded', function() {
+            setSidebarOpen(window.innerWidth >= 1024, { silent: true });
+            setRightSidebarOpen(window.innerWidth >= 1280, { silent: true });
+        });
+
+        // Keep overlay state sane on resize
+        window.addEventListener('resize', function() {
+            const isDesktop = window.innerWidth >= 1024;
             const sidebar = document.getElementById('sidebar');
-            if (sidebar && window.innerWidth >= 1024) {
-                // Auto-open sidebar on desktop
-                sidebar.classList.remove('-translate-x-full');
-                sidebar.classList.add('translate-x-0');
+            if (!sidebar) return;
+            if (isDesktop) {
+                setSidebarOpen(true, { silent: true });
+            }
+
+            const rightSidebar = document.getElementById('right-sidebar');
+            if (!rightSidebar) return;
+            const isWide = window.innerWidth >= 1280;
+            if (isWide) {
+                const wasOpen = rightSidebar.dataset.open === 'true';
+                setRightSidebarOpen(wasOpen, { silent: true });
+            } else {
+                setRightSidebarOpen(false, { silent: true });
             }
         });
     </script>
@@ -93,8 +160,13 @@
          onclick="toggleSidebar()"
          class="fixed inset-0 bg-black/50 z-30 lg:hidden hidden"></div>
 
-    <aside id="sidebar" class="fixed top-16 left-0 w-64 h-[calc(100vh-4rem)] flex-shrink-0 z-40 transition-transform duration-300 -translate-x-full lg:translate-x-0">
-        <div class="w-64 flex flex-col h-full glass-dark border-r border-gray-700/30">
+    {{-- Right Sidebar Overlay --}}
+    <div id="right-sidebar-overlay"
+         onclick="toggleRightSidebar()"
+         class="fixed inset-0 bg-black/50 z-30 xl:hidden hidden"></div>
+
+    <aside id="sidebar" class="fixed top-16 left-0 w-64 h-[calc(100vh-4rem)] flex-shrink-0 z-40 transition-transform duration-300 -translate-x-full">
+        <div class="w-64 flex flex-col h-full glass-dark border-r border-white/5">
             {{-- Navigation Links --}}
             <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-1">
                 <p class="px-3 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">Navigation</p>
@@ -129,6 +201,10 @@
                 <a href="{{ route('leaderboard') }}" class="group flex items-center px-3 py-2 rounded-lg text-sm font-medium hover:bg-white/5 transition-all duration-200 {{ request()->routeIs('leaderboard') ? 'nav-link-active text-white' : 'text-gray-300' }}">
                     <svg class="w-5 h-5 mr-3 transition-transform duration-200 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
                     Leaderboard
+                </a>
+                <a href="{{ route('ranked.index') }}" class="group flex items-center px-3 py-2 rounded-lg text-sm font-medium hover:bg-white/5 transition-all duration-200 {{ request()->routeIs('ranked.*') ? 'nav-link-active text-white' : 'text-gray-300' }}">
+                    <svg class="w-5 h-5 mr-3 transition-transform duration-200 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+                    Ranked
                 </a>
                 <a href="{{ route('achievements.index') }}" class="group flex items-center px-3 py-2 rounded-lg text-sm font-medium hover:bg-white/5 transition-all duration-200 {{ request()->routeIs('achievements.*') ? 'nav-link-active text-white' : 'text-gray-300' }}">
                     <svg class="w-5 h-5 mr-3 transition-transform duration-200 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
@@ -178,13 +254,13 @@
     </aside>
 
     {{-- Right Sidebar: Live Activity Feed (desktop only, fixed like left sidebar) --}}
-    <aside id="right-sidebar" class="fixed top-16 right-0 w-96 h-[calc(100vh-4rem)] flex-shrink-0 z-40 hidden xl:block glass-dark border-l border-gray-700/30 p-4">
+    <aside id="right-sidebar" class="fixed top-16 right-0 w-96 h-[calc(100vh-4rem)] flex-shrink-0 z-40 transition-transform duration-300 translate-x-full hidden glass-dark border-l border-white/5 p-4">
         @include('partials._activity-feed')
     </aside>
     @endauth
 
     {{-- Top Navigation Bar (full width, above everything) --}}
-    <nav class="sticky top-0 z-50 glass border-b border-gray-700/30 relative">
+    <nav class="sticky top-0 z-50 glass border-b border-white/5 relative">
         <div class="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-green-500/40 to-transparent"></div>
         <div class="px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
@@ -202,7 +278,7 @@
                 <div class="flex items-center gap-6">
                     {{-- Hamburger Menu (Toggle Sidebar) --}}
                     <button id="hamburger-icon" onclick="toggleSidebar()"
-                            class="p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 transition">
+                            class="p-2 rounded-md text-gray-400 hover:text-white hover:bg-white/5 transition">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path data-icon="open" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                             <path data-icon="close" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -254,18 +330,18 @@
                                    class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm placeholder-gray-400 focus-glow">
                             {{-- Recent searches --}}
                             <div x-show="showRecent && query.length < 2 && recentSearches.length > 0" class="absolute w-full mt-2 glass rounded-xl shadow-xl z-50" style="display:none;">
-                                <div class="px-4 py-2 flex items-center justify-between border-b border-gray-700">
+                                <div class="px-4 py-2 flex items-center justify-between border-b border-white/5">
                                     <span class="text-xs text-gray-400">Recent searches</span>
                                     <button @click="clearRecent()" class="text-xs text-gray-500 hover:text-red-400">Clear</button>
                                 </div>
                                 <template x-for="r in recentSearches" :key="r.name">
                                     <a :href="r.url || '/players?q='+encodeURIComponent(r.name)"
-                                       class="flex items-center gap-3 px-4 py-2 hover:bg-gray-700 transition">
+                                       class="flex items-center gap-3 px-4 py-2 hover:bg-white/5 transition">
                                         <template x-if="r.avatar">
                                             <img :src="r.avatar" class="w-6 h-6 rounded-full">
                                         </template>
                                         <template x-if="!r.avatar">
-                                            <div class="w-6 h-6 rounded-full bg-gray-600 flex items-center justify-center">
+                                            <div class="w-6 h-6 rounded-full bg-white/5 flex items-center justify-center">
                                                 <svg class="w-3 h-3 text-gray-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/></svg>
                                             </div>
                                         </template>
@@ -279,12 +355,12 @@
                                 <template x-for="r in results" :key="r.uuid">
                                     <a :href="r.url || '/players?q='+encodeURIComponent(r.name)"
                                        @click="saveRecent(r.name, r.url, r.avatar)"
-                                       class="flex items-center gap-3 px-4 py-2 hover:bg-gray-700 transition">
+                                       class="flex items-center gap-3 px-4 py-2 hover:bg-white/5 transition">
                                         <template x-if="r.avatar">
                                             <img :src="r.avatar" class="w-6 h-6 rounded-full">
                                         </template>
                                         <template x-if="!r.avatar">
-                                            <div class="w-6 h-6 rounded-full bg-gray-600 flex items-center justify-center">
+                                            <div class="w-6 h-6 rounded-full bg-white/5 flex items-center justify-center">
                                                 <svg class="w-3 h-3 text-gray-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/></svg>
                                             </div>
                                         </template>
@@ -329,20 +405,20 @@
                             </svg>
                         </button>
                         <div x-show="searchOpen" @click.outside="searchOpen = false" x-transition
-                             class="absolute right-0 mt-2 w-80 bg-gray-800 border border-gray-700 rounded-xl shadow-xl z-50 p-3" style="display:none;">
+                             class="absolute right-0 mt-2 w-80 glass-card backdrop-blur-xl rounded-xl shadow-xl z-50 p-3" style="display:none;">
                             <input x-ref="searchInput" type="text" x-model="query" @input.debounce.300ms="search()"
                                    @keydown.enter="if(query.length >= 2) window.location.href='/players?q='+encodeURIComponent(query)"
                                    placeholder="Search players..."
-                                   class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white text-sm placeholder-gray-500 focus:outline-none focus:border-green-500">
+                                   class="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm placeholder-gray-500 focus:outline-none focus:border-green-500">
                             <div x-show="results.length > 0" class="mt-2 max-h-60 overflow-y-auto">
                                 <template x-for="r in results" :key="r.uuid">
                                     <a :href="r.url || '/players?q='+encodeURIComponent(r.name)"
-                                       class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-700 transition">
+                                       class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/5 transition">
                                         <template x-if="r.avatar">
                                             <img :src="r.avatar" class="w-6 h-6 rounded-full">
                                         </template>
                                         <template x-if="!r.avatar">
-                                            <div class="w-6 h-6 rounded-full bg-gray-600 flex items-center justify-center">
+                                            <div class="w-6 h-6 rounded-full bg-white/5 flex items-center justify-center">
                                                 <svg class="w-3 h-3 text-gray-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/></svg>
                                             </div>
                                         </template>
@@ -416,7 +492,7 @@
                                 const type = n.data?.type || n.type || 'general';
                                 if (['team_invitation','team_application','application_result'].includes(type)) return 'team';
                                 if (['match_scheduled','match_reminder'].includes(type)) return 'match';
-                                if (['achievement_unlocked','achievement'].includes(type)) return 'achievement';
+                                if (['achievement_unlocked','achievement','achievement_earned'].includes(type)) return 'achievement';
                                 return 'general';
                             },
                             getCategoryIcon(cat) {
@@ -459,6 +535,9 @@
                                             new Notification('{{ site_setting('site_name', config('app.name')) }}', { body: e.message || 'New notification', icon: '/favicon-32x32.png' });
                                         }
                                         if (this.open) { this.fetchNotifications(); }
+                                        if (e.category === 'achievement' && e.metadata) {
+                                            window.dispatchEvent(new CustomEvent('achievement-unlocked', { detail: e.metadata }));
+                                        }
                                     });
                             }
                         ">
@@ -472,17 +551,17 @@
                             </button>
 
                             <div x-show="open" @click.outside="open = false" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
-                                 class="absolute right-0 mt-2 w-96 bg-gray-800 border border-gray-700 rounded-xl shadow-xl z-50 overflow-hidden" style="display: none;">
-                                <div class="p-3 border-b border-gray-700 flex items-center justify-between">
+                                 class="absolute right-0 mt-2 w-96 glass-card backdrop-blur-xl rounded-xl shadow-xl z-50 overflow-hidden" style="display: none;">
+                                <div class="p-3 border-b border-white/5 flex items-center justify-between">
                                     <span class="font-semibold text-white">Notifications</span>
                                     <button x-show="unread > 0" @click="markAllRead()"
                                             class="text-xs text-green-400 hover:text-green-300">Mark all read</button>
                                 </div>
                                 {{-- Category filters --}}
-                                <div class="flex items-center gap-1 px-3 py-2 border-b border-gray-700/50">
+                                <div class="flex items-center gap-1 px-3 py-2 border-b border-white/5">
                                     <template x-for="cat in ['all','team','match','achievement','general']" :key="cat">
                                         <button @click="filter = cat"
-                                                :class="filter === cat ? 'bg-green-500/20 text-green-400 border-green-500/30' : 'bg-gray-700/30 text-gray-400 border-gray-600/30 hover:text-white'"
+                                                :class="filter === cat ? 'bg-green-500/20 text-green-400 border-green-500/30' : 'bg-white/3 text-gray-400 border-white/10 hover:text-white'"
                                                 class="px-2 py-1 text-xs rounded-md border capitalize transition" x-text="cat"></button>
                                     </template>
                                 </div>
@@ -502,10 +581,10 @@
                                         <a :href="getLink(notification) || 'javascript:void(0)'"
                                            @click="markRead(notification)"
                                            :class="[
-                                               notification.read_at ? 'bg-gray-800' : 'bg-gray-700/50',
+                                               notification.read_at ? 'bg-transparent' : 'bg-white/3',
                                                getLink(notification) ? 'cursor-pointer' : 'cursor-default'
                                            ]"
-                                           class="block p-3 border-b border-gray-700 last:border-0 hover:bg-gray-700/70 transition">
+                                           class="block p-3 border-b border-white/5 last:border-0 hover:bg-white/5 transition">
                                             <div class="flex items-start gap-3">
                                                 <div class="shrink-0 mt-0.5" :class="getCategoryColor(getCategory(notification))">
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" x-html="getCategoryIcon(getCategory(notification))"></svg>
@@ -527,6 +606,15 @@
                             </div>
                         </div>
 
+                        {{-- Live Activity Toggle --}}
+                        <button id="right-sidebar-toggle" onclick="toggleRightSidebar()"
+                                class="p-2 rounded-md text-gray-400 hover:text-white hover:bg-white/5 transition"
+                                title="Live Activity" aria-expanded="false">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12h4l3-6 4 12 3-6h4"/>
+                            </svg>
+                        </button>
+
                         <div x-data="{ profileOpen: false }" class="relative">
                             <button @click="profileOpen = !profileOpen" @click.outside="profileOpen = false" class="flex items-center space-x-3 hover:opacity-80 transition">
                                 <img src="{{ auth()->user()->avatar_display }}" alt="{{ auth()->user()->name }}" class="w-8 h-8 rounded-full">
@@ -535,39 +623,39 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                                 </svg>
                             </button>
-                            <div x-show="profileOpen" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95" class="absolute right-0 mt-2 w-56 bg-gray-800 border border-gray-700 rounded-lg shadow-xl z-50 py-1" style="display: none;">
-                                <div class="px-4 py-3 border-b border-gray-700">
+                            <div x-show="profileOpen" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95" class="absolute right-0 mt-2 w-56 glass-card backdrop-blur-xl rounded-lg shadow-xl z-50 py-1" style="display: none;">
+                                <div class="px-4 py-3 border-b border-white/5">
                                     <p class="text-sm font-medium text-white">{{ auth()->user()->name }}</p>
                                     <p class="text-xs text-gray-400 capitalize">{{ auth()->user()->role }}</p>
                                 </div>
-                                <a href="{{ route('profile') }}" class="flex items-center px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white transition">
+                                <a href="{{ route('profile') }}" class="flex items-center px-4 py-2 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition">
                                     <svg class="w-4 h-4 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                                     My Profile
                                 </a>
-                                <a href="{{ route('profile.settings') }}" class="flex items-center px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white transition">
+                                <a href="{{ route('profile.settings') }}" class="flex items-center px-4 py-2 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition">
                                     <svg class="w-4 h-4 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                                     Settings
                                 </a>
-                                <a href="{{ route('discord.presence.settings') }}" class="flex items-center px-4 py-2 text-sm text-purple-400 hover:bg-gray-700 hover:text-purple-300 transition">
+                                <a href="{{ route('discord.presence.settings') }}" class="flex items-center px-4 py-2 text-sm text-purple-400 hover:bg-white/5 hover:text-purple-300 transition">
                                     <svg class="w-4 h-4 mr-3 text-purple-500" fill="currentColor" viewBox="0 0 24 24"><path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189z"/></svg>
                                     Discord Presence
                                 </a>
                                 @if(auth()->user()->isAdmin())
-                                <a href="{{ route('admin.dashboard') }}" class="flex items-center px-4 py-2 text-sm text-green-400 hover:bg-gray-700 hover:text-green-300 transition">
+                                <a href="{{ route('admin.dashboard') }}" class="flex items-center px-4 py-2 text-sm text-green-400 hover:bg-white/5 hover:text-green-300 transition">
                                     <svg class="w-4 h-4 mr-3 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                                     Admin Panel
                                 </a>
                                 @endif
                                 @if(auth()->user()->isReferee())
-                                <a href="{{ route('referee.dashboard') }}" class="flex items-center px-4 py-2 text-sm text-blue-400 hover:bg-gray-700 hover:text-blue-300 transition">
+                                <a href="{{ route('referee.dashboard') }}" class="flex items-center px-4 py-2 text-sm text-blue-400 hover:bg-white/5 hover:text-blue-300 transition">
                                     <svg class="w-4 h-4 mr-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                                     Referee Dashboard
                                 </a>
                                 @endif
-                                <div class="border-t border-gray-700 mt-1 pt-1">
+                                <div class="border-t border-white/5 mt-1 pt-1">
                                     <form method="POST" action="{{ route('logout') }}">
                                         @csrf
-                                        <button type="submit" class="flex items-center w-full px-4 py-2 text-sm text-red-400 hover:bg-gray-700 hover:text-red-300 transition">
+                                        <button type="submit" class="flex items-center w-full px-4 py-2 text-sm text-red-400 hover:bg-white/5 hover:text-red-300 transition">
                                             <svg class="w-4 h-4 mr-3 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
                                             Logout
                                         </button>
@@ -582,7 +670,7 @@
                         <a href="{{ route('register') }}" class="px-4 py-2 text-sm font-medium bg-green-600 hover:bg-green-700 rounded-md transition btn-glow">
                             Register
                         </a>
-                        <a href="{{ route('auth.steam') }}" class="p-2 bg-gray-700 hover:bg-gray-600 rounded-md transition" title="Login with Steam">
+                        <a href="{{ route('auth.steam') }}" class="p-2 bg-white/5 hover:bg-white/10 rounded-md transition" title="Login with Steam">
                             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                                 <path d="M12 0C5.373 0 0 5.373 0 12c0 5.084 3.163 9.426 7.627 11.174l2.896-4.143c-.468-.116-.91-.293-1.317-.525L4.5 21.75c-.913-.288-1.772-.684-2.563-1.176l4.707-3.308c-.155-.369-.277-.758-.359-1.162L0 19.293V12C0 5.373 5.373 0 12 0zm0 4.5c-4.136 0-7.5 3.364-7.5 7.5 0 .768.115 1.509.328 2.206l3.908-2.745c.493-2.293 2.535-4.011 4.997-4.011 2.795 0 5.067 2.272 5.067 5.067 0 2.462-1.758 4.514-4.089 4.977l-2.725 3.896C9.788 22.285 10.869 22.5 12 22.5c6.627 0 12-5.373 12-12S18.627 0 12 0z"/>
                             </svg>
@@ -622,12 +710,12 @@
     </main>
 
     @auth
-    <div class="hidden xl:block w-96 flex-shrink-0"></div>
+    <div id="right-sidebar-spacer" class="hidden w-96 flex-shrink-0"></div>
     @endauth
     </div>
 
     {{-- Footer: full width, outside sidebar+content wrapper --}}
-    <footer class="relative glass border-t border-gray-700/30 mt-auto">
+    <footer class="relative glass border-t border-white/5 mt-auto">
         <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-green-500/20 to-transparent"></div>
         <div class="py-6 px-4 sm:px-6 lg:px-8">
             <div class="flex flex-wrap items-center justify-center gap-4 mb-3 text-sm">
@@ -653,6 +741,82 @@
         </div>
     </footer>
     </div>
+
+    {{-- Achievement Unlocked Popup --}}
+    @auth
+    <div x-data="{
+        popups: [],
+        add(detail) {
+            const id = Date.now() + Math.random();
+            const popup = {
+                id,
+                name: detail.achievement_name || 'Achievement',
+                icon: detail.achievement_icon || '🏆',
+                color: detail.achievement_color || '#22c55e',
+                progress: 100,
+            };
+            this.popups.push(popup);
+            this.$nextTick(() => {
+                const el = this.$refs['popup-' + id];
+                if (el && window.animateAchievementPopup) {
+                    window.animateAchievementPopup(el, popup.color);
+                }
+                this.startDismissTimer(id);
+            });
+        },
+        startDismissTimer(id) {
+            const duration = 6000;
+            const interval = 50;
+            const popup = this.popups.find(p => p.id === id);
+            if (!popup) return;
+            const timer = setInterval(() => {
+                const p = this.popups.find(p => p.id === id);
+                if (!p) { clearInterval(timer); return; }
+                p.progress -= (interval / duration) * 100;
+                if (p.progress <= 0) {
+                    clearInterval(timer);
+                    this.dismiss(id);
+                }
+            }, interval);
+        },
+        dismiss(id) {
+            const el = this.$refs['popup-' + id];
+            if (el && window.dismissAchievementPopup) {
+                window.dismissAchievementPopup(el, () => {
+                    this.popups = this.popups.filter(p => p.id !== id);
+                });
+            } else {
+                this.popups = this.popups.filter(p => p.id !== id);
+            }
+        },
+        navigate() {
+            window.location.href = '/achievements';
+        }
+    }" @achievement-unlocked.window="add($event.detail)"
+       class="fixed bottom-6 right-6 z-[60] flex flex-col-reverse gap-3 pointer-events-none">
+        <template x-for="popup in popups" :key="popup.id">
+            <div :x-ref="'popup-' + popup.id"
+                 @click="navigate()"
+                 class="achievement-popup pointer-events-auto cursor-pointer w-80 rounded-xl overflow-hidden shadow-2xl border border-white/10"
+                 :style="'background: linear-gradient(135deg, rgba(17,24,39,0.95), rgba(31,41,55,0.95)); border-left: 3px solid ' + popup.color">
+                <div class="achievement-popup-shine"></div>
+                <div class="relative p-4 flex items-center gap-3">
+                    <div class="text-3xl shrink-0" x-text="popup.icon"></div>
+                    <div class="min-w-0 flex-1">
+                        <p class="text-xs font-bold uppercase tracking-widest" :style="'color: ' + popup.color">Achievement Unlocked!</p>
+                        <p class="text-sm font-semibold text-white truncate mt-0.5" x-text="popup.name"></p>
+                    </div>
+                    <button @click.stop="dismiss(popup.id)" class="shrink-0 text-gray-500 hover:text-white transition p-1">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+                <div class="h-0.5 bg-white/3">
+                    <div class="h-full transition-all duration-100 ease-linear rounded-full" :style="'width: ' + popup.progress + '%; background: ' + popup.color"></div>
+                </div>
+            </div>
+        </template>
+    </div>
+    @endauth
 
     @stack('scripts')
 </body>

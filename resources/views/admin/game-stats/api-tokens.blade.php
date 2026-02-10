@@ -46,25 +46,25 @@
     @endif
 
     {{-- Generate New Token --}}
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
-        <h2 class="text-lg font-semibold text-white mb-4">Generate New Token</h2>
+    <div class="glass-card rounded-xl p-6">
+        <h2 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">Generate New Token</h2>
         <form action="{{ route('admin.game-stats.generate-token') }}" method="POST" class="space-y-4">
             @csrf
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-300 mb-2">Token Name (optional)</label>
-                    <input type="text" name="token_name" placeholder="e.g., Production Server" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
+                    <input type="text" name="token_name" placeholder="e.g., Production Server" class="w-full bg-white/5 border-white/10 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-300 mb-2">Token Type</label>
-                    <select name="token_type" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
+                    <select name="token_type" class="w-full bg-white/5 border-white/10 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
                         <option value="standard">Standard (60 req/min)</option>
                         <option value="high-volume">High Volume (180 req/min)</option>
                         <option value="premium">Premium (300 req/min)</option>
                     </select>
                 </div>
             </div>
-            <button type="submit" class="px-6 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg transition flex items-center gap-2">
+            <button type="submit" class="px-6 py-2 bg-green-600 hover:bg-green-500 text-white rounded-xl transition flex items-center gap-2">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                 </svg>
@@ -73,7 +73,7 @@
         </form>
 
         {{-- Token Type Info --}}
-        <div class="mt-6 pt-6 border-t border-gray-700">
+        <div class="mt-6 pt-6 border-t border-white/5">
             <h3 class="text-sm font-semibold text-white mb-3">Token Types</h3>
             <div class="space-y-2 text-sm">
                 <div class="flex items-start gap-2">
@@ -93,8 +93,8 @@
     </div>
 
     {{-- API Documentation --}}
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
-        <h2 class="text-lg font-semibold text-white mb-4">API Endpoints</h2>
+    <div class="glass-card rounded-xl p-6">
+        <h2 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">API Endpoints</h2>
 
         {{-- Rate Limiting Info --}}
         <div class="mb-6 p-4 bg-blue-500/10 border border-blue-500/30 rounded-lg">
@@ -115,7 +115,7 @@
                     <code class="text-white">/api/player-stats</code>
                 </div>
                 <p class="text-sm text-gray-400 mb-2">Update or create player statistics</p>
-                <pre class="text-xs text-gray-300 bg-gray-800 rounded p-2 overflow-x-auto">{
+                <pre class="text-xs text-gray-300 bg-white/3 rounded p-2 overflow-x-auto">{
   "player_name": "John_Doe",
   "uuid": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
   "total_playtime": 7200,
@@ -129,7 +129,7 @@
                     <code class="text-white">/api/kills/batch</code>
                 </div>
                 <p class="text-sm text-gray-400 mb-2">Batch insert kills (timestamps in milliseconds)</p>
-                <pre class="text-xs text-gray-300 bg-gray-800 rounded p-2 overflow-x-auto">{
+                <pre class="text-xs text-gray-300 bg-white/3 rounded p-2 overflow-x-auto">{
   "data": [
     {
       "killer": "John_Doe",
@@ -148,7 +148,7 @@
                     <code class="text-white">/api/server-status</code>
                 </div>
                 <p class="text-sm text-gray-400 mb-2">Record server status (timestamp in milliseconds)</p>
-                <pre class="text-xs text-gray-300 bg-gray-800 rounded p-2 overflow-x-auto">{
+                <pre class="text-xs text-gray-300 bg-white/3 rounded p-2 overflow-x-auto">{
   "server_id": 1,
   "server_name": "ArmaBattles #1",
   "map": "Everon",
@@ -162,12 +162,12 @@
     </div>
 
     {{-- Existing Tokens --}}
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl overflow-hidden">
-        <div class="px-4 py-3 border-b border-gray-700">
-            <h2 class="text-lg font-semibold text-white">Active Tokens</h2>
+    <div class="glass-card rounded-xl overflow-hidden">
+        <div class="px-4 py-3 border-b border-white/5">
+            <h2 class="text-sm font-semibold text-white uppercase tracking-wider">Active Tokens</h2>
         </div>
         <table class="w-full">
-            <thead class="bg-gray-700/50">
+            <thead class="bg-white/3">
                 <tr>
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Name</th>
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Type</th>
@@ -177,9 +177,9 @@
                     <th class="px-4 py-3 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-gray-700">
+            <tbody class="divide-y divide-white/5">
                 @forelse($tokens as $token)
-                <tr class="hover:bg-gray-700/30">
+                <tr class="hover:bg-white/5">
                     <td class="px-4 py-3">
                         <span class="text-white font-medium">{{ $token->name }}</span>
                     </td>
@@ -218,8 +218,8 @@
     </div>
 
     {{-- cURL Examples --}}
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
-        <h2 class="text-lg font-semibold text-white mb-4">Test with cURL</h2>
+    <div class="glass-card rounded-xl p-6">
+        <h2 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">Test with cURL</h2>
         <div class="space-y-4">
             <div>
                 <p class="text-sm text-gray-400 mb-2">Test player stats endpoint:</p>

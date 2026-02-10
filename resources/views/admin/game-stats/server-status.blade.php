@@ -17,9 +17,9 @@
     </div>
 
     {{-- Filters --}}
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-4">
+    <div class="glass-card rounded-xl p-4">
         <form action="{{ route('admin.game-stats.server-status') }}" method="GET" class="flex flex-wrap gap-4">
-            <select name="server_id" class="bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
+            <select name="server_id" class="bg-white/5 border-white/10 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
                 <option value="">All Servers</option>
                 @foreach($serverIds as $serverId)
                 <option value="{{ $serverId }}" {{ request('server_id') == $serverId ? 'selected' : '' }}>
@@ -27,13 +27,13 @@
                 </option>
                 @endforeach
             </select>
-            <input type="date" name="date_from" value="{{ request('date_from') }}" class="bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
-            <input type="date" name="date_to" value="{{ request('date_to') }}" class="bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
-            <button type="submit" class="px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg transition">
+            <input type="date" name="date_from" value="{{ request('date_from') }}" class="bg-white/5 border-white/10 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
+            <input type="date" name="date_to" value="{{ request('date_to') }}" class="bg-white/5 border-white/10 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
+            <button type="submit" class="px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-xl transition">
                 Filter
             </button>
             @if(request()->hasAny(['server_id', 'date_from', 'date_to']))
-            <a href="{{ route('admin.game-stats.server-status') }}" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition">
+            <a href="{{ route('admin.game-stats.server-status') }}" class="px-4 py-2 bg-white/5 hover:bg-white/10 text-white rounded-xl transition">
                 Clear
             </a>
             @endif
@@ -41,9 +41,9 @@
     </div>
 
     {{-- Status Table --}}
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl overflow-hidden">
+    <div class="glass-card rounded-xl overflow-hidden">
         <table class="w-full">
-            <thead class="bg-gray-700/50">
+            <thead class="bg-white/3">
                 <tr>
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Time</th>
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Server</th>
@@ -54,14 +54,14 @@
                     <th class="px-4 py-3 text-center text-xs font-medium text-gray-400 uppercase tracking-wider">Uptime</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-gray-700">
+            <tbody class="divide-y divide-white/5">
                 @forelse($statuses as $status)
                 @php
                     $recordedAt = $status->recorded_at ? \Carbon\Carbon::parse($status->recorded_at) : null;
                     $uptimeHours = floor(($status->uptime_seconds ?? 0) / 3600);
                     $uptimeMinutes = floor((($status->uptime_seconds ?? 0) % 3600) / 60);
                 @endphp
-                <tr class="hover:bg-gray-700/30">
+                <tr class="hover:bg-white/5">
                     <td class="px-4 py-3">
                         @if($recordedAt)
                         <div class="text-sm text-white">{{ $recordedAt->format('M j, Y') }}</div>
@@ -83,7 +83,7 @@
                             $maxPlayers = $status->max_players ?? 64;
                             $percentage = $maxPlayers > 0 ? (($status->players_online ?? 0) / $maxPlayers) * 100 : 0;
                         @endphp
-                        <div class="w-full bg-gray-700 rounded-full h-1.5 mt-1">
+                        <div class="w-full bg-white/5 rounded-full h-1.5 mt-1">
                             <div class="h-1.5 rounded-full {{ $percentage > 80 ? 'bg-red-500' : ($percentage > 50 ? 'bg-yellow-500' : 'bg-green-500') }}" style="width: {{ $percentage }}%"></div>
                         </div>
                     </td>

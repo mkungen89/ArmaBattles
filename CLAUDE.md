@@ -173,6 +173,9 @@ When displaying scenario names, always use `$server->scenario_display_name` (not
 - `vehicles` — Vehicle metadata with optional image_path for display (mirrors weapons pattern)
 - `anticheat_events` — Raven AC enforcement actions and flagged players (event_type: ENFORCEMENT_ACTION, ENFORCEMENT_SKIPPED, LIFESTATE, SPAWN_GRACE, OTHER, UNKNOWN)
 - `anticheat_stats` — Periodic AC snapshots every ~10s (online/active/registered players, potential_cheaters, banned/confirmed/potentials lists as JSON)
+- `player_ratings` — Competitive Glicko-2 ratings per user (rating, rating_deviation, volatility, rank_tier, ranked_kills/deaths, placement_games, is_placed, peak_rating, opted_in_at)
+- `rating_history` — Rating change history per period (before/after for rating, RD, volatility, tier; period kills/deaths/encounters)
+- `rated_kills_queue` — Staging table for competitive events awaiting batch processing. Columns: kill_id, event_type (kill/team_kill/base_capture/heal/supply), player_uuid, killer/victim_uuid, processed flag. Supports PvP kills, team kill penalties, and objective events.
 - `analytics_events` — Write-once event log for page views, API requests, and feature usage. Columns: event_type (page_view/api_request/feature_use), event_name, user_id, token_id, ip_address, user_agent, response_time_ms, response_status, metadata (JSON), created_at. No `updated_at`. Indexed on (event_type, created_at), created_at, user_id, token_id.
 - `system_metrics` — Time-series system performance snapshots (every 5min via `metrics:collect`). Columns: cache_hits, cache_misses, jobs_processed, jobs_failed, queue_size, memory_usage_mb, cpu_load_1m, disk_usage_percent, api_requests_count, api_p50_ms, api_p95_ms, api_p99_ms, recorded_at.
 
@@ -187,6 +190,8 @@ When displaying scenario names, always use `$server->scenario_display_name` (not
 **Scrim System:** `ScrimMatch`, `ScrimInvitation` — Casual team-vs-team matches separate from tournaments. Status flow: `pending → scheduled → in_progress → completed/cancelled`. 7-day invitation expiry. Optional server password protection.
 
 **Reputation System:** `PlayerReputation`, `ReputationVote` — +Rep/-Rep voting with categories (teamwork, leadership, sportsmanship, general). Tiers: Trusted (100+), Good (50+), Neutral (0+), Poor (-50+), Flagged (-50 or lower). 24-hour vote change window.
+
+**Ranked Rating System (Glicko-2):** `PlayerRating`, `RatingHistory` — Opt-in competitive tactical rating. Rewards objective play, not just kills. Event types and their Glicko-2 mapping: `kill` = win vs victim's real rating; `team_kill` = LOSS vs phantom at own rating, RD 150 (significant penalty); `friendly_fire` = LOSS vs phantom at own rating, RD 250 (moderate penalty per hit); `vehicle_destroy` = win vs phantom at 1600 (high-value target); `base_capture` = win vs phantom at 1500; `heal` = win vs phantom at 1300 (non-self only); `supply` = win vs phantom at 1300; `building` = win vs phantom at 1200 (engineer role). AI kills excluded. `rated_kills_queue` table stages events for batch processing every 4 hours. Tiers: Bronze (0+), Silver (1200+), Gold (1400+), Platinum (1600+), Diamond (1800+), Master (2000+), Elite (2200+). 10 placement games required. Services: `Glicko2Service` (pure math), `RatingCalculationService` (orchestrator with phantom opponent constants). StatsController hooks: `queueRatedKillIfEligible()` in `storeKill()`, `queueRatedObjectiveIfEligible()` in `storeBaseEvent()`, `storeHealing()`, `storeSupplies()`, `storeXpEvent()` (ENEMY_KILL_VEH), `storeBuildingEvent()` (BUILDING_PLACED), `storeDamageEvents()` (is_friendly_fire). Commands: `ratings:calculate` (every 4h), `ratings:decay` (daily, 14-day inactivity). User: `$user->playerRating()` HasOne, `$user->isCompetitive()`, `$user->getRatingDisplay()`. Team: `$team->getTeamRating()` returns avg rating of competitive members.
 
 **Content Creators:** `ContentCreator`, `HighlightClip`, `ClipVote` — Multi-platform streamer directory (Twitch, YouTube, TikTok, Kick). Clip submission with community voting. "Clip of the Week" feature.
 
@@ -229,6 +234,7 @@ When displaying scenario names, always use `$server->scenario_display_name` (not
 - `/teams/*` — Platoon profiles, management, applications
 - `/matches/*` — Match check-in and scheduling
 - `/scrims/*` — Scrim (practice match) management
+- `/ranked/*` — Competitive skill rating leaderboard, player detail, about page, opt-in/out
 - `/reputation/*` — Player reputation leaderboard and voting
 - `/creators/*` — Content creator directory and registration
 - `/clips/*` — Highlight clip gallery and submission
@@ -246,6 +252,7 @@ When displaying scenario names, always use `$server->scenario_display_name` (not
   - `/admin/rcon/*` — RCON server commands (kick, ban, say). Separate from GameServerManager; uses `config('services.rcon.api_url/api_key')`
   - `/admin/reports/*` — Player conduct reports with status workflow (open/investigating/action_taken/dismissed)
   - `/admin/metrics` — Metrics & Tracking dashboard (analytics, API usage, performance) with 3 tabs and Chart.js charts
+  - `/admin/ranked` — Ranked ratings admin dashboard (competitive count, tier distribution, suspicious players, queue size, rating reset)
   - `/admin/audit-log` — Enhanced audit log with user/date/search filters and CSV export
   - `/admin/news/*` — News article management
 - `/export/*` — Stats export: player CSV, match history CSV, leaderboard CSV/JSON (via `StatsExportController`)
@@ -346,6 +353,8 @@ Production uses PostgreSQL. Tests use in-memory SQLite. Uses database-backed cac
 - `metrics:collect` — every 5 minutes (collects queue size, CPU, memory, disk, API percentiles into `system_metrics`)
 - Old analytics events cleanup — daily (configurable via `analytics_retention_days` setting, default 90 days)
 - Old system metrics cleanup — daily (configurable via `metrics_retention_days` setting, default 90 days)
+- `ratings:calculate` — every 4 hours (processes rated_kills_queue, updates Glicko-2 ratings)
+- `ratings:decay` — daily (increases RD for competitive players inactive >14 days)
 
 ### Profile System
 

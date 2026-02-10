@@ -8,21 +8,21 @@
         <h1 class="text-3xl font-bold text-white">Kill Feed</h1>
         <div class="flex items-center gap-3">
             <label class="flex items-center gap-2 text-sm text-gray-400 cursor-pointer">
-                <input type="checkbox" x-model="showAI" class="rounded bg-gray-700 border-gray-600 text-green-500 focus:ring-green-500">
+                <input type="checkbox" x-model="showAI" class="rounded bg-white/5 border-white/10 text-green-500 focus:ring-green-500">
                 Show AI kills
             </label>
             <label class="flex items-center gap-2 text-sm text-gray-400 cursor-pointer">
-                <input type="checkbox" x-model="headshotsOnly" class="rounded bg-gray-700 border-gray-600 text-green-500 focus:ring-green-500">
+                <input type="checkbox" x-model="headshotsOnly" class="rounded bg-white/5 border-white/10 text-green-500 focus:ring-green-500">
                 Headshots only
             </label>
             <span class="text-xs text-gray-600" x-text="'(' + filteredKills.length + ' shown)'"></span>
         </div>
     </div>
 
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl overflow-hidden">
+    <div class="glass-card rounded-xl overflow-hidden">
         <div class="overflow-x-auto">
         <table class="w-full">
-            <thead class="bg-gray-700/50">
+            <thead class="bg-white/3">
                 <tr>
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Time</th>
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Killer</th>
@@ -31,9 +31,9 @@
                     <th class="px-4 py-3 text-right text-xs font-medium text-gray-400 uppercase">Distance</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-gray-700/50">
+            <tbody class="divide-y divide-white/5">
                 <template x-for="kill in filteredKills" :key="kill.id">
-                    <tr class="hover:bg-gray-700/30 transition-colors" :class="kill._new ? 'animate-pulse bg-green-900/20' : ''">
+                    <tr class="hover:bg-white/5 transition-colors" :class="kill._new ? 'animate-pulse bg-green-900/20' : ''">
                         <td class="px-4 py-2 text-sm text-gray-400" x-text="timeAgo(kill.killed_at)"></td>
                         <td class="px-4 py-2">
                             <span class="text-green-400 text-sm font-medium" x-text="kill.killer_name || 'Unknown'"></span>

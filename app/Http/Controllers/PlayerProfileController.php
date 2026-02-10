@@ -150,6 +150,9 @@ class PlayerProfileController extends Controller
             ]
         );
 
+        // Competitive rating
+        $playerRating = $user->playerRating;
+
         return view('profile.public', [
             'user' => $user,
             'team' => $team,
@@ -170,6 +173,7 @@ class PlayerProfileController extends Controller
             'playerAchievements' => $playerAchievements,
             'showcaseAchievements' => $showcaseAchievements,
             'reputation' => $reputation,
+            'playerRating' => $playerRating,
             'isOwner' => auth()->check() && auth()->id() === $user->id,
         ]);
     }

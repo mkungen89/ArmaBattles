@@ -7,13 +7,13 @@
     <div class="flex items-center justify-between">
         <h1 class="text-2xl font-bold text-white">Game Statistics</h1>
         <div class="flex gap-3">
-            <a href="{{ route('admin.weapons.index') }}" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition flex items-center gap-2">
+            <a href="{{ route('admin.weapons.index') }}" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl transition flex items-center gap-2">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                 </svg>
                 Weapons
             </a>
-            <a href="{{ route('admin.game-stats.api-tokens') }}" class="px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg transition flex items-center gap-2">
+            <a href="{{ route('admin.game-stats.api-tokens') }}" class="px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-xl transition flex items-center gap-2">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
                 </svg>
@@ -24,7 +24,7 @@
 
     {{-- Stats Cards --}}
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
+        <div class="glass-card rounded-xl p-6">
             <div class="flex items-center gap-4">
                 <div class="p-3 bg-blue-500/20 rounded-lg">
                     <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -38,7 +38,7 @@
             </div>
         </div>
 
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
+        <div class="glass-card rounded-xl p-6">
             <div class="flex items-center gap-4">
                 <div class="p-3 bg-green-500/20 rounded-lg">
                     <svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -52,7 +52,7 @@
             </div>
         </div>
 
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
+        <div class="glass-card rounded-xl p-6">
             <div class="flex items-center gap-4">
                 <div class="p-3 bg-red-500/20 rounded-lg">
                     <svg class="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -66,7 +66,7 @@
             </div>
         </div>
 
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
+        <div class="glass-card rounded-xl p-6">
             <div class="flex items-center gap-4">
                 <div class="p-3 bg-purple-500/20 rounded-lg">
                     <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -80,7 +80,7 @@
             </div>
         </div>
 
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
+        <div class="glass-card rounded-xl p-6">
             <div class="flex items-center gap-4">
                 <div class="p-3 bg-yellow-500/20 rounded-lg">
                     <svg class="w-6 h-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -94,7 +94,7 @@
             </div>
         </div>
 
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
+        <div class="glass-card rounded-xl p-6">
             <div class="flex items-center gap-4">
                 <div class="p-3 bg-orange-500/20 rounded-lg">
                     <svg class="w-6 h-6 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -108,7 +108,7 @@
             </div>
         </div>
 
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
+        <div class="glass-card rounded-xl p-6">
             <div class="flex items-center gap-4">
                 <div class="p-3 bg-pink-500/20 rounded-lg">
                     <svg class="w-6 h-6 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -122,7 +122,7 @@
             </div>
         </div>
 
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
+        <div class="glass-card rounded-xl p-6">
             <div class="flex items-center gap-4">
                 <div class="p-3 bg-cyan-500/20 rounded-lg">
                     <svg class="w-6 h-6 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -142,7 +142,7 @@
 
     {{-- Quick Links --}}
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <a href="{{ route('admin.game-stats.players') }}" class="bg-gray-800/50 border border-gray-700 hover:border-green-500/50 rounded-xl p-6 transition group">
+        <a href="{{ route('admin.game-stats.players') }}" class="glass-card hover:border-green-500/50 rounded-xl p-6 transition group">
             <div class="flex items-center gap-4">
                 <div class="p-3 bg-blue-500/20 rounded-lg group-hover:bg-blue-500/30 transition">
                     <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -156,7 +156,7 @@
             </div>
         </a>
 
-        <a href="{{ route('admin.game-stats.kills') }}" class="bg-gray-800/50 border border-gray-700 hover:border-green-500/50 rounded-xl p-6 transition group">
+        <a href="{{ route('admin.game-stats.kills') }}" class="glass-card hover:border-green-500/50 rounded-xl p-6 transition group">
             <div class="flex items-center gap-4">
                 <div class="p-3 bg-red-500/20 rounded-lg group-hover:bg-red-500/30 transition">
                     <svg class="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -170,7 +170,7 @@
             </div>
         </a>
 
-        <a href="{{ route('admin.game-stats.sessions') }}" class="bg-gray-800/50 border border-gray-700 hover:border-green-500/50 rounded-xl p-6 transition group">
+        <a href="{{ route('admin.game-stats.sessions') }}" class="glass-card hover:border-green-500/50 rounded-xl p-6 transition group">
             <div class="flex items-center gap-4">
                 <div class="p-3 bg-purple-500/20 rounded-lg group-hover:bg-purple-500/30 transition">
                     <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -184,7 +184,7 @@
             </div>
         </a>
 
-        <a href="{{ route('admin.game-stats.server-status') }}" class="bg-gray-800/50 border border-gray-700 hover:border-green-500/50 rounded-xl p-6 transition group">
+        <a href="{{ route('admin.game-stats.server-status') }}" class="glass-card hover:border-green-500/50 rounded-xl p-6 transition group">
             <div class="flex items-center gap-4">
                 <div class="p-3 bg-cyan-500/20 rounded-lg group-hover:bg-cyan-500/30 transition">
                     <svg class="w-6 h-6 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -198,7 +198,7 @@
             </div>
         </a>
 
-        <a href="{{ route('admin.game-stats.healing') }}" class="bg-gray-800/50 border border-gray-700 hover:border-green-500/50 rounded-xl p-6 transition group">
+        <a href="{{ route('admin.game-stats.healing') }}" class="glass-card hover:border-green-500/50 rounded-xl p-6 transition group">
             <div class="flex items-center gap-4">
                 <div class="p-3 bg-green-500/20 rounded-lg group-hover:bg-green-500/30 transition">
                     <svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -212,7 +212,7 @@
             </div>
         </a>
 
-        <a href="{{ route('admin.game-stats.base-captures') }}" class="bg-gray-800/50 border border-gray-700 hover:border-green-500/50 rounded-xl p-6 transition group">
+        <a href="{{ route('admin.game-stats.base-captures') }}" class="glass-card hover:border-green-500/50 rounded-xl p-6 transition group">
             <div class="flex items-center gap-4">
                 <div class="p-3 bg-yellow-500/20 rounded-lg group-hover:bg-yellow-500/30 transition">
                     <svg class="w-6 h-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -226,7 +226,7 @@
             </div>
         </a>
 
-        <a href="{{ route('admin.game-stats.chat') }}" class="bg-gray-800/50 border border-gray-700 hover:border-green-500/50 rounded-xl p-6 transition group">
+        <a href="{{ route('admin.game-stats.chat') }}" class="glass-card hover:border-green-500/50 rounded-xl p-6 transition group">
             <div class="flex items-center gap-4">
                 <div class="p-3 bg-pink-500/20 rounded-lg group-hover:bg-pink-500/30 transition">
                     <svg class="w-6 h-6 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -240,7 +240,7 @@
             </div>
         </a>
 
-        <a href="{{ route('admin.game-stats.game-sessions') }}" class="bg-gray-800/50 border border-gray-700 hover:border-green-500/50 rounded-xl p-6 transition group">
+        <a href="{{ route('admin.game-stats.game-sessions') }}" class="glass-card hover:border-green-500/50 rounded-xl p-6 transition group">
             <div class="flex items-center gap-4">
                 <div class="p-3 bg-orange-500/20 rounded-lg group-hover:bg-orange-500/30 transition">
                     <svg class="w-6 h-6 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -255,7 +255,7 @@
             </div>
         </a>
 
-        <a href="{{ route('admin.game-stats.supply-deliveries') }}" class="bg-gray-800/50 border border-gray-700 hover:border-green-500/50 rounded-xl p-6 transition group">
+        <a href="{{ route('admin.game-stats.supply-deliveries') }}" class="glass-card hover:border-green-500/50 rounded-xl p-6 transition group">
             <div class="flex items-center gap-4">
                 <div class="p-3 bg-amber-500/20 rounded-lg group-hover:bg-amber-500/30 transition">
                     <svg class="w-6 h-6 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -274,11 +274,11 @@
     @if(auth()->user()->isGM())
     <div class="mt-6">
         <div class="flex items-center gap-2 mb-4">
-            <h2 class="text-lg font-semibold text-white">GM Tools</h2>
+            <h2 class="text-sm font-semibold text-white uppercase tracking-wider">GM Tools</h2>
             <span class="px-2 py-1 bg-purple-500/20 text-purple-400 text-xs rounded">GM/Admin Only</span>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <a href="{{ route('gm.sessions') }}" class="bg-gray-800/50 border border-purple-700/50 hover:border-purple-500/50 rounded-xl p-6 transition group">
+            <a href="{{ route('gm.sessions') }}" class="glass-card hover:border-purple-500/50 rounded-xl p-6 transition group">
                 <div class="flex items-center gap-4">
                     <div class="p-3 bg-purple-500/20 rounded-lg group-hover:bg-purple-500/30 transition">
                         <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -292,7 +292,7 @@
                 </div>
             </a>
 
-            <a href="{{ route('gm.editor-actions') }}" class="bg-gray-800/50 border border-purple-700/50 hover:border-purple-500/50 rounded-xl p-6 transition group">
+            <a href="{{ route('gm.editor-actions') }}" class="glass-card hover:border-purple-500/50 rounded-xl p-6 transition group">
                 <div class="flex items-center gap-4">
                     <div class="p-3 bg-purple-500/20 rounded-lg group-hover:bg-purple-500/30 transition">
                         <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -311,12 +311,12 @@
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {{-- Top Players --}}
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl overflow-hidden">
-            <div class="px-4 py-3 border-b border-gray-700">
-                <h2 class="text-lg font-semibold text-white">Top Players</h2>
+        <div class="glass-card rounded-xl overflow-hidden">
+            <div class="px-4 py-3 border-b border-white/5">
+                <h2 class="text-sm font-semibold text-white uppercase tracking-wider">Top Players</h2>
             </div>
             <table class="w-full">
-                <thead class="bg-gray-700/50">
+                <thead class="bg-white/3">
                     <tr>
                         <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase">#</th>
                         <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase">Player</th>
@@ -325,9 +325,9 @@
                         <th class="px-4 py-2 text-right text-xs font-medium text-gray-400 uppercase">K/D</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-700">
+                <tbody class="divide-y divide-white/5">
                     @forelse($topPlayers as $index => $player)
-                    <tr class="hover:bg-gray-700/30">
+                    <tr class="hover:bg-white/5">
                         <td class="px-4 py-2 text-gray-400">{{ $index + 1 }}</td>
                         <td class="px-4 py-2">
                             <a href="{{ route('admin.game-stats.player', $player->player_uuid) }}" class="text-white hover:text-green-400 transition">
@@ -350,22 +350,22 @@
         </div>
 
         {{-- Recent Sessions --}}
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl overflow-hidden">
-            <div class="px-4 py-3 border-b border-gray-700 flex items-center justify-between">
-                <h2 class="text-lg font-semibold text-white">Recent Sessions</h2>
+        <div class="glass-card rounded-xl overflow-hidden">
+            <div class="px-4 py-3 border-b border-white/5 flex items-center justify-between">
+                <h2 class="text-sm font-semibold text-white uppercase tracking-wider">Recent Sessions</h2>
                 <a href="{{ route('admin.game-stats.sessions') }}" class="text-sm text-green-400 hover:text-green-300">View all</a>
             </div>
             <table class="w-full">
-                <thead class="bg-gray-700/50">
+                <thead class="bg-white/3">
                     <tr>
                         <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase">Time</th>
                         <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase">Player</th>
                         <th class="px-4 py-2 text-center text-xs font-medium text-gray-400 uppercase">Platform</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-700">
+                <tbody class="divide-y divide-white/5">
                     @forelse($recentSessions as $session)
-                    <tr class="hover:bg-gray-700/30">
+                    <tr class="hover:bg-white/5">
                         <td class="px-4 py-2 text-sm text-gray-400">{{ \Carbon\Carbon::parse($session->occurred_at)->diffForHumans() }}</td>
                         <td class="px-4 py-2 text-white">{{ $session->player_name }}</td>
                         <td class="px-4 py-2 text-center">
@@ -383,13 +383,13 @@
     </div>
 
     {{-- Recent Kill Events --}}
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl overflow-hidden">
-        <div class="px-4 py-3 border-b border-gray-700 flex items-center justify-between">
-            <h2 class="text-lg font-semibold text-white">Recent Kill Events</h2>
+    <div class="glass-card rounded-xl overflow-hidden">
+        <div class="px-4 py-3 border-b border-white/5 flex items-center justify-between">
+            <h2 class="text-sm font-semibold text-white uppercase tracking-wider">Recent Kill Events</h2>
             <a href="{{ route('admin.game-stats.kills') }}" class="text-sm text-green-400 hover:text-green-300">View all</a>
         </div>
         <table class="w-full">
-            <thead class="bg-gray-700/50">
+            <thead class="bg-white/3">
                 <tr>
                     <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase">Time</th>
                     <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase">Killer</th>
@@ -398,9 +398,9 @@
                     <th class="px-4 py-2 text-center text-xs font-medium text-gray-400 uppercase">Distance</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-gray-700">
+            <tbody class="divide-y divide-white/5">
                 @forelse($recentKillEvents as $kill)
-                <tr class="hover:bg-gray-700/30">
+                <tr class="hover:bg-white/5">
                     <td class="px-4 py-2 text-sm text-gray-400">{{ \Carbon\Carbon::parse($kill->killed_at)->diffForHumans() }}</td>
                     <td class="px-4 py-2">
                         <span class="text-green-400 font-medium">{{ $kill->killer_name }}</span>
@@ -413,7 +413,7 @@
                             @if(isset($weaponImages[$kill->weapon_name]))
                             <img src="{{ Storage::url($weaponImages[$kill->weapon_name]) }}" alt="{{ $kill->weapon_name }}" class="h-6 w-auto object-contain">
                             @endif
-                            <span class="px-2 py-1 bg-gray-700 text-gray-300 text-xs rounded">{{ $kill->weapon_name }}</span>
+                            <span class="px-2 py-1 bg-white/5 text-gray-300 text-xs rounded">{{ $kill->weapon_name }}</span>
                         </div>
                     </td>
                     <td class="px-4 py-2">
@@ -436,8 +436,8 @@
 
     {{-- Latest Server Status --}}
     @if($latestServerStatus)
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
-        <h2 class="text-lg font-semibold text-white mb-4">Latest Server Status</h2>
+    <div class="glass-card rounded-xl p-6">
+        <h2 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">Latest Server Status</h2>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div>
                 <p class="text-sm text-gray-400">Server ID</p>

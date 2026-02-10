@@ -8,14 +8,14 @@
     </div>
     <div class="space-y-8">
         {{-- Overview --}}
-        <div class="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+        <div class="glass-card rounded-xl p-6">
             <h2 class="text-xl font-bold text-green-500 mb-4">Overview</h2>
             <p class="text-gray-300">
                 This privacy policy explains what data we collect when you use our website and game servers, and how that data is handled. We are a community-run project, not a corporation -- we keep things simple and only collect what we need to run the site.
             </p>
         </div>
         {{-- Steam Data --}}
-        <div class="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+        <div class="glass-card rounded-xl p-6">
             <h2 class="text-xl font-bold text-green-500 mb-4">Steam Authentication</h2>
             <p class="text-gray-300 mb-4">
                 When you log in through Steam, we receive the following information from your public Steam profile:
@@ -39,7 +39,7 @@
             </p>
         </div>
         {{-- Game Data --}}
-        <div class="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+        <div class="glass-card rounded-xl p-6">
             <h2 class="text-xl font-bold text-green-500 mb-4">Game Data Collection</h2>
             <p class="text-gray-300 mb-4">
                 When you play on our tracked Arma Reforger servers, we automatically collect gameplay data including:
@@ -71,7 +71,7 @@
             </p>
         </div>
         {{-- Two-Factor Authentication --}}
-        <div class="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+        <div class="glass-card rounded-xl p-6">
             <h2 class="text-xl font-bold text-green-500 mb-4">Two-Factor Authentication</h2>
             <p class="text-gray-300 mb-4">
                 If you choose to enable two-factor authentication (2FA), we store the following additional data:
@@ -95,7 +95,7 @@
             </p>
         </div>
         {{-- Cookies --}}
-        <div class="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+        <div class="glass-card rounded-xl p-6">
             <h2 class="text-xl font-bold text-green-500 mb-4">Cookies</h2>
             <p class="text-gray-300 mb-4">
                 We use cookies for the following purposes:
@@ -115,7 +115,7 @@
             </p>
         </div>
         {{-- Data Storage --}}
-        <div class="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+        <div class="glass-card rounded-xl p-6">
             <h2 class="text-xl font-bold text-green-500 mb-4">Data Storage & Security</h2>
             <p class="text-gray-300 mb-4">
                 Your data is stored on our servers and backed up regularly. We use standard security practices to protect your information, including:
@@ -143,7 +143,7 @@
             </p>
         </div>
         {{-- Your Rights --}}
-        <div class="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+        <div class="glass-card rounded-xl p-6">
             <h2 class="text-xl font-bold text-green-500 mb-4">Your Rights</h2>
             <p class="text-gray-300 mb-4">
                 Under applicable privacy laws (including the EU General Data Protection Regulation and US state privacy laws such as the CCPA), you have the following rights:
@@ -176,14 +176,14 @@
             </ul>
         </div>
         {{-- Data Removal --}}
-        <div class="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+        <div class="glass-card rounded-xl p-6">
             <h2 class="text-xl font-bold text-green-500 mb-4">Data Removal</h2>
             <p class="text-gray-300">
                 If you would like your account and associated data removed, please contact a server admin on Discord. We will delete your account information upon request. Note that anonymized game statistics (such as aggregate server stats) may be retained.
             </p>
         </div>
         {{-- Changes --}}
-        <div class="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+        <div class="glass-card rounded-xl p-6">
             <h2 class="text-xl font-bold text-green-500 mb-4">Changes to This Policy</h2>
             <p class="text-gray-300">
                 We may update this privacy policy from time to time. Any changes will be reflected on this page with an updated date below. Continued use of the site after changes constitutes acceptance of the updated policy.

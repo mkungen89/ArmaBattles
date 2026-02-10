@@ -10,11 +10,11 @@
     </div>
 
     {{-- Filters --}}
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-4">
+    <div class="glass-card rounded-xl p-4">
         <form action="{{ route('admin.audit-log') }}" method="GET" class="flex flex-wrap gap-4 items-end">
             <div>
                 <label class="block text-xs text-gray-500 mb-1">Action</label>
-                <select name="action" class="bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
+                <select name="action" class="bg-white/5 border-white/10 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
                     <option value="">All Actions</option>
                     @foreach($actions as $action)
                     <option value="{{ $action }}" {{ request('action') === $action ? 'selected' : '' }}>{{ $action }}</option>
@@ -23,7 +23,7 @@
             </div>
             <div>
                 <label class="block text-xs text-gray-500 mb-1">User</label>
-                <select name="user_id" class="bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
+                <select name="user_id" class="bg-white/5 border-white/10 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
                     <option value="">All Users</option>
                     @foreach($users as $user)
                     <option value="{{ $user->id }}" {{ request('user_id') == $user->id ? 'selected' : '' }}>{{ $user->name }}</option>
@@ -32,21 +32,21 @@
             </div>
             <div>
                 <label class="block text-xs text-gray-500 mb-1">From</label>
-                <input type="date" name="date_from" value="{{ request('date_from') }}" class="bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
+                <input type="date" name="date_from" value="{{ request('date_from') }}" class="bg-white/5 border-white/10 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
             </div>
             <div>
                 <label class="block text-xs text-gray-500 mb-1">To</label>
-                <input type="date" name="date_to" value="{{ request('date_to') }}" class="bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
+                <input type="date" name="date_to" value="{{ request('date_to') }}" class="bg-white/5 border-white/10 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
             </div>
             <div>
                 <label class="block text-xs text-gray-500 mb-1">Search</label>
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="Search action..." class="bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Search action..." class="bg-white/5 border-white/10 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
             </div>
             <button type="submit" class="px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg transition">
                 Filter
             </button>
             @if(request()->hasAny(['action', 'user_id', 'date_from', 'date_to', 'search']))
-            <a href="{{ route('admin.audit-log') }}" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition">
+            <a href="{{ route('admin.audit-log') }}" class="px-4 py-2 bg-white/5 hover:bg-white/10 text-white rounded-xl transition">
                 Clear
             </a>
             @endif
@@ -57,9 +57,9 @@
     </div>
 
     {{-- Audit Log Table --}}
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl overflow-hidden">
+    <div class="glass-card rounded-xl overflow-hidden">
         <table class="w-full">
-            <thead class="bg-gray-700/50">
+            <thead class="bg-white/3">
                 <tr>
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Time</th>
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">User</th>
@@ -69,9 +69,9 @@
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Details</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-gray-700">
+            <tbody class="divide-y divide-white/5">
                 @forelse($logs as $log)
-                <tr class="hover:bg-gray-700/30">
+                <tr class="hover:bg-white/3">
                     <td class="px-4 py-3 text-sm text-gray-400 whitespace-nowrap" title="{{ $log->created_at->format('M j, Y g:i:s A') }}">
                         {{ $log->created_at->diffForHumans() }}
                     </td>
@@ -95,7 +95,7 @@
                                 str_contains($log->action, 'delete') || str_contains($log->action, 'destroy') || str_contains($log->action, 'reject') || str_contains($log->action, 'disband') => 'bg-red-500/20 text-red-400',
                                 str_contains($log->action, 'create') || str_contains($log->action, 'store') => 'bg-blue-500/20 text-blue-400',
                                 str_contains($log->action, 'update') || str_contains($log->action, 'edit') => 'bg-yellow-500/20 text-yellow-400',
-                                default => 'bg-gray-700 text-gray-400',
+                                default => 'bg-white/5 text-gray-400',
                             };
                         @endphp
                         <span class="px-2 py-1 text-xs rounded-full {{ $actionColor }}">
@@ -122,7 +122,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                                 </svg>
                             </summary>
-                            <pre class="mt-2 p-2 bg-gray-900/50 border border-gray-700 rounded-lg text-xs text-gray-300 overflow-x-auto max-w-xs">{{ json_encode($log->metadata, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) }}</pre>
+                            <pre class="mt-2 p-2 bg-gray-900/50 border border-white/5 rounded-lg text-xs text-gray-300 overflow-x-auto max-w-xs">{{ json_encode($log->metadata, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) }}</pre>
                         </details>
                         @else
                         <span class="text-gray-500 text-xs">-</span>

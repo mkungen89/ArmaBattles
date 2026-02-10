@@ -11,7 +11,7 @@
         <h2 class="text-2xl font-bold text-green-500">Getting Started</h2>
         <div class="space-y-3" x-data="{ open: null }">
             {{-- Q1 --}}
-            <div class="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl">
+            <div class="glass-card rounded-xl">
                 <button @click="open = open === 1 ? null : 1" class="w-full flex items-center justify-between p-6 text-left">
                     <span class="font-semibold text-white">What is this community about?</span>
                     <svg class="w-5 h-5 text-green-500 transition-transform duration-200" :class="open === 1 ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -23,7 +23,7 @@
                 </div>
             </div>
             {{-- Q2 --}}
-            <div class="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl">
+            <div class="glass-card rounded-xl">
                 <button @click="open = open === 2 ? null : 2" class="w-full flex items-center justify-between p-6 text-left">
                     <span class="font-semibold text-white">How do I create an account?</span>
                     <svg class="w-5 h-5 text-green-500 transition-transform duration-200" :class="open === 2 ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -40,7 +40,7 @@
                 </div>
             </div>
             {{-- Q3 --}}
-            <div class="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl">
+            <div class="glass-card rounded-xl">
                 <button @click="open = open === 3 ? null : 3" class="w-full flex items-center justify-between p-6 text-left">
                     <span class="font-semibold text-white">Is it free to join?</span>
                     <svg class="w-5 h-5 text-green-500 transition-transform duration-200" :class="open === 3 ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -58,7 +58,7 @@
         <h2 class="text-2xl font-bold text-green-500">Player Stats & Linking Your Account</h2>
         <div class="space-y-3" x-data="{ open: null }">
             {{-- Q4 --}}
-            <div class="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl">
+            <div class="glass-card rounded-xl">
                 <button @click="open = open === 1 ? null : 1" class="w-full flex items-center justify-between p-6 text-left">
                     <span class="font-semibold text-white">What is a Player UUID and why do I need to link it?</span>
                     <svg class="w-5 h-5 text-green-500 transition-transform duration-200" :class="open === 1 ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -70,7 +70,7 @@
                 </div>
             </div>
             {{-- Q5 --}}
-            <div class="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl">
+            <div class="glass-card rounded-xl">
                 <button @click="open = open === 2 ? null : 2" class="w-full flex items-center justify-between p-6 text-left">
                     <span class="font-semibold text-white">How do I find my Arma Reforger UUID?</span>
                     <svg class="w-5 h-5 text-green-500 transition-transform duration-200" :class="open === 2 ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -78,11 +78,11 @@
                     </svg>
                 </button>
                 <div x-show="open === 2" x-collapse x-cloak class="px-6 pb-6 text-gray-300">
-                    Your UUID can be found in your Arma Reforger profile or by asking a server admin. It is a long string of characters that looks something like <code class="bg-gray-700 px-2 py-0.5 rounded text-green-400 text-sm">a1b2c3d4-e5f6-7890-abcd-ef1234567890</code>. You only need to link it once.
+                    Your UUID can be found in your Arma Reforger profile or by asking a server admin. It is a long string of characters that looks something like <code class="bg-white/5 px-2 py-0.5 rounded text-green-400 text-sm">a1b2c3d4-e5f6-7890-abcd-ef1234567890</code>. You only need to link it once.
                 </div>
             </div>
             {{-- Q6 --}}
-            <div class="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl">
+            <div class="glass-card rounded-xl">
                 <button @click="open = open === 3 ? null : 3" class="w-full flex items-center justify-between p-6 text-left">
                     <span class="font-semibold text-white">How are stats tracked?</span>
                     <svg class="w-5 h-5 text-green-500 transition-transform duration-200" :class="open === 3 ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -100,7 +100,7 @@
         <h2 class="text-2xl font-bold text-green-500">Tournaments</h2>
         <div class="space-y-3" x-data="{ open: null }">
             {{-- Q7 --}}
-            <div class="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl">
+            <div class="glass-card rounded-xl">
                 <button @click="open = open === 1 ? null : 1" class="w-full flex items-center justify-between p-6 text-left">
                     <span class="font-semibold text-white">How do I register for a tournament?</span>
                     <svg class="w-5 h-5 text-green-500 transition-transform duration-200" :class="open === 1 ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -112,7 +112,7 @@
                 </div>
             </div>
             {{-- Q8 --}}
-            <div class="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl">
+            <div class="glass-card rounded-xl">
                 <button @click="open = open === 2 ? null : 2" class="w-full flex items-center justify-between p-6 text-left">
                     <span class="font-semibold text-white">What tournament formats are available?</span>
                     <svg class="w-5 h-5 text-green-500 transition-transform duration-200" :class="open === 2 ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -124,7 +124,7 @@
                 </div>
             </div>
             {{-- Q9 --}}
-            <div class="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl">
+            <div class="glass-card rounded-xl">
                 <button @click="open = open === 3 ? null : 3" class="w-full flex items-center justify-between p-6 text-left">
                     <span class="font-semibold text-white">How does match check-in work?</span>
                     <svg class="w-5 h-5 text-green-500 transition-transform duration-200" :class="open === 3 ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -142,7 +142,7 @@
         <h2 class="text-2xl font-bold text-green-500">Platoons</h2>
         <div class="space-y-3" x-data="{ open: null }">
             {{-- Q10 --}}
-            <div class="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl">
+            <div class="glass-card rounded-xl">
                 <button @click="open = open === 1 ? null : 1" class="w-full flex items-center justify-between p-6 text-left">
                     <span class="font-semibold text-white">How do I create or join a platoon?</span>
                     <svg class="w-5 h-5 text-green-500 transition-transform duration-200" :class="open === 1 ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -154,7 +154,7 @@
                 </div>
             </div>
             {{-- Q11 --}}
-            <div class="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl">
+            <div class="glass-card rounded-xl">
                 <button @click="open = open === 2 ? null : 2" class="w-full flex items-center justify-between p-6 text-left">
                     <span class="font-semibold text-white">Can I be in multiple platoons?</span>
                     <svg class="w-5 h-5 text-green-500 transition-transform duration-200" :class="open === 2 ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -166,7 +166,7 @@
                 </div>
             </div>
             {{-- Q12 --}}
-            <div class="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl">
+            <div class="glass-card rounded-xl">
                 <button @click="open = open === 3 ? null : 3" class="w-full flex items-center justify-between p-6 text-left">
                     <span class="font-semibold text-white">What roles exist within a platoon?</span>
                     <svg class="w-5 h-5 text-green-500 transition-transform duration-200" :class="open === 3 ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -184,7 +184,7 @@
         <h2 class="text-2xl font-bold text-green-500">General</h2>
         <div class="space-y-3" x-data="{ open: null }">
             {{-- Q13 --}}
-            <div class="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl">
+            <div class="glass-card rounded-xl">
                 <button @click="open = open === 1 ? null : 1" class="w-full flex items-center justify-between p-6 text-left">
                     <span class="font-semibold text-white">How do I report a player?</span>
                     <svg class="w-5 h-5 text-green-500 transition-transform duration-200" :class="open === 1 ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -196,7 +196,7 @@
                 </div>
             </div>
             {{-- Q14 --}}
-            <div class="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl">
+            <div class="glass-card rounded-xl">
                 <button @click="open = open === 2 ? null : 2" class="w-full flex items-center justify-between p-6 text-left">
                     <span class="font-semibold text-white">How do I connect to the server?</span>
                     <svg class="w-5 h-5 text-green-500 transition-transform duration-200" :class="open === 2 ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -208,7 +208,7 @@
                 </div>
             </div>
             {{-- Q15 --}}
-            <div class="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl">
+            <div class="glass-card rounded-xl">
                 <button @click="open = open === 3 ? null : 3" class="w-full flex items-center justify-between p-6 text-left">
                     <span class="font-semibold text-white">I found a bug on the website. What should I do?</span>
                     <svg class="w-5 h-5 text-green-500 transition-transform duration-200" :class="open === 3 ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -222,8 +222,8 @@
         </div>
     </div>
     {{-- Still Need Help --}}
-    <div class="mt-12 bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6 text-center">
-        <h3 class="text-lg font-bold text-white mb-2">Still have questions?</h3>
+    <div class="mt-12 glass-card rounded-xl p-6 text-center">
+        <h3 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">Still have questions?</h3>
         <p class="text-gray-400">Join our Discord server and ask in the support channel. Our community and staff are happy to help.</p>
     </div>
     {{-- Last Updated --}}

@@ -9,14 +9,14 @@
         <div class="flex gap-3">
             <form action="{{ route('admin.vehicles.sync') }}" method="POST" class="inline">
                 @csrf
-                <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition flex items-center gap-2">
+                <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl transition flex items-center gap-2">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
                     </svg>
                     Sync from Distance Data
                 </button>
             </form>
-            <a href="{{ route('admin.vehicles.create') }}" class="px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg transition flex items-center gap-2">
+            <a href="{{ route('admin.vehicles.create') }}" class="px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-xl transition flex items-center gap-2">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                 </svg>
@@ -33,7 +33,7 @@
 
     {{-- Stats Cards --}}
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
+        <div class="glass-card rounded-xl p-6">
             <div class="flex items-center gap-4">
                 <div class="p-3 bg-blue-500/20 rounded-lg">
                     <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -47,7 +47,7 @@
             </div>
         </div>
 
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
+        <div class="glass-card rounded-xl p-6">
             <div class="flex items-center gap-4">
                 <div class="p-3 bg-green-500/20 rounded-lg">
                     <svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -61,7 +61,7 @@
             </div>
         </div>
 
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
+        <div class="glass-card rounded-xl p-6">
             <div class="flex items-center gap-4">
                 <div class="p-3 bg-yellow-500/20 rounded-lg">
                     <svg class="w-6 h-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -77,19 +77,19 @@
     </div>
 
     {{-- Filters --}}
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-4">
+    <div class="glass-card rounded-xl p-4">
         <form action="{{ route('admin.vehicles.index') }}" method="GET" class="flex flex-wrap gap-4">
             <div class="flex-1 min-w-[200px]">
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="Search vehicles..." class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Search vehicles..." class="w-full bg-white/5 border-white/10 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
             </div>
-            <select name="has_image" class="bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
+            <select name="has_image" class="bg-white/5 border-white/10 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
                 <option value="">All Vehicles</option>
                 <option value="yes" {{ request('has_image') === 'yes' ? 'selected' : '' }}>With Image</option>
                 <option value="no" {{ request('has_image') === 'no' ? 'selected' : '' }}>Without Image</option>
             </select>
-            <button type="submit" class="px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg transition">Filter</button>
+            <button type="submit" class="px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-xl transition">Filter</button>
             @if(request()->hasAny(['search', 'has_image']))
-            <a href="{{ route('admin.vehicles.index') }}" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition">Clear</a>
+            <a href="{{ route('admin.vehicles.index') }}" class="px-4 py-2 bg-white/5 hover:bg-white/10 text-white rounded-xl transition">Clear</a>
             @endif
         </form>
     </div>
@@ -97,7 +97,7 @@
     {{-- Vehicles Grid --}}
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         @forelse($vehicles as $vehicle)
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl overflow-hidden hover:border-gray-600 transition">
+        <div class="glass-card rounded-xl overflow-hidden hover:border-white/10 transition">
             <div class="aspect-video bg-gray-900 flex items-center justify-center">
                 @if($vehicle->image_path)
                 <img src="{{ Storage::url($vehicle->image_path) }}" alt="{{ $vehicle->display_name }}" class="w-full h-full object-contain p-4">
@@ -118,7 +118,7 @@
                 </div>
                 @endif
                 <div class="mt-3 flex gap-2">
-                    <a href="{{ route('admin.vehicles.edit', $vehicle) }}" class="flex-1 px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-white text-sm rounded text-center transition">Edit</a>
+                    <a href="{{ route('admin.vehicles.edit', $vehicle) }}" class="flex-1 px-3 py-1.5 bg-white/5 hover:bg-white/10 text-white text-sm rounded text-center transition">Edit</a>
                     <form action="{{ route('admin.vehicles.destroy', $vehicle) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this vehicle?')">
                         @csrf
                         @method('DELETE')
@@ -129,14 +129,14 @@
         </div>
         @empty
         <div class="col-span-full">
-            <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-8 text-center">
+            <div class="glass-card rounded-xl p-8 text-center">
                 <svg class="w-16 h-16 text-gray-600 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M8 7h8m-8 5h8m-4-10v2m0 12v2M5 21h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2z"/>
                 </svg>
                 <p class="text-gray-400 mb-4">No vehicles found. Sync from distance data to populate.</p>
                 <form action="{{ route('admin.vehicles.sync') }}" method="POST" class="inline">
                     @csrf
-                    <button type="submit" class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition">
+                    <button type="submit" class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl transition">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
                         </svg>

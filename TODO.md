@@ -358,7 +358,7 @@
     - `app/Console/Commands/TrackServerStatus.php` (dispatch)
     - `/etc/systemd/system/reverb.service`, nginx config
 
-- [ ] **Live Match Spectator Mode** 🔴
+- [ ] **Live Match Spectator Mode** 🔴 - Future enhancement
   - [ ] Embed Twitch/YouTube streams på match-sidor
   - [ ] Live score overlay med WebSockets
   - [ ] Real-time kill feed för specifik match
@@ -429,20 +429,29 @@
 
 ### B. Competitive & Skill System
 
-- [ ] **Skill Rating System (ELO/Glicko-2)** 🔴
-  - [ ] Skapa `player_ratings` tabell (rating, rd, volatility, games_played)
-  - [ ] Implementera Glicko-2 algoritm
-  - [ ] Beräkna rating efter varje kill/death
-  - [ ] Team rating baserat på genomsnitt
-  - [ ] Ranked leaderboards separat från stats
-  - [ ] Match balancing baserat på ratings
-  - **Commands:**
-    ```bash
-    php artisan make:migration create_player_ratings_table
-    php artisan make:model PlayerRating
-    php artisan make:service RatingCalculationService
-    ```
-  - **Files:** `app/Services/RatingCalculationService.php`
+- [x] **Skill Rating System (ELO/Glicko-2)** 🔴 ✅ **KLART 2026-02-10**
+  - [x] Skapa `player_ratings` tabell (rating, rd, volatility, games_played)
+  - [x] Implementera Glicko-2 algoritm
+  - [x] Beräkna rating efter varje kill/death + objectives
+  - [x] Team rating baserat på genomsnitt
+  - [x] Ranked leaderboards separat från stats
+  - [x] Opt-in system med placement games
+  - [x] Rating decay för inaktivitet
+  - [ ] Match balancing baserat på ratings - Future enhancement
+  - **Implementerat:**
+    - **Database:** `player_ratings`, `rating_history`, `rated_kills_queue` tables
+    - **Services:** `Glicko2Service` (pure math), `RatingCalculationService` (orchestrator)
+    - **Commands:** `ratings:calculate` (every 4h), `ratings:decay` (daily)
+    - **Phantom opponents:** kill=victim's rating, team_kill=LOSS vs own rating, base_capture=1500, heal=1300, supply=1300, vehicle_destroy=1600, building=1200
+    - **Tiers:** Bronze/Silver/Gold/Platinum/Diamond/Master/Elite
+    - **Admin:** `/admin/ranked` dashboard with tier distribution, suspicious players, rating reset
+  - **Files:**
+    - `app/Models/PlayerRating.php`, `app/Models/RatingHistory.php`
+    - `app/Services/Glicko2Service.php`, `app/Services/RatingCalculationService.php`
+    - `app/Console/Commands/CalculateRatings.php`, `app/Console/Commands/DecayRatings.php`
+    - `app/Http/Controllers/RankedController.php`, `app/Http/Controllers/Admin/RankedAdminController.php`
+    - Migrations: `player_ratings`, `rating_history`, `rated_kills_queue` tables
+    - Views: `ranked/index.blade.php`, `ranked/show.blade.php`, `ranked/about.blade.php`, `admin/ranked/*`
 
 - [ ] **Automated Tournament System** 🔴
   - [ ] Auto-start tournaments vid X antal registreringar
@@ -562,7 +571,7 @@
   - [x] Achievement progress bars på profiles - Unearned achievements show progress
   - [x] Rare achievements (< 1% unlock rate) med speciell styling - Rarity system implemented
   - [ ] Achievement points & player levels - Future feature
-  - [ ] "New achievement unlocked!" popup notifications - Future feature
+  - [x] "New achievement unlocked!" popup notifications ✅ **KLART 2026-02-10**
   - [x] Achievement showcase (pin 3 favorites) - Showcase modal with up to 3 pinned achievements
   - **Implementerat:**
     - **Database:** `achievement_progress`, `achievement_showcases` tables
@@ -579,11 +588,26 @@
       - `getRarityColorAttribute()` - Color scheme för rarity tier
       - `getRarityLabelAttribute()` - Human-readable rarity label
     - **CheckAchievements Command:** Updated to call `AchievementProgressService`
+    - **Achievement Unlocked Popup** ✅ **NY 2026-02-10**:
+      - Game-style toast popup (Xbox/PlayStation-style) slides in from bottom-right via WebSocket
+      - GSAP animations: slide-in with back.out easing, glow pulse in achievement color, slide-out on dismiss
+      - CSS shimmer sweep effect (diagonal light sweep across card)
+      - Auto-dismiss after 6 seconds with animated progress bar
+      - Stacks multiple achievements, click navigates to `/achievements`, dismiss (X) button
+      - Extended `NewNotification` event with `metadata` array for achievement icon/name/color
+      - `BroadcastNotificationCreated` listener extracts achievement fields from `achievement_earned` notifications
+      - Fixed `getCategory()` to recognize `achievement_earned` notification type
+      - Respects `prefers-reduced-motion` accessibility preference
   - **Files:**
     - `database/migrations/2026_02_08_163437_add_achievement_progress_tracking.php`
     - `app/Services/AchievementProgressService.php` (ny service)
     - `app/Console/Commands/CheckAchievements.php` (uppdaterad)
     - `resources/views/achievements/index.blade.php` (uppdaterad med progress)
+    - `app/Events/NewNotification.php` (utökad med metadata)
+    - `app/Listeners/BroadcastNotificationCreated.php` (achievement metadata extraction)
+    - `resources/views/layouts/app.blade.php` (popup komponent + category fix)
+    - `resources/js/animations.js` (popup GSAP animationer)
+    - `resources/css/app.css` (achievement shimmer animation)
 
 - [x] **Player Reputation System** 🟡 ✅ **KLART 2026-02-08**
   - [x] +Rep / -Rep voting system (1 vote per 24h)
@@ -1386,7 +1410,7 @@ php artisan make:migration create_player_loadouts_table
 
 ---
 
-**Last Updated:** 2026-02-09
+**Last Updated:** 2026-02-10
 **Test Status:** 116 passing / 10 skipped / 0 failing — 126 total methods ✅
 **Metrics Dashboard:** `/admin/metrics` — Analytics, API Usage, Performance tabs
 **Total Estimated Effort:** 6-12 månader för alla features

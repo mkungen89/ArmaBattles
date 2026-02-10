@@ -7,30 +7,30 @@
     <div class="flex items-center justify-between">
         <h1 class="text-2xl font-bold text-white">Raven Anti-Cheat</h1>
         <div class="flex gap-2">
-            <a href="{{ route('admin.anticheat.events') }}" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition text-sm">View All Events</a>
-            <a href="{{ route('admin.anticheat.stats-history') }}" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition text-sm">Stats History</a>
+            <a href="{{ route('admin.anticheat.events') }}" class="px-4 py-2 bg-white/5 hover:bg-white/10 text-white rounded-xl transition text-sm">View All Events</a>
+            <a href="{{ route('admin.anticheat.stats-history') }}" class="px-4 py-2 bg-white/5 hover:bg-white/10 text-white rounded-xl transition text-sm">Stats History</a>
         </div>
     </div>
 
     {{-- Summary Cards --}}
     <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-4">
+        <div class="glass-card rounded-xl p-4">
             <div class="text-2xl font-bold text-white">{{ number_format($stats['total_events']) }}</div>
             <div class="text-sm text-gray-400">Total Events</div>
         </div>
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-4">
+        <div class="glass-card rounded-xl p-4">
             <div class="text-2xl font-bold text-red-400">{{ number_format($stats['enforcement_actions']) }}</div>
             <div class="text-sm text-gray-400">Enforcement Actions</div>
         </div>
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-4">
+        <div class="glass-card rounded-xl p-4">
             <div class="text-2xl font-bold text-yellow-400">{{ number_format($stats['enforcement_skipped']) }}</div>
             <div class="text-sm text-gray-400">Enforcement Skipped</div>
         </div>
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-4">
+        <div class="glass-card rounded-xl p-4">
             <div class="text-2xl font-bold text-green-400">{{ number_format($stats['events_today']) }}</div>
             <div class="text-sm text-gray-400">Events Today</div>
         </div>
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-4">
+        <div class="glass-card rounded-xl p-4">
             <div class="text-2xl font-bold text-blue-400">{{ number_format($stats['total_stats_snapshots']) }}</div>
             <div class="text-sm text-gray-400">Stats Snapshots</div>
         </div>
@@ -38,11 +38,11 @@
 
     {{-- Live Server Status --}}
     @if($latestStats->count() > 0)
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
-        <h2 class="text-lg font-bold text-white mb-4">Latest Server AC Status</h2>
+    <div class="glass-card rounded-xl p-6">
+        <h2 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">Latest Server AC Status</h2>
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
             @foreach($latestStats as $stat)
-            <div class="bg-gray-700/30 border border-gray-600 rounded-lg p-4">
+            <div class="bg-white/3 border border-white/10 rounded-lg p-4">
                 <div class="flex items-center justify-between mb-3">
                     <span class="text-white font-medium">Server #{{ $stat->server_id }}</span>
                     <span class="text-xs text-gray-400">{{ \Carbon\Carbon::parse($stat->event_time)->diffForHumans() }}</span>
@@ -111,13 +111,13 @@
     @endif
 
     {{-- Recent Events --}}
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl overflow-hidden">
-        <div class="px-4 py-3 border-b border-gray-700 flex items-center justify-between">
-            <h2 class="text-lg font-bold text-white">Recent Events</h2>
+    <div class="glass-card rounded-xl overflow-hidden">
+        <div class="px-4 py-3 border-b border-white/5 flex items-center justify-between">
+            <h2 class="text-sm font-semibold text-white uppercase tracking-wider">Recent Events</h2>
             <a href="{{ route('admin.anticheat.events') }}" class="text-sm text-green-400 hover:text-green-300 transition">View All</a>
         </div>
         <table class="w-full">
-            <thead class="bg-gray-700/50">
+            <thead class="bg-white/3">
                 <tr>
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Time</th>
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Type</th>
@@ -126,7 +126,7 @@
                     <th class="px-4 py-3 text-center text-xs font-medium text-gray-400 uppercase">Server</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-gray-700">
+            <tbody class="divide-y divide-white/5">
                 @forelse($recentEvents as $event)
                 @php
                     $eventTime = $event->event_time ? \Carbon\Carbon::parse($event->event_time) : null;
@@ -140,7 +140,7 @@
                     ];
                     $color = $typeColors[$event->event_type] ?? 'bg-gray-500/20 text-gray-400';
                 @endphp
-                <tr class="hover:bg-gray-700/30">
+                <tr class="hover:bg-white/5">
                     <td class="px-4 py-3">
                         <div class="text-sm text-white">{{ $eventTime?->format('M j, Y') ?? 'N/A' }}</div>
                         <div class="text-xs text-gray-400">{{ $eventTime?->format('H:i:s') ?? '' }}</div>

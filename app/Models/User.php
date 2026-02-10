@@ -264,6 +264,39 @@ class User extends Authenticatable
     }
 
     /**
+     * Get user's competitive rating
+     */
+    public function playerRating(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(PlayerRating::class);
+    }
+
+    /**
+     * Check if user has opted into competitive mode
+     */
+    public function isCompetitive(): bool
+    {
+        return $this->playerRating()->whereNotNull('opted_in_at')->exists();
+    }
+
+    /**
+     * Get formatted rating display string
+     */
+    public function getRatingDisplay(): ?string
+    {
+        $rating = $this->playerRating;
+        if (!$rating || !$rating->opted_in_at) {
+            return null;
+        }
+
+        if (!$rating->is_placed) {
+            return "Placement {$rating->placement_games}/10";
+        }
+
+        return number_format($rating->rating, 0);
+    }
+
+    /**
      * Get user's reputation
      */
     public function reputation(): \Illuminate\Database\Eloquent\Relations\HasOne

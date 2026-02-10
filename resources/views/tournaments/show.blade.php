@@ -2,7 +2,7 @@
 @section('title', $tournament->name)
 @section('content')
     <!-- Header -->
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl overflow-hidden mb-6">
+    <div class="glass-card rounded-xl overflow-hidden mb-6">
         @if($tournament->banner_url)
             <div class="h-48 sm:h-64 bg-cover bg-center relative" style="background-image: url('{{ $tournament->banner_url }}')">
                 <div class="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent"></div>
@@ -32,7 +32,7 @@
                 </div>
                 <div class="flex gap-2">
                     @if($tournament->stream_url)
-                        <a href="{{ $tournament->stream_url }}" target="_blank" rel="noopener noreferrer" class="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-lg transition inline-flex items-center gap-2">
+                        <a href="{{ $tournament->stream_url }}" target="_blank" rel="noopener noreferrer" class="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-xl transition inline-flex items-center gap-2">
                             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                                 <path d="M8 5v14l11-7z"/>
                             </svg>
@@ -40,12 +40,12 @@
                         </a>
                     @endif
                     @if(in_array($tournament->format, ['round_robin', 'swiss']))
-                        <a href="{{ route('tournaments.standings', $tournament) }}" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition">
+                        <a href="{{ route('tournaments.standings', $tournament) }}" class="px-4 py-2 bg-white/5 hover:bg-white/10 text-white rounded-xl transition">
                             Standings
                         </a>
                     @endif
                     @if($tournament->matches()->exists())
-                        <a href="{{ route('tournaments.bracket', $tournament) }}" class="px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg transition">
+                        <a href="{{ route('tournaments.bracket', $tournament) }}" class="px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-xl transition">
                             View Bracket
                         </a>
                     @endif
@@ -58,8 +58,8 @@
         <div class="lg:col-span-2 space-y-6">
             <!-- Description -->
             @if($tournament->description)
-                <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
-                    <h2 class="text-lg font-semibold text-white mb-4">About the tournament</h2>
+                <div class="glass-card rounded-xl p-6">
+                    <h2 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">About the tournament</h2>
                     <div class="prose prose-invert max-w-none text-gray-300">
                         {!! nl2br(e($tournament->description)) !!}
                     </div>
@@ -67,8 +67,8 @@
             @endif
             <!-- Rules -->
             @if($tournament->rules)
-                <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
-                    <h2 class="text-lg font-semibold text-white mb-4">Rules</h2>
+                <div class="glass-card rounded-xl p-6">
+                    <h2 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">Rules</h2>
                     <div class="prose prose-invert max-w-none text-gray-300">
                         {!! nl2br(e($tournament->rules)) !!}
                     </div>
@@ -76,11 +76,11 @@
             @endif
             <!-- Upcoming Matches -->
             @if($upcomingMatches->count() > 0)
-                <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
-                    <h2 class="text-lg font-semibold text-white mb-4">Upcoming matches</h2>
+                <div class="glass-card rounded-xl p-6">
+                    <h2 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">Upcoming matches</h2>
                     <div class="space-y-3">
                         @foreach($upcomingMatches as $match)
-                            <a href="{{ route('tournaments.match', [$tournament, $match]) }}" class="block bg-gray-700/50 rounded-lg p-4 hover:bg-gray-700 transition">
+                            <a href="{{ route('tournaments.match', [$tournament, $match]) }}" class="block bg-white/3 rounded-lg p-4 hover:bg-white/5 transition">
                                 <div class="flex items-center justify-between">
                                     <div class="flex items-center gap-4">
                                         <span class="text-white font-medium">{{ $match->team1?->name ?? 'TBD' }}</span>
@@ -103,11 +103,11 @@
             @endif
             <!-- Recent Results -->
             @if($recentMatches->count() > 0)
-                <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
-                    <h2 class="text-lg font-semibold text-white mb-4">Recent results</h2>
+                <div class="glass-card rounded-xl p-6">
+                    <h2 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">Recent results</h2>
                     <div class="space-y-3">
                         @foreach($recentMatches as $match)
-                            <a href="{{ route('tournaments.match', [$tournament, $match]) }}" class="block bg-gray-700/50 rounded-lg p-4 hover:bg-gray-700 transition">
+                            <a href="{{ route('tournaments.match', [$tournament, $match]) }}" class="block bg-white/3 rounded-lg p-4 hover:bg-white/5 transition">
                                 <div class="flex items-center justify-between">
                                     <div class="flex items-center gap-4">
                                         <span class="font-medium {{ $match->winner_id === $match->team1_id ? 'text-green-400' : 'text-white' }}">
@@ -128,18 +128,18 @@
                 </div>
             @endif
             <!-- Teams -->
-            <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
-                <h2 class="text-lg font-semibold text-white mb-4">
+            <div class="glass-card rounded-xl p-6">
+                <h2 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">
                     Participating platoons ({{ $tournament->approvedTeams->count() }}/{{ $tournament->max_teams }})
                 </h2>
                 @if($tournament->approvedTeams->count() > 0)
                     <div class="grid sm:grid-cols-2 gap-3">
                         @foreach($tournament->approvedTeams as $team)
-                            <a href="{{ route('teams.show', $team) }}" class="flex items-center gap-3 bg-gray-700/50 rounded-lg p-3 hover:bg-gray-700 transition">
+                            <a href="{{ route('teams.show', $team) }}" class="flex items-center gap-3 bg-white/3 rounded-lg p-3 hover:bg-white/5 transition">
                                 @if($team->avatar_url)
                                     <img src="{{ $team->avatar_url }}" alt="{{ $team->name }}" class="w-10 h-10 rounded-lg object-cover">
                                 @else
-                                    <div class="w-10 h-10 rounded-lg bg-gray-600 flex items-center justify-center text-gray-400 font-bold">
+                                    <div class="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-gray-400 font-bold">
                                         {{ strtoupper(substr($team->tag, 0, 2)) }}
                                     </div>
                                 @endif
@@ -161,8 +161,8 @@
         <!-- Sidebar -->
         <div class="space-y-6">
             <!-- Info Card -->
-            <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
-                <h2 class="text-lg font-semibold text-white mb-4">Information</h2>
+            <div class="glass-card rounded-xl p-6">
+                <h2 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">Information</h2>
                 <dl class="space-y-4">
                     <div>
                         <dt class="text-sm text-gray-400">Format</dt>
@@ -223,8 +223,8 @@
                     $registration = $userTeam ? $tournament->registrations()->where('team_id', $userTeam->id)->first() : null;
                 @endphp
                 @if($tournament->isRegistrationOpen() && $userTeam)
-                    <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
-                        <h2 class="text-lg font-semibold text-white mb-4">Registration</h2>
+                    <div class="glass-card rounded-xl p-6">
+                        <h2 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">Registration</h2>
                         @if($registration)
                             <div class="mb-4">
                                 <span class="px-3 py-1 text-sm rounded-full {{ $registration->status_badge }}">
@@ -237,7 +237,7 @@
                             @if(in_array($registration->status, ['pending', 'approved']))
                                 <form action="{{ route('teams.withdraw', [$userTeam, $tournament]) }}" method="POST">
                                     @csrf
-                                    <button type="submit" class="w-full px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded-lg transition" onclick="return confirm('Are you sure you want to withdraw?')">
+                                    <button type="submit" class="w-full px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded-xl transition" onclick="return confirm('Are you sure you want to withdraw?')">
                                         Withdraw registration
                                     </button>
                                 </form>
@@ -246,7 +246,7 @@
                             <form action="{{ route('teams.register', $userTeam) }}" method="POST">
                                 @csrf
                                 <input type="hidden" name="tournament_id" value="{{ $tournament->id }}">
-                                <button type="submit" class="w-full px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg transition font-medium">
+                                <button type="submit" class="w-full px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-xl transition font-medium">
                                     Register {{ $userTeam->name }}
                                 </button>
                             </form>
@@ -264,20 +264,20 @@
                         @endif
                     </div>
                 @elseif(!$userTeam && $tournament->isRegistrationOpen())
-                    <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
-                        <h2 class="text-lg font-semibold text-white mb-4">Registration</h2>
+                    <div class="glass-card rounded-xl p-6">
+                        <h2 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">Registration</h2>
                         <p class="text-gray-400 text-sm mb-4">You must be a member of a platoon to register.</p>
-                        <a href="{{ route('teams.create') }}" class="block w-full px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg transition text-center font-medium">
+                        <a href="{{ route('teams.create') }}" class="block w-full px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-xl transition text-center font-medium">
                             Create a platoon
                         </a>
                     </div>
                 @endif
             @else
                 @if($tournament->isRegistrationOpen())
-                    <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
-                        <h2 class="text-lg font-semibold text-white mb-4">Registration</h2>
+                    <div class="glass-card rounded-xl p-6">
+                        <h2 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">Registration</h2>
                         <p class="text-gray-400 text-sm mb-4">Log in to register your platoon.</p>
-                        <a href="{{ route('auth.steam') }}" class="block w-full px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition text-center">
+                        <a href="{{ route('auth.steam') }}" class="block w-full px-4 py-2 bg-white/5 hover:bg-white/10 text-white rounded-xl transition text-center">
                             Login with Steam
                         </a>
                     </div>
@@ -286,7 +286,7 @@
             <!-- Winner Card -->
             @if($tournament->winner)
                 <div class="bg-gradient-to-br from-yellow-500/20 to-orange-500/20 border border-yellow-500/30 rounded-xl p-6">
-                    <h2 class="text-lg font-semibold text-yellow-400 mb-4 flex items-center gap-2">
+                    <h2 class="text-sm font-semibold text-yellow-400 uppercase tracking-wider mb-3 flex items-center gap-2">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
                         </svg>

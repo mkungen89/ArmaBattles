@@ -8,14 +8,14 @@
     </div>
     <div class="space-y-8">
         {{-- Acceptance --}}
-        <div class="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+        <div class="glass-card rounded-xl p-6">
             <h2 class="text-xl font-bold text-green-500 mb-4">1. Acceptance of Terms</h2>
             <p class="text-gray-300">
                 By accessing this website or connecting to our game servers, you agree to be bound by these terms of service. If you do not agree with any part of these terms, you should not use our services. These terms apply to all users, including visitors, registered members, and tournament participants.
             </p>
         </div>
         {{-- Accounts --}}
-        <div class="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+        <div class="glass-card rounded-xl p-6">
             <h2 class="text-xl font-bold text-green-500 mb-4">2. Accounts</h2>
             <ul class="space-y-3 text-gray-300">
                 <li class="flex items-start gap-3">
@@ -37,7 +37,7 @@
             </ul>
         </div>
         {{-- Fair Play --}}
-        <div class="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+        <div class="glass-card rounded-xl p-6">
             <h2 class="text-xl font-bold text-green-500 mb-4">3. Fair Play</h2>
             <p class="text-gray-300 mb-4">
                 All players on our servers are expected to play fairly. The following are strictly prohibited:
@@ -62,14 +62,14 @@
             </ul>
         </div>
         {{-- Server Rules --}}
-        <div class="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+        <div class="glass-card rounded-xl p-6">
             <h2 class="text-xl font-bold text-green-500 mb-4">4. Server Rules</h2>
             <p class="text-gray-300">
                 In addition to these terms, all players must follow our <a href="{{ route('rules') }}" class="text-green-400 hover:text-green-300 underline">Server Rules</a>. Server-specific rules are enforced by our admin and moderator team. Violation of server rules may result in warnings, kicks, temporary bans, or permanent bans at admin discretion.
             </p>
         </div>
         {{-- Tournaments --}}
-        <div class="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+        <div class="glass-card rounded-xl p-6">
             <h2 class="text-xl font-bold text-green-500 mb-4">5. Tournaments & Competitions</h2>
             <ul class="space-y-3 text-gray-300">
                 <li class="flex items-start gap-3">
@@ -91,7 +91,7 @@
             </ul>
         </div>
         {{-- Bans & Enforcement --}}
-        <div class="bg-gray-800/50 backdrop-blur-sm border border-red-500/30 rounded-xl p-6">
+        <div class="glass-card border border-red-500/30 rounded-xl p-6">
             <h2 class="text-xl font-bold text-red-400 mb-4">6. Bans & Enforcement</h2>
             <ul class="space-y-3 text-gray-300">
                 <li class="flex items-start gap-3">
@@ -113,21 +113,21 @@
             </ul>
         </div>
         {{-- Content --}}
-        <div class="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+        <div class="glass-card rounded-xl p-6">
             <h2 class="text-xl font-bold text-green-500 mb-4">7. User Content</h2>
             <p class="text-gray-300">
                 Any content you submit through our services (chat messages, platoon descriptions, etc.) must not contain illegal material, hate speech, explicit content, or personal information of others. We reserve the right to remove any content that violates these guidelines without notice.
             </p>
         </div>
         {{-- Liability --}}
-        <div class="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+        <div class="glass-card rounded-xl p-6">
             <h2 class="text-xl font-bold text-green-500 mb-4">8. Limitation of Liability</h2>
             <p class="text-gray-300">
                 This is a community-run project provided as-is. We make no guarantees about server uptime, data preservation, or service availability. We are not liable for any loss of data, stats, or progress. We do our best to keep things running smoothly, but stuff happens.
             </p>
         </div>
         {{-- Changes --}}
-        <div class="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+        <div class="glass-card rounded-xl p-6">
             <h2 class="text-xl font-bold text-green-500 mb-4">9. Changes to These Terms</h2>
             <p class="text-gray-300">
                 We may update these terms at any time. Changes take effect immediately when posted on this page. Continued use of our services after changes constitutes acceptance of the updated terms. We will make reasonable efforts to announce significant changes on Discord.

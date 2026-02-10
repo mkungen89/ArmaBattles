@@ -10,14 +10,14 @@
         {{-- Export Buttons --}}
         <div class="flex gap-2">
             <a href="{{ route('export.leaderboard.csv', ['type' => $sort]) }}"
-               class="px-4 py-2 bg-green-600/80 hover:bg-green-500 text-white text-sm rounded-lg transition flex items-center gap-2">
+               class="px-4 py-2 bg-green-600/80 hover:bg-green-500 text-white text-sm rounded-xl transition flex items-center gap-2">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
                 </svg>
                 Export CSV
             </a>
             <a href="{{ route('export.leaderboard.json', ['type' => $sort]) }}"
-               class="px-4 py-2 bg-blue-600/80 hover:bg-blue-500 text-white text-sm rounded-lg transition flex items-center gap-2">
+               class="px-4 py-2 bg-blue-600/80 hover:bg-blue-500 text-white text-sm rounded-xl transition flex items-center gap-2">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                 </svg>
@@ -33,7 +33,7 @@
         @endphp
         @foreach($periods as $key => $label)
         <a href="{{ route('leaderboard', ['sort' => $sort, 'period' => $key]) }}"
-           class="px-4 py-2 rounded-lg text-sm font-medium transition {{ ($period ?? 'all') === $key ? 'bg-green-600 text-white' : 'bg-gray-700/50 text-gray-400 border border-gray-600 hover:text-white' }}">
+           class="px-4 py-2 rounded-xl text-sm font-medium transition {{ ($period ?? 'all') === $key ? 'bg-green-600 text-white' : 'bg-white/3 text-gray-400 border border-white/5 hover:text-white' }}">
             {{ $label }}
         </a>
         @endforeach
@@ -56,17 +56,17 @@
         @endphp
         @foreach($filters as $key => $label)
         <a href="{{ route('leaderboard', ['sort' => $key, 'period' => $period ?? 'all']) }}"
-           class="px-3 py-1.5 rounded-lg text-sm font-medium transition {{ $sort === $key ? 'bg-green-500/20 text-green-400 border border-green-500/50' : 'bg-gray-700/50 text-gray-400 border border-gray-600 hover:text-white' }}">
+           class="px-3 py-1.5 rounded-xl text-sm font-medium transition {{ $sort === $key ? 'bg-green-500/20 text-green-400 border border-green-500/50' : 'bg-white/3 text-gray-400 border border-white/5 hover:text-white' }}">
             {{ $label }}
         </a>
         @endforeach
     </div>
 
     {{-- Leaderboard Table --}}
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl overflow-hidden" x-data="leaderboardScroll()" x-init="init()">
+    <div class="glass-card rounded-xl overflow-hidden" x-data="leaderboardScroll()" x-init="init()">
         <div class="overflow-x-auto">
         <table class="w-full">
-            <thead class="bg-gray-700/50">
+            <thead class="bg-white/3">
                 <tr>
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase w-16">Rank</th>
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Player</th>
@@ -100,14 +100,14 @@
                     </th>
                 </tr>
             </thead>
-            <tbody x-ref="tableBody" class="divide-y divide-gray-700/50">
+            <tbody x-ref="tableBody" class="divide-y divide-white/5">
                 @forelse($players as $index => $player)
                 @php
                     $rank = ($players->currentPage() - 1) * $players->perPage() + $index + 1;
                     $kd = $player->deaths > 0 ? round($player->kills / $player->deaths, 2) : $player->kills;
                     $user = $linkedUsers[$player->player_uuid] ?? null;
                 @endphp
-                <tr class="{{ $loop->odd ? 'bg-gray-800/30' : 'bg-gray-800/10' }} hover:bg-gray-700/30 transition-colors">
+                <tr class="{{ $loop->odd ? 'bg-gray-800/30' : 'bg-gray-800/10' }} hover:bg-white/5 transition-colors">
                     <td class="px-4 py-3">
                         @if($rank === 1)
                         <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-yellow-500/20 text-yellow-400 font-bold text-sm">1</span>
@@ -127,7 +127,7 @@
                                     {{ $player->player_name }}
                                 </a>
                             @else
-                                <div class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center">
+                                <div class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center">
                                     <svg class="w-4 h-4 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
                                     </svg>
@@ -161,7 +161,7 @@
         </div>
 
         {{-- Skeleton loading rows --}}
-        <div x-show="loadingMore" class="divide-y divide-gray-700/50">
+        <div x-show="loadingMore" class="divide-y divide-white/5">
             <template x-for="i in 5" :key="'lb-skel-'+i">
                 <div class="flex items-center px-4 py-3 gap-4">
                     <div class="skeleton w-8 h-8 rounded-full flex-shrink-0"></div>
@@ -234,7 +234,7 @@ function leaderboardScroll() {
                 json.data.forEach((p) => {
                     this.rowCount++;
                     const tr = document.createElement('tr');
-                    tr.className = (this.rowCount % 2 === 1 ? 'bg-gray-800/30' : 'bg-gray-800/10') + ' hover:bg-gray-700/30 transition-colors';
+                    tr.className = (this.rowCount % 2 === 1 ? 'bg-gray-800/30' : 'bg-gray-800/10') + ' hover:bg-white/5 transition-colors';
                     tr.innerHTML = this.buildRowHTML(p);
                     this.$refs.tableBody.appendChild(tr);
                 });
@@ -258,7 +258,7 @@ function leaderboardScroll() {
 
             const avatarHtml = p.avatar
                 ? '<img src="' + this.escapeHtml(p.avatar) + '" alt="" class="w-8 h-8 rounded-full blur-up loaded" loading="lazy">'
-                : '<div class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center"><svg class="w-4 h-4 text-gray-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/></svg></div>';
+                : '<div class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center"><svg class="w-4 h-4 text-gray-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/></svg></div>';
 
             const nameHtml = p.profile_url
                 ? '<a href="' + this.escapeHtml(p.profile_url) + '" class="text-white font-medium hover:text-green-400 transition">' + this.escapeHtml(p.player_name) + '</a>'

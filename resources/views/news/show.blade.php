@@ -23,7 +23,7 @@
             @if($article->isOfficial())
                 <span class="inline-flex items-center px-2 py-1 bg-blue-500/20 text-blue-400 rounded text-xs font-bold uppercase">Official</span>
                 @if($article->category)
-                    <span class="inline-flex items-center px-2 py-1 bg-gray-700 text-gray-300 rounded text-xs font-medium uppercase">{{ $article->category }}</span>
+                    <span class="inline-flex items-center px-2 py-1 bg-white/5 text-gray-300 rounded text-xs font-medium uppercase">{{ $article->category }}</span>
                 @endif
             @else
                 <span class="inline-flex items-center px-2 py-1 bg-green-500/15 text-green-400 rounded text-xs font-bold uppercase">Community</span>
@@ -54,7 +54,7 @@
         </div>
     @endif
     {{-- Article Content --}}
-    <div class="article-content mb-8 bg-gray-800/30 border border-gray-700/50 rounded-xl p-6 md:p-8">
+    <div class="article-content mb-8 glass-card rounded-xl p-6 md:p-8">
         {!! $article->content !!}
     </div>
     <style>
@@ -94,13 +94,13 @@
                 .then(r => r.json())
                 .then(data => { hoorahed = data.hoorahed; count = data.count; })
             "
-            :class="hoorahed ? 'bg-green-600 hover:bg-green-700 text-white' : 'bg-gray-700 hover:bg-gray-600 text-gray-300'"
-            class="inline-flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all duration-200">
+            :class="hoorahed ? 'bg-green-600 hover:bg-green-700 text-white' : 'bg-white/5 hover:bg-white/10 text-gray-300'"
+            class="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all duration-200">
                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg>
                 <span x-text="hoorahed ? 'Hoorahed!' : 'Hoorah!'"></span>
             </button>
         @else
-            <a href="{{ route('login') }}" class="inline-flex items-center gap-2 px-6 py-3 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-lg font-semibold transition">
+            <a href="{{ route('login') }}" class="inline-flex items-center gap-2 px-6 py-3 bg-white/5 hover:bg-white/10 text-gray-300 rounded-xl font-semibold transition">
                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg>
                 Hoorah!
             </a>
@@ -108,7 +108,7 @@
         <span class="text-gray-400 text-sm" x-text="count + ' Hoorah' + (count !== 1 ? 's' : '')"></span>
     </div>
     {{-- Comments Section --}}
-    <div class="border-t border-gray-700 pt-8">
+    <div class="border-t border-white/5 pt-8">
         <h2 class="text-xl font-bold text-white mb-6">Comments ({{ $article->comments->count() }})</h2>
         {{-- Comment Form --}}
         @auth
@@ -116,25 +116,25 @@
                 @csrf
                 <div class="mb-3">
                     <textarea name="body" rows="3" maxlength="2000" required
-                        class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:border-green-500 focus:ring-1 focus:ring-green-500 resize-none"
+                        class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:border-green-500 focus:ring-1 focus:ring-green-500 resize-none"
                         placeholder="Write a comment...">{{ old('body') }}</textarea>
                     @error('body')
                         <p class="text-red-400 text-sm mt-1">{{ $message }}</p>
                     @enderror
                 </div>
-                <button type="submit" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium transition">
+                <button type="submit" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-xl text-sm font-medium transition">
                     Post Comment
                 </button>
             </form>
         @else
-            <div class="mb-8 p-4 bg-gray-800/50 border border-gray-700 rounded-lg text-center">
+            <div class="mb-8 p-4 glass-card rounded-lg text-center">
                 <a href="{{ route('login') }}" class="text-green-400 hover:text-green-300">Log in</a> to leave a comment.
             </div>
         @endauth
         {{-- Comments List --}}
         <div class="space-y-4">
             @forelse($article->comments->sortBy('created_at') as $comment)
-                <div class="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                <div class="glass-card rounded-lg p-4">
                     <div class="flex items-center justify-between mb-2">
                         <div class="flex items-center gap-2">
                             <img src="{{ $comment->user->avatar_display }}" alt="" class="w-6 h-6 rounded-full">

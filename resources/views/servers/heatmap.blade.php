@@ -19,7 +19,7 @@
         {{-- Controls --}}
         <div class="flex flex-wrap items-center gap-3">
             {{-- Period filter --}}
-            <div class="flex items-center gap-1 bg-gray-800 border border-gray-700 rounded-lg p-1">
+            <div class="flex items-center gap-1 bg-white/3 border border-white/5 rounded-lg p-1">
                 <template x-for="p in periods" :key="p.value">
                     <button
                         @click="setPeriod(p.value)"
@@ -31,7 +31,7 @@
             </div>
 
             {{-- Type filter --}}
-            <div class="flex items-center gap-1 bg-gray-800 border border-gray-700 rounded-lg p-1">
+            <div class="flex items-center gap-1 bg-white/3 border border-white/5 rounded-lg p-1">
                 <template x-for="t in types" :key="t.value">
                     <button
                         @click="setType(t.value)"
@@ -43,14 +43,14 @@
             </div>
 
             {{-- Radius slider --}}
-            <div class="flex items-center gap-2 bg-gray-800 border border-gray-700 rounded-lg px-3 py-1.5">
+            <div class="flex items-center gap-2 bg-white/3 border border-white/5 rounded-lg px-3 py-1.5">
                 <span class="text-xs text-gray-400">Radius</span>
                 <input type="range" min="5" max="50" x-model="radius" @input="updateHeat()" class="w-20 h-1 accent-green-500">
                 <span class="text-xs text-gray-300 w-6 text-right" x-text="radius"></span>
             </div>
 
             {{-- Intensity slider --}}
-            <div class="flex items-center gap-2 bg-gray-800 border border-gray-700 rounded-lg px-3 py-1.5">
+            <div class="flex items-center gap-2 bg-white/3 border border-white/5 rounded-lg px-3 py-1.5">
                 <span class="text-xs text-gray-400">Intensity</span>
                 <input type="range" min="0.1" max="1" step="0.1" x-model="intensity" @input="updateHeat()" class="w-20 h-1 accent-green-500">
                 <span class="text-xs text-gray-300 w-6 text-right" x-text="intensity"></span>
@@ -60,7 +60,7 @@
             {{-- Show Players toggle --}}
             <button
                 @click="togglePlayers()"
-                :class="showPlayers ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/50' : 'bg-gray-800 border-gray-700 text-gray-400 hover:text-white'"
+                :class="showPlayers ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/50' : 'bg-white/3 border-white/5 text-gray-400 hover:text-white'"
                 class="flex items-center gap-1.5 border rounded-lg px-3 py-1.5 text-xs font-medium transition"
             >
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -71,7 +71,7 @@
             @endif
 
             {{-- Fullscreen --}}
-            <button @click="toggleFullscreen()" class="flex items-center gap-1.5 bg-gray-800 border border-gray-700 hover:bg-gray-700 rounded-lg px-3 py-1.5 text-xs text-gray-300 hover:text-white transition">
+            <button @click="toggleFullscreen()" class="flex items-center gap-1.5 bg-white/3 border border-white/5 hover:bg-white/5 rounded-lg px-3 py-1.5 text-xs text-gray-300 hover:text-white transition">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <template x-if="!fullscreen">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 4h-4m4 0l-5-5"/>
@@ -111,7 +111,7 @@
     </div>
 
     {{-- Map Container --}}
-    <div id="heatmap" class="w-full rounded-xl border border-gray-700 overflow-hidden" style="height: calc(100vh - 180px); background: #18181b;"></div>
+    <div id="heatmap" class="w-full rounded-xl border border-white/5 overflow-hidden" style="height: calc(100vh - 180px); background: #18181b;"></div>
 </div>
 @endsection
 

@@ -21,10 +21,10 @@
         <p class="text-gray-400">{{ $tournament->format_text }}</p>
     </div>
     <div class="flex gap-2">
-        <a href="{{ route('tournaments.show', $tournament) }}" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition" target="_blank">
+        <a href="{{ route('tournaments.show', $tournament) }}" class="px-4 py-2 bg-white/5 hover:bg-white/10 text-white rounded-xl transition" target="_blank">
             View public
         </a>
-        <a href="{{ route('admin.tournaments.edit', $tournament) }}" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition">
+        <a href="{{ route('admin.tournaments.edit', $tournament) }}" class="px-4 py-2 bg-white/5 hover:bg-white/10 text-white rounded-xl transition">
             Edit
         </a>
     </div>
@@ -32,23 +32,23 @@
 
 <!-- Stats -->
 <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-4 text-center">
+    <div class="glass-card rounded-xl p-4 text-center">
         <div class="text-2xl font-bold text-white">{{ $stats['total_registrations'] }}</div>
         <div class="text-sm text-gray-400">Registrations</div>
     </div>
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-4 text-center">
+    <div class="glass-card rounded-xl p-4 text-center">
         <div class="text-2xl font-bold text-green-400">{{ $stats['approved_teams'] }}</div>
         <div class="text-sm text-gray-400">Approved</div>
     </div>
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-4 text-center">
+    <div class="glass-card rounded-xl p-4 text-center">
         <div class="text-2xl font-bold text-yellow-400">{{ $stats['pending_teams'] }}</div>
         <div class="text-sm text-gray-400">Pending</div>
     </div>
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-4 text-center">
+    <div class="glass-card rounded-xl p-4 text-center">
         <div class="text-2xl font-bold text-white">{{ $stats['total_matches'] }}</div>
         <div class="text-sm text-gray-400">Matches</div>
     </div>
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-4 text-center">
+    <div class="glass-card rounded-xl p-4 text-center">
         <div class="text-2xl font-bold text-blue-400">{{ $stats['completed_matches'] }}</div>
         <div class="text-sm text-gray-400">Completed</div>
     </div>
@@ -58,8 +58,8 @@
     <!-- Main Actions -->
     <div class="lg:col-span-2 space-y-6">
         <!-- Status Management -->
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
-            <h2 class="text-lg font-semibold text-white mb-4">Status</h2>
+        <div class="glass-card rounded-xl p-6">
+            <h2 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">Status</h2>
 
             <div class="flex flex-wrap gap-2">
                 @php
@@ -86,7 +86,7 @@
                         @csrf
                         <input type="hidden" name="status" value="{{ $newStatus }}">
                         <button type="submit" class="px-4 py-2 rounded-lg transition text-sm
-                            {{ $newStatus === 'cancelled' ? 'bg-red-600 hover:bg-red-500' : 'bg-gray-700 hover:bg-gray-600' }} text-white"
+                            {{ $newStatus === 'cancelled' ? 'bg-red-600 hover:bg-red-500' : 'bg-white/5 hover:bg-white/10' }} text-white"
                             onclick="{{ $newStatus === 'cancelled' ? 'return confirm(\'Are you sure?\')' : '' }}">
                             {{ $statusLabels[$newStatus] }}
                         </button>
@@ -96,24 +96,24 @@
         </div>
 
         <!-- Bracket Management -->
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
-            <h2 class="text-lg font-semibold text-white mb-4">Bracket</h2>
+        <div class="glass-card rounded-xl p-6">
+            <h2 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">Bracket</h2>
 
             @if($tournament->matches->count() > 0)
                 <p class="text-gray-400 mb-4">
                     Bracket generated with {{ $tournament->matches->count() }} matches.
                 </p>
                 <div class="flex gap-2">
-                    <a href="{{ route('admin.tournaments.matches', $tournament) }}" class="px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg transition">
+                    <a href="{{ route('admin.tournaments.matches', $tournament) }}" class="px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-xl transition">
                         Manage matches
                     </a>
-                    <a href="{{ route('tournaments.bracket', $tournament) }}" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition" target="_blank">
+                    <a href="{{ route('tournaments.bracket', $tournament) }}" class="px-4 py-2 bg-white/5 hover:bg-white/10 text-white rounded-xl transition" target="_blank">
                         View bracket
                     </a>
                     @if($tournament->status !== 'completed')
                         <form action="{{ route('admin.tournaments.reset-bracket', $tournament) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure? All match results will be lost!')">
                             @csrf
-                            <button type="submit" class="px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded-lg transition">
+                            <button type="submit" class="px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded-xl transition">
                                 Reset bracket
                             </button>
                         </form>
@@ -123,7 +123,7 @@
                 @if($tournament->format === 'swiss')
                     <form action="{{ route('admin.tournaments.next-swiss-round', $tournament) }}" method="POST" class="mt-4">
                         @csrf
-                        <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition">
+                        <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl transition">
                             Generate next Swiss round
                         </button>
                     </form>
@@ -138,7 +138,7 @@
                 @if($stats['approved_teams'] >= $tournament->min_teams)
                     <form action="{{ route('admin.tournaments.generate-bracket', $tournament) }}" method="POST">
                         @csrf
-                        <button type="submit" class="px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg transition">
+                        <button type="submit" class="px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-xl transition">
                             Generate bracket
                         </button>
                     </form>
@@ -147,7 +147,7 @@
         </div>
 
         <!-- Recent Registrations -->
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
+        <div class="glass-card rounded-xl p-6">
             <div class="flex items-center justify-between mb-4">
                 <h2 class="text-lg font-semibold text-white">Recent registrations</h2>
                 <a href="{{ route('admin.tournaments.registrations', $tournament) }}" class="text-sm text-green-400 hover:text-green-300">
@@ -158,7 +158,7 @@
             @if($tournament->registrations->count() > 0)
                 <div class="space-y-2">
                     @foreach($tournament->registrations->take(5) as $registration)
-                        <div class="flex items-center justify-between bg-gray-700/50 rounded-lg p-3">
+                        <div class="flex items-center justify-between bg-white/3 rounded-lg p-3">
                             <div class="flex items-center gap-3">
                                 <span class="text-white">{{ $registration->team->name }}</span>
                                 <span class="px-2 py-0.5 text-xs rounded-full {{ $registration->status_badge }}">
@@ -189,8 +189,8 @@
     <!-- Sidebar -->
     <div class="space-y-6">
         <!-- Info -->
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
-            <h2 class="text-lg font-semibold text-white mb-4">Information</h2>
+        <div class="glass-card rounded-xl p-6">
+            <h2 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">Information</h2>
             <dl class="space-y-3 text-sm">
                 <div class="flex justify-between">
                     <dt class="text-gray-400">Max platoons</dt>
@@ -251,7 +251,7 @@
             <form action="{{ route('admin.tournaments.destroy', $tournament) }}" method="POST" onsubmit="return confirm('Are you ABSOLUTELY sure? This will permanently delete the tournament and all matches!')">
                 @csrf
                 @method('DELETE')
-                <button type="submit" class="w-full px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded-lg transition">
+                <button type="submit" class="w-full px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded-xl transition">
                     Delete tournament
                 </button>
             </form>

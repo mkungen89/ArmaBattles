@@ -148,8 +148,55 @@ export function animatePageEntrance() {
     });
 }
 
+/**
+ * Achievement popup slide-in animation with glow pulse.
+ */
+export function animateAchievementPopup(element, color = '#22c55e') {
+    if (!element) return;
+
+    if (prefersReducedMotion) {
+        element.style.opacity = '1';
+        return;
+    }
+
+    gsap.fromTo(element,
+        { x: 120, opacity: 0 },
+        { x: 0, opacity: 1, duration: 0.5, ease: 'back.out(1.2)' }
+    );
+
+    gsap.fromTo(element,
+        { boxShadow: `0 0 0px ${color}00` },
+        { boxShadow: `0 0 30px ${color}66, 0 0 60px ${color}22`, duration: 0.4, delay: 0.3, yoyo: true, repeat: 1, ease: 'power2.inOut' }
+    );
+}
+
+/**
+ * Achievement popup slide-out animation, calls onComplete when done.
+ */
+export function dismissAchievementPopup(element, onComplete) {
+    if (!element) { onComplete?.(); return; }
+
+    if (prefersReducedMotion) {
+        element.style.opacity = '0';
+        onComplete?.();
+        return;
+    }
+
+    gsap.to(element, {
+        x: 120,
+        opacity: 0,
+        duration: 0.3,
+        ease: 'power2.in',
+        onComplete,
+    });
+}
+
 // Auto-initialize on DOMContentLoaded
 document.addEventListener('DOMContentLoaded', () => {
+    // Expose popup animations globally for Blade Alpine components
+    window.animateAchievementPopup = animateAchievementPopup;
+    window.dismissAchievementPopup = dismissAchievementPopup;
+
     if (prefersReducedMotion) return;
 
     animatePageEntrance();

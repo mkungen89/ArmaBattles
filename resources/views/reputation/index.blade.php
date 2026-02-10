@@ -2,7 +2,7 @@
 @section('title', 'Player Reputation')
 @section('content')
     <div class="py-12">
-        
+
             {{-- Header --}}
             <div class="bg-gradient-to-r from-green-600/10 to-emerald-600/10 border border-green-500/20 rounded-2xl p-6 mb-6">
                 <div class="flex items-center justify-between">
@@ -18,7 +18,7 @@
                 </div>
             </div>
             {{-- Info Box --}}
-            <div class="bg-green-500/10 border border-green-500/30 rounded-lg p-4 mb-6">
+            <div class="bg-green-500/10 border border-green-500/30 rounded-xl p-4 mb-6">
                 <div class="flex items-start gap-3">
                     <svg class="w-6 h-6 text-green-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -37,7 +37,7 @@
             </div>
             {{-- Tabs --}}
             <div x-data="{ tab: 'top' }" class="space-y-6">
-                <div class="flex flex-wrap gap-2 border-b border-gray-700">
+                <div class="flex flex-wrap gap-2 border-b border-white/5">
                     <button @click="tab = 'top'"
                             :class="tab === 'top' ? 'border-green-500 text-white' : 'border-transparent text-gray-400 hover:text-white'"
                             class="px-4 py-2 border-b-2 font-medium transition">
@@ -56,7 +56,7 @@
                 </div>
                 {{-- Top Players Tab --}}
                 <div x-show="tab === 'top'" x-transition>
-                    <div class="bg-gray-800/50 backdrop-blur border border-gray-700 rounded-xl overflow-hidden">
+                    <div class="glass-card backdrop-blur rounded-xl overflow-hidden">
                         <div class="overflow-x-auto">
                             <table class="w-full">
                                 <thead class="bg-gray-900/50">
@@ -70,9 +70,9 @@
                                         <th class="px-6 py-3 text-center text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody class="divide-y divide-gray-700">
+                                <tbody class="divide-y divide-white/5">
                                     @forelse($topPlayers as $index => $rep)
-                                        <tr class="hover:bg-gray-700/30 transition">
+                                        <tr class="hover:bg-white/5 transition">
                                             <td class="px-6 py-4 whitespace-nowrap">
                                                 <span class="text-2xl font-bold
                                                     {{ $index === 0 ? 'text-yellow-400' : ($index === 1 ? 'text-gray-300' : ($index === 2 ? 'text-orange-400' : 'text-gray-500')) }}">
@@ -100,13 +100,13 @@
                                                 <span class="text-red-400">{{ $rep->negative_votes }}</span>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-center">
-                                                <span class="px-3 py-1 rounded-full text-xs font-semibold {{ $rep->badge_color }} bg-gray-700/50">
+                                                <span class="px-3 py-1 rounded-full text-xs font-semibold {{ $rep->badge_color }} bg-white/3">
                                                     {{ $rep->label }}
                                                 </span>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-center">
                                                 <a href="{{ route('reputation.show', $rep->user) }}"
-                                                   class="px-3 py-1 bg-green-600/20 hover:bg-green-600/30 text-green-400 text-sm rounded-lg transition">
+                                                   class="px-3 py-1 bg-green-600/20 hover:bg-green-600/30 text-green-400 text-sm rounded-xl transition">
                                                     View
                                                 </a>
                                             </td>
@@ -125,10 +125,10 @@
                 </div>
                 {{-- Trusted Players Tab --}}
                 <div x-show="tab === 'trusted'" x-transition style="display:none;">
-                    <div class="bg-gray-800/50 backdrop-blur border border-green-500/30 rounded-xl p-6">
+                    <div class="glass-card backdrop-blur border border-green-500/30 rounded-xl p-6">
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                             @forelse($trustedPlayers as $rep)
-                                <div class="bg-gray-900/50 border border-green-500/20 rounded-lg p-4">
+                                <div class="bg-gray-900/50 border border-green-500/20 rounded-xl p-4">
                                     <div class="flex items-center gap-3 mb-3">
                                         <img src="{{ $rep->user->avatar_display }}" alt="{{ $rep->user->name }}" class="w-12 h-12 rounded-full">
                                         <div class="flex-1 min-w-0">
@@ -144,7 +144,7 @@
                                         <span>-{{ $rep->negative_votes }} negative</span>
                                     </div>
                                     <a href="{{ route('reputation.show', $rep->user) }}"
-                                       class="block w-full text-center px-3 py-2 bg-green-600/20 hover:bg-green-600/30 text-green-400 text-sm rounded-lg transition">
+                                       class="block w-full text-center px-3 py-2 bg-green-600/20 hover:bg-green-600/30 text-green-400 text-sm rounded-xl transition">
                                         View Profile
                                     </a>
                                 </div>
@@ -158,7 +158,7 @@
                 </div>
                 {{-- Flagged Players Tab --}}
                 <div x-show="tab === 'flagged'" x-transition style="display:none;">
-                    <div class="bg-gray-800/50 backdrop-blur border border-red-500/30 rounded-xl overflow-hidden">
+                    <div class="glass-card backdrop-blur border border-red-500/30 rounded-xl overflow-hidden">
                         @if(auth()->check() && auth()->user()->isAdmin())
                             <div class="bg-red-500/10 border-b border-red-500/30 p-4">
                                 <p class="text-sm text-red-400">
@@ -176,9 +176,9 @@
                                         <th class="px-6 py-3 text-center text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody class="divide-y divide-gray-700">
+                                <tbody class="divide-y divide-white/5">
                                     @forelse($flaggedPlayers as $rep)
-                                        <tr class="hover:bg-gray-700/30 transition">
+                                        <tr class="hover:bg-white/5 transition">
                                             <td class="px-6 py-4 whitespace-nowrap">
                                                 <a href="{{ route('reputation.show', $rep->user) }}" class="flex items-center hover:text-red-400 transition">
                                                     <img src="{{ $rep->user->avatar_display }}" alt="{{ $rep->user->name }}" class="w-10 h-10 rounded-full mr-3">
@@ -198,7 +198,7 @@
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-center">
                                                 <a href="{{ route('reputation.show', $rep->user) }}"
-                                                   class="px-3 py-1 bg-red-600/20 hover:bg-red-600/30 text-red-400 text-sm rounded-lg transition">
+                                                   class="px-3 py-1 bg-red-600/20 hover:bg-red-600/30 text-red-400 text-sm rounded-xl transition">
                                                     Review
                                                 </a>
                                             </td>
@@ -217,5 +217,5 @@
                 </div>
             </div>
         </div>
-    
+
 @endsection

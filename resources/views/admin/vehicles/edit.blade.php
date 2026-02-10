@@ -29,26 +29,26 @@
     </div>
     @endif
 
-    <form action="{{ route('admin.vehicles.update', $vehicle) }}" method="POST" enctype="multipart/form-data" class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
+    <form action="{{ route('admin.vehicles.update', $vehicle) }}" method="POST" enctype="multipart/form-data" class="glass-card rounded-xl p-6">
         @csrf
         @method('PUT')
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
                 <label for="name" class="block text-sm font-medium text-gray-400 mb-2">Vehicle Name (from game) *</label>
-                <input type="text" name="name" id="name" value="{{ old('name', $vehicle->name) }}" required class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
+                <input type="text" name="name" id="name" value="{{ old('name', $vehicle->name) }}" required class="w-full bg-white/5 border-white/10 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
                 <p class="text-xs text-gray-500 mt-1">The exact vehicle name as it appears in game data</p>
             </div>
 
             <div>
                 <label for="display_name" class="block text-sm font-medium text-gray-400 mb-2">Display Name</label>
-                <input type="text" name="display_name" id="display_name" value="{{ old('display_name', $vehicle->display_name) }}" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
+                <input type="text" name="display_name" id="display_name" value="{{ old('display_name', $vehicle->display_name) }}" class="w-full bg-white/5 border-white/10 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
                 <p class="text-xs text-gray-500 mt-1">Optional friendly name to show in UI</p>
             </div>
 
             <div>
                 <label for="vehicle_type" class="block text-sm font-medium text-gray-400 mb-2">Vehicle Type</label>
-                <select name="vehicle_type" id="vehicle_type" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
+                <select name="vehicle_type" id="vehicle_type" class="w-full bg-white/5 border-white/10 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
                     <option value="">Select type...</option>
                     <option value="Car" {{ old('vehicle_type', $vehicle->vehicle_type) === 'Car' ? 'selected' : '' }}>Car</option>
                     <option value="Truck" {{ old('vehicle_type', $vehicle->vehicle_type) === 'Truck' ? 'selected' : '' }}>Truck</option>
@@ -81,7 +81,7 @@
                 <label for="image" class="block text-sm font-medium text-gray-400 mb-2">{{ $vehicle->image_path ? 'Replace Image' : 'Upload Image' }}</label>
                 <div class="flex items-center gap-4">
                     <div class="flex-1">
-                        <input type="file" name="image" id="image" accept="image/png,image/jpeg,image/gif,image/webp" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:bg-green-600 file:text-white hover:file:bg-green-500">
+                        <input type="file" name="image" id="image" accept="image/png,image/jpeg,image/gif,image/webp" class="w-full bg-white/5 border-white/10 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:bg-green-600 file:text-white hover:file:bg-green-500">
                         <p class="text-xs text-gray-500 mt-1">Recommended: 256 x 256 px, transparent PNG. Max 2 MB.</p>
                     </div>
                     <div id="imagePreview" class="hidden w-24 h-24 bg-gray-900 rounded-lg flex items-center justify-center overflow-hidden">
@@ -92,8 +92,8 @@
         </div>
 
         <div class="mt-6 flex gap-3">
-            <button type="submit" class="px-6 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg transition">Save Changes</button>
-            <a href="{{ route('admin.vehicles.index') }}" class="px-6 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition">Cancel</a>
+            <button type="submit" class="px-6 py-2 bg-green-600 hover:bg-green-500 text-white rounded-xl transition">Save Changes</button>
+            <a href="{{ route('admin.vehicles.index') }}" class="px-6 py-2 bg-white/5 hover:bg-white/10 text-white rounded-xl transition">Cancel</a>
         </div>
     </form>
 </div>

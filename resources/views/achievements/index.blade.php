@@ -2,7 +2,7 @@
 @section('title', 'Achievements')
 @section('content')
     <div class="py-12">
-        
+
             {{-- Header --}}
             <div class="bg-gradient-to-r from-green-600/10 to-emerald-600/10 border border-green-500/20 rounded-2xl p-6 mb-6">
                 <div class="flex items-center justify-between flex-wrap gap-4">
@@ -19,7 +19,7 @@
                                     <p class="text-xs text-gray-500">{{ $achievements->count() > 0 ? round(($earnedAchievements->count() / $achievements->count()) * 100, 1) : 0 }}% Complete</p>
                                 </div>
                                 <button onclick="document.getElementById('showcaseModal').classList.remove('hidden')"
-                                        class="px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg transition flex items-center gap-2">
+                                        class="px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-xl transition flex items-center gap-2">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
                                     </svg>
@@ -33,12 +33,12 @@
             {{-- Category Filter --}}
             <div class="flex flex-wrap gap-2 mb-6">
                 <a href="{{ route('achievements.index', ['category' => 'all']) }}"
-                   class="px-4 py-2 rounded-lg transition {{ $category === 'all' ? 'bg-green-600 text-white' : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700' }}">
+                   class="px-4 py-2 rounded-xl transition {{ $category === 'all' ? 'bg-green-600 text-white' : 'glass-card text-gray-400 hover:bg-white/5' }}">
                     All
                 </a>
                 @foreach($categories as $cat)
                     <a href="{{ route('achievements.index', ['category' => $cat]) }}"
-                       class="px-4 py-2 rounded-lg transition capitalize {{ $category === $cat ? 'bg-green-600 text-white' : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700' }}">
+                       class="px-4 py-2 rounded-xl transition capitalize {{ $category === $cat ? 'bg-green-600 text-white' : 'glass-card text-gray-400 hover:bg-white/5' }}">
                         {{ ucwords(str_replace('_', ' ', $cat)) }}
                     </a>
                 @endforeach
@@ -53,11 +53,11 @@
                         $isRare = $rarity < 1.0;
                         $isUltraRare = $rarity < 0.1;
                     @endphp
-                    <div class="achievement-card bg-gray-800/50 backdrop-blur border {{ $isEarned ? 'border-green-500/30 achievement-earned' : 'border-gray-700' }} rounded-xl p-6 relative overflow-hidden group hover:border-green-500/30 transition"
+                    <div class="achievement-card glass-card backdrop-blur {{ $isEarned ? 'border border-green-500/30 achievement-earned' : '' }} rounded-xl p-6 relative overflow-hidden group hover:border-green-500/30 transition"
                          x-data="{ showDetails: false }">
                         {{-- Rare Badge --}}
                         @if($isEarned && ($isRare || $isUltraRare))
-                            <div class="absolute top-2 right-2 px-2 py-1 rounded-lg text-xs font-bold
+                            <div class="absolute top-2 right-2 px-2 py-1 rounded-xl text-xs font-bold
                                 {{ $isUltraRare ? 'bg-gradient-to-r from-green-500 to-emerald-500' : 'bg-gradient-to-r from-yellow-500 to-orange-500' }}
                                 text-white shadow-lg">
                                 {{ $isUltraRare ? 'ULTRA RARE' : 'RARE' }}
@@ -91,7 +91,7 @@
                             {{ $achievement->name }}
                         </h3>
                         <p class="text-xs text-center mb-2">
-                            <span class="px-2 py-1 rounded bg-gray-700/50 text-gray-400 capitalize">
+                            <span class="px-2 py-1 rounded bg-white/3 text-gray-400 capitalize">
                                 {{ ucwords(str_replace('_', ' ', $achievement->category)) }}
                             </span>
                         </p>
@@ -106,7 +106,7 @@
                                     <span>Progress</span>
                                     <span>{{ number_format($progress->current_value) }} / {{ number_format($progress->target_value) }}</span>
                                 </div>
-                                <div class="w-full bg-gray-700 rounded-full h-2 overflow-hidden">
+                                <div class="w-full bg-white/5 rounded-full h-2 overflow-hidden">
                                     <div class="bg-gradient-to-r from-green-500 to-emerald-500 h-2 rounded-full transition-all duration-500"
                                          style="width: {{ min($progress->percentage, 100) }}%"></div>
                                 </div>
@@ -114,18 +114,18 @@
                             </div>
                         @endif
                         {{-- Stats --}}
-                        <div class="flex items-center justify-between text-xs border-t border-gray-700 pt-3">
+                        <div class="flex items-center justify-between text-xs border-t border-white/5 pt-3">
                             <div class="text-center flex-1">
                                 <p class="text-gray-500">Points</p>
                                 <p class="text-white font-semibold">{{ $achievement->points }}</p>
                             </div>
-                            <div class="text-center flex-1 border-l border-gray-700">
+                            <div class="text-center flex-1 border-l border-white/5">
                                 <p class="text-gray-500">Rarity</p>
                                 <p class="font-semibold {{ $rarity < 1 ? 'text-green-400' : ($rarity < 10 ? 'text-blue-400' : 'text-gray-400') }}">
                                     {{ $rarity }}%
                                 </p>
                             </div>
-                            <div class="text-center flex-1 border-l border-gray-700">
+                            <div class="text-center flex-1 border-l border-white/5">
                                 <p class="text-gray-500">Unlocked</p>
                                 <p class="text-white font-semibold">{{ number_format($achievement->unlock_count) }}</p>
                             </div>
@@ -135,7 +135,7 @@
                             @if($isEarned && auth()->user()->player_uuid)
                                 <button onclick="togglePin({{ $achievement->id }})"
                                         id="pin-btn-{{ $achievement->id }}"
-                                        class="mt-3 w-full px-3 py-2 bg-green-600/20 hover:bg-green-600/30 text-green-400 text-sm rounded-lg transition flex items-center justify-center gap-2">
+                                        class="mt-3 w-full px-3 py-2 bg-green-600/20 hover:bg-green-600/30 text-green-400 text-sm rounded-xl transition flex items-center justify-center gap-2">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
                                     </svg>
@@ -163,7 +163,7 @@
             <div id="showcaseModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50"
                  onclick="if(event.target===this)this.classList.add('hidden')">
                 <div x-data="{ pinnedIds: @js(optional(\App\Models\AchievementShowcase::where('player_uuid', auth()->user()->player_uuid)->first())->pinned_achievements ?? []) }"
-                     class="bg-gray-900 border border-gray-700 rounded-2xl p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+                     class="bg-gray-900 border border-white/5 rounded-2xl p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto">
                     <div class="flex items-center justify-between mb-4">
                         <h2 class="text-2xl font-bold text-white">Achievement Showcase</h2>
                         <button onclick="document.getElementById('showcaseModal').classList.add('hidden')" class="text-gray-400 hover:text-white transition">
@@ -175,7 +175,7 @@
                         <p class="text-gray-400 mb-4">Select up to 3 achievements to showcase on your profile.</p>
                         <div class="mb-4 flex gap-2 flex-wrap">
                             <template x-for="id in pinnedIds" :key="id">
-                                <span class="px-3 py-1 bg-green-600/20 text-green-400 rounded-lg text-sm">
+                                <span class="px-3 py-1 bg-green-600/20 text-green-400 rounded-xl text-sm">
                                     Achievement #<span x-text="id"></span>
                                 </span>
                             </template>
@@ -188,8 +188,8 @@
                                 @if($isEarned)
                                     <button type="button"
                                             @click="if(pinnedIds.includes({{ $achievement->id }})) { pinnedIds = pinnedIds.filter(id => id !== {{ $achievement->id }}); } else if(pinnedIds.length < 3) { pinnedIds.push({{ $achievement->id }}); }"
-                                            :class="pinnedIds.includes({{ $achievement->id }}) ? 'border-green-500 bg-green-500/10' : 'border-gray-700'"
-                                            class="text-left p-3 border rounded-lg hover:border-green-500/50 transition">
+                                            :class="pinnedIds.includes({{ $achievement->id }}) ? 'border-green-500 bg-green-500/10' : 'border-white/5'"
+                                            class="text-left p-3 border rounded-xl hover:border-green-500/50 transition">
                                         <div class="flex items-center gap-3">
                                             <div class="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0"
                                                  style="background-color: {{ $achievement->color }}20;">
@@ -217,7 +217,7 @@
                                 <input type="hidden" :name="'pinned_achievements[' + index + ']'" :value="id">
                             </template>
                             <button type="submit"
-                                    class="w-full px-6 py-3 bg-green-600 hover:bg-green-500 text-white rounded-lg transition font-semibold">
+                                    class="w-full px-6 py-3 bg-green-600 hover:bg-green-500 text-white rounded-xl transition font-semibold">
                                 Save Showcase
                             </button>
                         </form>

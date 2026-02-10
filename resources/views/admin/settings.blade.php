@@ -47,7 +47,7 @@
                     <button type="button" @click="activeTab = '{{ $group }}'"
                             :class="activeTab === '{{ $group }}'
                                 ? 'bg-green-500/10 border-green-500/30 text-green-400'
-                                : 'border-transparent text-gray-400 hover:bg-gray-700/50 hover:text-white'"
+                                : 'border-transparent text-gray-400 hover:bg-white/5 hover:text-white'"
                             class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg border transition text-left">
                         <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             {!! $groupIcons[$group] ?? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>' !!}
@@ -59,7 +59,7 @@
                     </button>
                     @endforeach
 
-                    <div class="border-t border-gray-700 my-3"></div>
+                    <div class="border-t border-white/5 my-3"></div>
 
                     {{-- Save Button in sidebar --}}
                     <button type="submit"
@@ -84,7 +84,7 @@
                             </svg>
                         </div>
                         <div>
-                            <h2 class="text-lg font-semibold text-white">{{ $group }}</h2>
+                            <h2 class="text-sm font-semibold text-white uppercase tracking-wider">{{ $group }}</h2>
                             <p class="text-xs text-gray-500">{{ $groupDescriptions[$group] ?? '' }}</p>
                         </div>
                     </div>
@@ -92,7 +92,7 @@
                     {{-- Settings List --}}
                     <div class="space-y-4">
                         @foreach($settings as $setting)
-                        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-5 hover:border-gray-600 transition">
+                        <div class="glass-card rounded-xl p-5 hover:border-white/10 transition">
                             <div class="flex flex-col lg:flex-row lg:items-start gap-4">
                                 <div class="lg:w-2/5">
                                     <label for="{{ $setting['key'] }}" class="block text-sm font-medium text-white">{{ $setting['label'] }}</label>
@@ -107,30 +107,30 @@
                                         <label class="relative inline-flex items-center cursor-pointer" x-data="{ on: {{ $setting['value'] ? 'true' : 'false' }} }">
                                             <input type="checkbox" name="{{ $setting['key'] }}" value="1" class="sr-only peer"
                                                    x-model="on" :checked="on">
-                                            <div class="w-11 h-6 bg-gray-600 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600 transition-colors"></div>
+                                            <div class="w-11 h-6 bg-white/5 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600 transition-colors"></div>
                                             <span class="ml-3 text-sm" :class="on ? 'text-green-400' : 'text-gray-500'" x-text="on ? 'Enabled' : 'Disabled'"></span>
                                         </label>
 
                                     @elseif($setting['type'] === 'text')
                                         {{-- Textarea --}}
                                         <textarea name="{{ $setting['key'] }}" id="{{ $setting['key'] }}" rows="3"
-                                            class="w-full bg-gray-900/50 border border-gray-600 text-white rounded-lg px-4 py-2.5 focus:ring-green-500 focus:border-green-500 text-sm placeholder-gray-600 font-mono"
+                                            class="w-full bg-gray-900/50 border border-white/10 text-white rounded-lg px-4 py-2.5 focus:ring-green-500 focus:border-green-500 text-sm placeholder-gray-600 font-mono"
                                             placeholder="{{ $setting['label'] }}">{{ $setting['value'] }}</textarea>
 
                                     @elseif($setting['type'] === 'integer')
                                         {{-- Number Input --}}
                                         <input type="number" name="{{ $setting['key'] }}" id="{{ $setting['key'] }}" value="{{ $setting['value'] }}"
-                                            class="w-full lg:w-40 bg-gray-900/50 border border-gray-600 text-white rounded-lg px-4 py-2.5 focus:ring-green-500 focus:border-green-500 text-sm tabular-nums">
+                                            class="w-full lg:w-40 bg-gray-900/50 border border-white/10 text-white rounded-lg px-4 py-2.5 focus:ring-green-500 focus:border-green-500 text-sm tabular-nums">
 
                                     @elseif($setting['type'] === 'color')
                                         {{-- Color Picker --}}
                                         <div class="flex items-center gap-3" x-data="{ color: '{{ $setting['value'] ?? '#22c55e' }}' }">
                                             <input type="color" name="{{ $setting['key'] }}" id="{{ $setting['key'] }}"
                                                 x-model="color"
-                                                class="h-10 w-14 bg-transparent border-2 border-gray-600 rounded-lg cursor-pointer hover:border-gray-500 transition">
+                                                class="h-10 w-14 bg-transparent border-2 border-white/10 rounded-lg cursor-pointer hover:border-white/10 transition">
                                             <input type="text" x-model="color" readonly
-                                                class="w-28 bg-gray-900/50 border border-gray-600 text-white rounded-lg px-3 py-2.5 text-sm font-mono text-center">
-                                            <div class="w-8 h-8 rounded-full border-2 border-gray-600" :style="'background-color: ' + color"></div>
+                                                class="w-28 bg-gray-900/50 border border-white/10 text-white rounded-lg px-3 py-2.5 text-sm font-mono text-center">
+                                            <div class="w-8 h-8 rounded-full border-2 border-white/10" :style="'background-color: ' + color"></div>
                                         </div>
 
                                     @elseif($setting['type'] === 'json' && $setting['options'])
@@ -141,10 +141,10 @@
                                         @endphp
                                         <div class="grid grid-cols-2 xl:grid-cols-3 gap-2">
                                             @foreach($options as $option)
-                                            <label class="flex items-center gap-2.5 text-sm text-gray-300 cursor-pointer px-3 py-2 rounded-lg hover:bg-gray-700/30 transition">
+                                            <label class="flex items-center gap-2.5 text-sm text-gray-300 cursor-pointer px-3 py-2 rounded-lg hover:bg-white/3 transition">
                                                 <input type="checkbox" name="{{ $setting['key'] }}[]" value="{{ $option }}"
                                                        {{ in_array($option, $selectedValues) ? 'checked' : '' }}
-                                                       class="rounded bg-gray-700 border-gray-500 text-green-500 focus:ring-green-500 focus:ring-offset-0">
+                                                       class="rounded bg-white/5 border-white/10 text-green-500 focus:ring-green-500 focus:ring-offset-0">
                                                 <span>{{ str_replace('_', ' ', ucfirst($option)) }}</span>
                                             </label>
                                             @endforeach
@@ -154,7 +154,7 @@
                                         {{-- Select Dropdown --}}
                                         @php $options = json_decode($setting['options'], true) ?? []; @endphp
                                         <select name="{{ $setting['key'] }}" id="{{ $setting['key'] }}"
-                                            class="w-full lg:w-auto bg-gray-900/50 border border-gray-600 text-white rounded-lg px-4 py-2.5 focus:ring-green-500 focus:border-green-500 text-sm">
+                                            class="w-full lg:w-auto bg-gray-900/50 border border-white/10 text-white rounded-lg px-4 py-2.5 focus:ring-green-500 focus:border-green-500 text-sm">
                                             @foreach($options as $option)
                                             <option value="{{ $option }}" {{ $setting['value'] === $option ? 'selected' : '' }}>{{ $option }}</option>
                                             @endforeach
@@ -163,7 +163,7 @@
                                     @else
                                         {{-- Default Text Input --}}
                                         <input type="text" name="{{ $setting['key'] }}" id="{{ $setting['key'] }}" value="{{ $setting['value'] }}"
-                                            class="w-full bg-gray-900/50 border border-gray-600 text-white rounded-lg px-4 py-2.5 focus:ring-green-500 focus:border-green-500 text-sm placeholder-gray-600"
+                                            class="w-full bg-gray-900/50 border border-white/10 text-white rounded-lg px-4 py-2.5 focus:ring-green-500 focus:border-green-500 text-sm placeholder-gray-600"
                                             placeholder="{{ $setting['label'] }}">
                                     @endif
                                 </div>
@@ -191,10 +191,10 @@
     </form>
 
     {{-- System Information --}}
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6 mt-8">
+    <div class="glass-card rounded-xl p-6 mt-8">
         <details class="group">
             <summary class="flex items-center justify-between cursor-pointer">
-                <h2 class="text-lg font-semibold text-white flex items-center gap-2">
+                <h2 class="text-sm font-semibold text-white uppercase tracking-wider flex items-center gap-2">
                     <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
@@ -206,27 +206,27 @@
             </summary>
 
             <div class="grid md:grid-cols-3 gap-3 mt-4">
-                <div class="bg-gray-700/30 rounded-lg p-3">
+                <div class="bg-white/3 rounded-lg p-3">
                     <p class="text-xs text-gray-500 uppercase tracking-wider">PHP</p>
                     <p class="text-sm font-medium text-white mt-0.5">{{ phpversion() }}</p>
                 </div>
-                <div class="bg-gray-700/30 rounded-lg p-3">
+                <div class="bg-white/3 rounded-lg p-3">
                     <p class="text-xs text-gray-500 uppercase tracking-wider">Laravel</p>
                     <p class="text-sm font-medium text-white mt-0.5">{{ app()->version() }}</p>
                 </div>
-                <div class="bg-gray-700/30 rounded-lg p-3">
+                <div class="bg-white/3 rounded-lg p-3">
                     <p class="text-xs text-gray-500 uppercase tracking-wider">Environment</p>
                     <p class="text-sm font-medium mt-0.5 {{ config('app.env') === 'production' ? 'text-green-400' : 'text-yellow-400' }}">{{ config('app.env') }}</p>
                 </div>
-                <div class="bg-gray-700/30 rounded-lg p-3">
+                <div class="bg-white/3 rounded-lg p-3">
                     <p class="text-xs text-gray-500 uppercase tracking-wider">Server Time</p>
                     <p class="text-sm font-medium text-white mt-0.5">{{ now()->format('Y-m-d H:i:s') }}</p>
                 </div>
-                <div class="bg-gray-700/30 rounded-lg p-3">
+                <div class="bg-white/3 rounded-lg p-3">
                     <p class="text-xs text-gray-500 uppercase tracking-wider">Timezone</p>
                     <p class="text-sm font-medium text-white mt-0.5">{{ config('app.timezone') }}</p>
                 </div>
-                <div class="bg-gray-700/30 rounded-lg p-3">
+                <div class="bg-white/3 rounded-lg p-3">
                     <p class="text-xs text-gray-500 uppercase tracking-wider">Cache</p>
                     <p class="text-sm font-medium text-white mt-0.5">{{ config('cache.default') }}</p>
                 </div>
@@ -235,10 +235,10 @@
     </div>
 
     {{-- Quick Actions --}}
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
+    <div class="glass-card rounded-xl p-6">
         <details class="group">
             <summary class="flex items-center justify-between cursor-pointer">
-                <h2 class="text-lg font-semibold text-white flex items-center gap-2">
+                <h2 class="text-sm font-semibold text-white uppercase tracking-wider flex items-center gap-2">
                     <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                     </svg>

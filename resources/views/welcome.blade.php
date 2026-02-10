@@ -18,7 +18,7 @@
             </h1>
             <!-- Server Status Card -->
             <div id="server-status">
-                <div id="server-card" class="bg-gray-800/80 backdrop-blur-md rounded-2xl border border-gray-700/50 overflow-hidden shadow-2xl transition-shadow duration-500">
+                <div id="server-card" class="glass-card rounded-2xl overflow-hidden shadow-2xl transition-shadow duration-500">
                     <!-- Server Header -->
                     <div class="relative h-36 sm:h-40 overflow-hidden">
                         <img src="https://wallpapercave.com/wp/wp15024138.webp" alt="Everon" class="w-full h-full object-cover">
@@ -49,9 +49,9 @@
                     <!-- Server Info -->
                     <div id="server-info" class="p-5">
                         <div class="animate-pulse space-y-4">
-                            <div class="h-3 bg-gray-700 rounded w-1/3"></div>
-                            <div class="h-2 bg-gray-700 rounded w-full"></div>
-                            <div class="h-10 bg-gray-700 rounded w-full"></div>
+                            <div class="h-3 bg-white/5 rounded w-1/3"></div>
+                            <div class="h-2 bg-white/5 rounded w-full"></div>
+                            <div class="h-10 bg-white/5 rounded w-full"></div>
                         </div>
                     </div>
                 </div>
@@ -66,7 +66,7 @@
                     <span>Join with Steam</span>
                 </a>
                 @endguest
-                <a href="{{ route('rules') }}" class="inline-flex items-center space-x-2 px-6 py-4 bg-gray-800/80 hover:bg-gray-700 border border-gray-600 rounded-xl font-semibold transition-all duration-300 hover:scale-105">
+                <a href="{{ route('rules') }}" class="inline-flex items-center space-x-2 px-6 py-4 bg-white/3 hover:bg-white/5 border border-white/5 rounded-xl font-semibold transition-all duration-300 hover:scale-105">
                     <svg class="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                     </svg>
@@ -90,7 +90,7 @@
         </div>
         <div class="grid md:grid-cols-3 gap-6">
             @foreach($latestNews as $article)
-                <a href="{{ route('news.show', $article) }}" class="group bg-gray-800/60 backdrop-blur border border-gray-700/50 rounded-xl overflow-hidden hover:border-green-500/50 transition-all duration-300 hover:-translate-y-1">
+                <a href="{{ route('news.show', $article) }}" class="group glass-card rounded-xl overflow-hidden hover:border-green-500/50 transition-all duration-300 hover:-translate-y-1">
                     <div class="relative h-40 overflow-hidden">
                         @if($article->featured_image_url)
                             <img src="{{ $article->featured_image_url }}" alt="{{ $article->title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
@@ -120,8 +120,50 @@
         </div>
     </div>
     @endif
+    {{-- Official Arma Reforger News --}}
+    @if($armaNews->isNotEmpty())
+    <div>
+        <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center gap-3">
+                <h2 class="text-2xl font-bold text-white">Official News</h2>
+                <span class="px-2 py-0.5 bg-blue-500/20 text-blue-400 rounded text-[10px] font-bold uppercase tracking-wider">Bohemia Interactive</span>
+            </div>
+            <a href="https://reforger.armaplatform.com/news" target="_blank" rel="noopener" class="text-blue-400 hover:text-blue-300 text-sm font-medium flex items-center gap-1 transition">
+                View All
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+            </a>
+        </div>
+        <div class="grid md:grid-cols-3 gap-6">
+            @foreach($armaNews as $news)
+                <a href="{{ $news['url'] }}" target="_blank" rel="noopener" class="group glass-card rounded-xl overflow-hidden hover:border-blue-500/50 transition-all duration-300 hover:-translate-y-1">
+                    <div class="relative h-40 overflow-hidden">
+                        @if($news['image_url'])
+                            <img src="{{ $news['image_url'] }}" alt="{{ $news['title'] }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                        @else
+                            <div class="w-full h-full bg-gradient-to-br from-blue-500/20 to-emerald-500/10 flex items-center justify-center">
+                                <svg class="w-10 h-10 text-blue-500/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/>
+                                </svg>
+                            </div>
+                        @endif
+                        <span class="absolute top-2 left-2 px-2 py-0.5 bg-blue-500/90 text-white rounded text-[10px] font-bold uppercase">{{ $news['category'] }}</span>
+                        <span class="absolute top-2 right-2 text-white/60 group-hover:text-white/90 transition">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                        </span>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-sm font-bold text-white mb-1 line-clamp-2 group-hover:text-blue-400 transition-colors">{{ $news['title'] }}</h3>
+                        <p class="text-gray-400 text-xs line-clamp-2 mb-2">{{ $news['excerpt'] }}</p>
+                        <span class="text-xs text-gray-500">{{ $news['date']->format('j M, Y') }}</span>
+                    </div>
+                </a>
+            @endforeach
+        </div>
+    </div>
+    @endif
+
     <!-- Features Section -->
-    <div class="{{ $latestNews->isEmpty() ? '-mt-20' : '' }}">
+    <div class="{{ $latestNews->isEmpty() && $armaNews->isEmpty() ? '-mt-20' : '' }}">
         <div class="text-center mb-12">
             <h2 class="text-3xl font-bold mb-4">Why Join Us?</h2>
             <div class="w-16 h-1 bg-green-500 mx-auto rounded-full mb-4"></div>
@@ -133,7 +175,7 @@
                  x-transition:enter="transition ease-out duration-500"
                  x-transition:enter-start="opacity-0 translate-y-4"
                  x-transition:enter-end="opacity-100 translate-y-0"
-                 class="group bg-gradient-to-br from-green-500/5 to-gray-800/90 rounded-2xl p-8 border border-gray-700/50 hover:border-green-500/50 transition-all duration-300 hover:-translate-y-1">
+                 class="group bg-gradient-to-br from-green-500/5 to-white/3 rounded-2xl p-8 border border-white/5 hover:border-green-500/50 transition-all duration-300 hover:-translate-y-1">
                 <div class="w-14 h-14 bg-green-500/10 rounded-xl flex items-center justify-center mb-6 group-hover:bg-green-500/20 transition-colors">
                     <svg class="w-7 h-7 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
@@ -147,7 +189,7 @@
                  x-transition:enter="transition ease-out duration-500"
                  x-transition:enter-start="opacity-0 translate-y-4"
                  x-transition:enter-end="opacity-100 translate-y-0"
-                 class="group bg-gradient-to-br from-blue-500/5 to-gray-800/90 rounded-2xl p-8 border border-gray-700/50 hover:border-blue-500/50 transition-all duration-300 hover:-translate-y-1">
+                 class="group bg-gradient-to-br from-blue-500/5 to-white/3 rounded-2xl p-8 border border-white/5 hover:border-blue-500/50 transition-all duration-300 hover:-translate-y-1">
                 <div class="w-14 h-14 bg-blue-500/10 rounded-xl flex items-center justify-center mb-6 group-hover:bg-blue-500/20 transition-colors">
                     <svg class="w-7 h-7 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
@@ -161,7 +203,7 @@
                  x-transition:enter="transition ease-out duration-500"
                  x-transition:enter-start="opacity-0 translate-y-4"
                  x-transition:enter-end="opacity-100 translate-y-0"
-                 class="group bg-gradient-to-br from-purple-500/5 to-gray-800/90 rounded-2xl p-8 border border-gray-700/50 hover:border-purple-500/50 transition-all duration-300 hover:-translate-y-1">
+                 class="group bg-gradient-to-br from-purple-500/5 to-white/3 rounded-2xl p-8 border border-white/5 hover:border-purple-500/50 transition-all duration-300 hover:-translate-y-1">
                 <div class="w-14 h-14 bg-purple-500/10 rounded-xl flex items-center justify-center mb-6 group-hover:bg-purple-500/20 transition-colors">
                     <svg class="w-7 h-7 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
@@ -178,7 +220,7 @@
     </div>
     <!-- Battle Log Section -->
     <div>
-        <div class="bg-gradient-to-br from-green-500/5 via-gray-800/80 to-emerald-500/5 border border-gray-700/50 rounded-2xl overflow-hidden">
+        <div class="bg-gradient-to-br from-green-500/5 via-white/3 to-emerald-500/5 border border-white/5 rounded-2xl overflow-hidden">
             <div class="grid md:grid-cols-2 gap-0">
                 {{-- Left: Text content --}}
                 <div class="p-8 md:p-12 flex flex-col justify-center">
@@ -216,12 +258,12 @@
                         </div>
                     </div>
                     <div class="flex flex-wrap gap-3">
-                        <a href="{{ route('leaderboard') }}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-green-600 hover:bg-green-500 rounded-lg font-semibold text-sm transition-all duration-300 shadow-lg shadow-green-500/20 hover:shadow-green-500/30">
+                        <a href="{{ route('leaderboard') }}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-green-600 hover:bg-green-500 rounded-xl font-semibold text-sm transition-all duration-300 shadow-lg shadow-green-500/20 hover:shadow-green-500/30">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
                             View Leaderboard
                         </a>
                         @auth
-                        <a href="{{ route('profile') }}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-gray-700 hover:bg-gray-600 border border-gray-600 rounded-lg font-semibold text-sm transition">
+                        <a href="{{ route('profile') }}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-white/5 hover:bg-white/10 border border-white/5 rounded-xl font-semibold text-sm transition">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                             My Battle Log
                         </a>
@@ -232,7 +274,7 @@
                 <div class="p-8 md:p-12 bg-gray-900/40 flex items-center justify-center">
                     <div class="w-full max-w-sm space-y-4">
                         {{-- Mock stat card --}}
-                        <div class="bg-gray-800/80 border border-gray-700/50 rounded-xl p-5">
+                        <div class="glass-card rounded-xl p-5">
                             <div class="flex items-center gap-3 mb-4">
                                 <div class="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center">
                                     <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
@@ -258,7 +300,7 @@
                             </div>
                         </div>
                         {{-- Mock weapon breakdown --}}
-                        <div class="bg-gray-800/80 border border-gray-700/50 rounded-xl p-5">
+                        <div class="glass-card rounded-xl p-5">
                             <p class="text-xs text-gray-500 uppercase tracking-wider mb-3">Top Weapons</p>
                             <div class="space-y-2.5">
                                 <div>
@@ -266,7 +308,7 @@
                                         <span class="text-gray-300">M16A2</span>
                                         <span class="text-green-400 font-medium">142 kills</span>
                                     </div>
-                                    <div class="w-full bg-gray-700/50 rounded-full h-1.5">
+                                    <div class="w-full bg-white/3 rounded-full h-1.5">
                                         <div class="bg-green-500 h-1.5 rounded-full" style="width: 75%"></div>
                                     </div>
                                 </div>
@@ -275,7 +317,7 @@
                                         <span class="text-gray-300">AK-74</span>
                                         <span class="text-green-400 font-medium">98 kills</span>
                                     </div>
-                                    <div class="w-full bg-gray-700/50 rounded-full h-1.5">
+                                    <div class="w-full bg-white/3 rounded-full h-1.5">
                                         <div class="bg-green-500/70 h-1.5 rounded-full" style="width: 52%"></div>
                                     </div>
                                 </div>
@@ -284,14 +326,14 @@
                                         <span class="text-gray-300">SVD</span>
                                         <span class="text-green-400 font-medium">61 kills</span>
                                     </div>
-                                    <div class="w-full bg-gray-700/50 rounded-full h-1.5">
+                                    <div class="w-full bg-white/3 rounded-full h-1.5">
                                         <div class="bg-green-500/50 h-1.5 rounded-full" style="width: 32%"></div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         {{-- Mock hit zone --}}
-                        <div class="bg-gray-800/80 border border-gray-700/50 rounded-xl p-5">
+                        <div class="glass-card rounded-xl p-5">
                             <p class="text-xs text-gray-500 uppercase tracking-wider mb-3">Hit Zone Accuracy</p>
                             <div class="flex items-center justify-around">
                                 <div class="text-center">
@@ -321,7 +363,7 @@
     <div>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
             <!-- Max Players -->
-            <div class="bg-gray-800/60 backdrop-blur border border-gray-700/50 rounded-xl p-6 text-center">
+            <div class="glass-card rounded-xl p-6 text-center">
                 <div class="w-12 h-12 bg-green-500/10 rounded-lg flex items-center justify-center mx-auto mb-3">
                     <svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -331,7 +373,7 @@
                 <div class="text-sm text-gray-400 uppercase tracking-wide">Max Players</div>
             </div>
             <!-- Uptime -->
-            <div class="bg-gray-800/60 backdrop-blur border border-gray-700/50 rounded-xl p-6 text-center">
+            <div class="glass-card rounded-xl p-6 text-center">
                 <div class="w-12 h-12 bg-blue-500/10 rounded-lg flex items-center justify-center mx-auto mb-3">
                     <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -341,7 +383,7 @@
                 <div class="text-sm text-gray-400 uppercase tracking-wide">Server Uptime</div>
             </div>
             <!-- Location -->
-            <div class="bg-gray-800/60 backdrop-blur border border-gray-700/50 rounded-xl p-6 text-center">
+            <div class="glass-card rounded-xl p-6 text-center">
                 <div class="w-12 h-12 bg-purple-500/10 rounded-lg flex items-center justify-center mx-auto mb-3">
                     <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -351,7 +393,7 @@
                 <div class="text-sm text-gray-400 uppercase tracking-wide">Server Location</div>
             </div>
             <!-- Gameplay -->
-            <div class="bg-gray-800/60 backdrop-blur border border-gray-700/50 rounded-xl p-6 text-center">
+            <div class="glass-card rounded-xl p-6 text-center">
                 <div class="w-12 h-12 bg-amber-500/10 rounded-lg flex items-center justify-center mx-auto mb-3">
                     <svg class="w-6 h-6 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
@@ -365,7 +407,7 @@
     </div>
     <!-- CTA Section -->
     <div>
-        <div class="bg-gradient-to-r from-green-500/10 via-gray-800/80 to-green-500/10 border border-gray-700/50 rounded-2xl p-10 text-center">
+        <div class="bg-gradient-to-r from-green-500/10 via-white/3 to-green-500/10 border border-white/5 rounded-2xl p-10 text-center">
             <h2 class="text-2xl md:text-3xl font-bold mb-4">Ready to Join the Battle?</h2>
             <p class="text-gray-400 mb-8 max-w-xl mx-auto">Connect with Steam and become part of our community today. See you on the battlefield!</p>
             @guest
@@ -424,7 +466,7 @@
                 playstation: '<svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8.985 2.596v17.548l3.915 1.261V6.688c0-.69.304-1.151.794-.991.636.181.76.814.76 1.505v5.876c2.441 1.193 4.362-.002 4.362-3.153 0-3.237-1.126-4.675-4.438-5.827-1.307-.448-3.728-1.186-5.391-1.502h-.002zm4.656 16.242l6.296-2.275c.715-.258.826-.625.246-.818-.586-.192-1.637-.139-2.357.123l-4.205 1.5v-2.385l.24-.085s1.201-.42 2.913-.615c1.696-.18 3.792.03 5.437.661 1.848.548 2.078 1.346 1.6 2.147-.477.8-1.639 1.261-1.639 1.261l-8.531 3.058v-2.572zm-9.112 2.593L.203 19.755c-.857-.439-.709-1.176.375-1.64l2.695-1.07v2.393l-2.025.769c-.727.277-.839.648-.25.842.59.193 1.64.15 2.364-.125l.166-.062v2.369l-.098.036c-1.258.396-2.485.392-3.502-.026z"/></svg>'
             };
             const platformsHtml = (data.platforms || ['pc']).map(p =>
-                `<span class="inline-flex items-center gap-1 px-2 py-1 bg-gray-700/50 rounded text-xs text-gray-300">${platformIcons[p] || ''} ${p.toUpperCase()}</span>`
+                `<span class="inline-flex items-center gap-1 px-2 py-1 bg-white/3 rounded text-xs text-gray-300">${platformIcons[p] || ''} ${p.toUpperCase()}</span>`
             ).join('');
             statusEl.innerHTML = `
                 <div class="space-y-3">
@@ -436,7 +478,7 @@
                             <span class="text-sm text-gray-400">Players: <span class="text-white font-semibold">${data.players}/${data.maxPlayers}</span></span>
                             <span class="text-xs text-gray-500">${playerPercent}% full</span>
                         </div>
-                        <div class="w-full bg-gray-700/50 rounded-full h-2 overflow-hidden">
+                        <div class="w-full bg-white/3 rounded-full h-2 overflow-hidden">
                             <div class="bg-gradient-to-r from-green-500 to-emerald-400 h-2 rounded-full transition-all duration-500" style="width: ${playerPercent}%"></div>
                         </div>
                     </div>
@@ -446,7 +488,7 @@
                             <span class="inline-block w-2 h-2 bg-green-500 rounded-full mr-2"></span>
                             ${data.ip}:${data.port}
                         </span>
-                        <a href="steam://connect/${data.ip}:${data.port}" class="inline-flex items-center space-x-2 px-4 py-2 bg-green-600 hover:bg-green-500 rounded-lg font-medium transition text-sm">
+                        <a href="steam://connect/${data.ip}:${data.port}" class="inline-flex items-center space-x-2 px-4 py-2 bg-green-600 hover:bg-green-500 rounded-xl font-medium transition text-sm">
                             <span>Join Server</span>
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>

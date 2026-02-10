@@ -5,7 +5,7 @@
 @section('content')
 <div class="min-h-screen">
     {{-- Hero Section --}}
-    <div class="relative border border-gray-700 rounded-xl overflow-hidden mb-6">
+    <div class="relative border border-white/5 rounded-xl overflow-hidden mb-6">
         {{-- Background Image --}}
         <div class="absolute inset-0 z-0">
             <img src="https://wallpapercave.com/wp/wp15024138.webp" alt="Everon" class="w-full h-full object-cover">
@@ -53,7 +53,7 @@
 
                     {{-- Platform Badges --}}
                     @if(in_array('pc', $server->supported_platforms ?? []))
-                    <span class="px-3 py-1 text-xs font-medium bg-gray-700 text-gray-300 rounded-full">
+                    <span class="px-3 py-1 text-xs font-medium bg-white/5 text-gray-300 rounded-full">
                         <svg class="w-3 h-3 inline mr-1" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M20 18c1.1 0 1.99-.9 1.99-2L22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2H0v2h24v-2h-4zM4 6h16v10H4V6z"/>
                         </svg>
@@ -61,7 +61,7 @@
                     </span>
                     @endif
                     @if(in_array('xbox', $server->supported_platforms ?? []))
-                    <span class="px-3 py-1 text-xs font-medium bg-gray-700 text-gray-300 rounded-full">
+                    <span class="px-3 py-1 text-xs font-medium bg-white/5 text-gray-300 rounded-full">
                         <svg class="w-3 h-3 inline mr-1" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M4.102 21.033C6.211 22.881 8.977 24 12 24c3.026 0 5.789-1.119 7.902-2.967 1.877-1.912-4.316-8.709-7.902-11.417-3.582 2.708-9.779 9.505-7.898 11.417zm11.16-14.406c2.5 2.961 7.484 10.313 6.076 12.912C23.012 17.36 24 14.812 24 12c0-3.389-1.393-6.449-3.645-8.645-.146-.144-.293-.284-.441-.42l-.001-.001c-.151-.138-.304-.27-.46-.396a12.012 12.012 0 00-.844-.614c-.075-.051-.148-.104-.224-.153l-.017-.012A11.94 11.94 0 0012.001 0c-.127 0-.252.007-.378.012.178.023.349.066.518.115.055.016.113.026.168.044.055.017.109.038.163.058.13.047.258.1.384.157l.084.039c.038.018.074.04.112.059.096.049.189.102.281.157.09.052.178.107.265.164.039.026.079.05.117.076l.006.004c.057.039.113.08.169.121.226.164.443.34.651.527l.009.008-.001-.001-.001-.001-.003-.002-.007-.006c-2.402 2.152-5.468 6.477-5.468 6.477s-3.066-4.325-5.468-6.478l-.007.006-.003.002-.002.002-.001.001-.001.001.009-.008c.208-.188.426-.363.651-.527.056-.041.112-.082.169-.121l.006-.004c.038-.026.078-.05.117-.076.087-.057.175-.112.265-.164.092-.055.185-.108.281-.157.038-.019.074-.041.112-.059l.084-.039c.126-.057.254-.11.384-.157.054-.02.108-.041.163-.058.055-.018.113-.028.168-.044a3.56 3.56 0 01.518-.115A12.012 12.012 0 0012.001 0c-2.725 0-5.26.91-7.281 2.442l-.017.012c-.076.049-.149.102-.224.153-.295.195-.578.406-.844.614-.156.126-.309.258-.46.396l-.001.001c-.148.136-.295.276-.441.42C.393 5.551-1 8.611-1 12c0 2.812.988 5.36 2.662 7.539-1.408-2.599 3.576-9.951 6.076-12.912 1.038-1.231 2.204-2.363 3.262-2.927 1.058.564 2.224 1.696 3.262 2.927z"/>
                         </svg>
@@ -69,7 +69,7 @@
                     </span>
                     @endif
                     @if(in_array('playstation', $server->supported_platforms ?? []))
-                    <span class="px-3 py-1 text-xs font-medium bg-gray-700 text-gray-300 rounded-full">
+                    <span class="px-3 py-1 text-xs font-medium bg-white/5 text-gray-300 rounded-full">
                         <svg class="w-3 h-3 inline mr-1" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M8.985 2.596v17.548l3.915 1.261V6.688c0-.69.304-1.151.794-.991.636.181.76.814.76 1.505v5.876c2.441 1.193 4.362-.002 4.362-3.153 0-3.237-1.126-4.675-4.438-5.827-1.307-.448-3.728-1.186-5.391-1.502h-.002zm4.656 16.242l6.296-2.275c.715-.258.826-.625.246-.818-.586-.192-1.637-.139-2.357.123l-4.205 1.5v-2.385l.24-.085s1.201-.42 2.913-.615c1.696-.18 3.792.03 5.437.661 1.848.548 2.078 1.346 1.6 2.147-.477.8-1.639 1.261-1.639 1.261l-8.531 3.058v-2.572zm-9.112 2.593L.203 19.755c-.857-.439-.709-1.176.375-1.64l2.695-1.07v2.393l-2.025.769c-.727.277-.839.648-.25.842.59.193 1.64.15 2.364-.125l.166-.062v2.369l-.098.036c-1.258.396-2.485.392-3.502-.026z"/>
                         </svg>
@@ -86,7 +86,7 @@
                         </svg>
                         <span id="hero-player-count" class="text-xl font-bold text-white">{{ $server->players }} / {{ $server->max_players }}</span>
                     </div>
-                    <div class="w-full bg-gray-700 rounded-full h-2">
+                    <div class="w-full bg-white/5 rounded-full h-2">
                         <div id="hero-player-bar" class="bg-green-500 h-2 rounded-full transition-all duration-300" style="width: {{ $server->player_percentage }}%"></div>
                     </div>
                     <p class="text-xs text-gray-500 mt-1"><span id="hero-percentage">{{ $server->player_percentage }}</span>% Full</p>
@@ -114,21 +114,21 @@
                     </span>
                 </div>
 
-                <button id="copy-info-btn" class="flex items-center justify-center gap-2 px-4 py-2.5 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition">
+                <button id="copy-info-btn" class="flex items-center justify-center gap-2 px-4 py-2.5 bg-white/5 hover:bg-white/10 text-white rounded-xl transition">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
                     </svg>
                     Copy Info
                 </button>
 
-                <button id="share-btn" class="flex items-center justify-center gap-2 px-4 py-2.5 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition">
+                <button id="share-btn" class="flex items-center justify-center gap-2 px-4 py-2.5 bg-white/5 hover:bg-white/10 text-white rounded-xl transition">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
                     </svg>
                     Share
                 </button>
 
-                <a href="{{ route('servers.heatmap', $server->battlemetrics_id) }}" class="flex items-center justify-center gap-2 px-4 py-2.5 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition">
+                <a href="{{ route('servers.heatmap', $server->battlemetrics_id) }}" class="flex items-center justify-center gap-2 px-4 py-2.5 bg-white/5 hover:bg-white/10 text-white rounded-xl transition">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -136,14 +136,14 @@
                     Heatmap
                 </a>
 
-                <a href="{{ route('servers.embed', $server) }}" class="flex items-center justify-center gap-2 px-4 py-2.5 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition">
+                <a href="{{ route('servers.embed', $server) }}" class="flex items-center justify-center gap-2 px-4 py-2.5 bg-white/5 hover:bg-white/10 text-white rounded-xl transition">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
                     </svg>
                     Embed
                 </a>
 
-                <a href="steam://connect/{{ $server->ip }}:{{ $server->port }}" class="flex items-center justify-center gap-2 px-4 py-2.5 bg-green-600 hover:bg-green-500 text-white rounded-lg transition font-medium">
+                <a href="steam://connect/{{ $server->ip }}:{{ $server->port }}" class="flex items-center justify-center gap-2 px-4 py-2.5 bg-green-600 hover:bg-green-500 text-white rounded-xl transition font-medium">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -159,7 +159,7 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6 items-start">
         {{-- Left Column: Chart + Sessions + Mods --}}
         <div class="lg:col-span-2 space-y-6">
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-4">
+        <div class="glass-card rounded-xl p-4">
             <div class="flex items-center justify-between mb-3">
                 <h2 class="text-base font-semibold text-white flex items-center gap-2">
                     Player Count Over Time
@@ -171,7 +171,7 @@
                 </h2>
 
                 {{-- Time Filter Buttons --}}
-                <div class="flex items-center gap-1 bg-gray-700/50 rounded-lg p-1">
+                <div class="flex items-center gap-1 bg-white/3 rounded-lg p-1">
                     <button data-range="6h" class="time-filter-btn px-2 py-1 text-xs font-medium rounded-md transition text-gray-400 hover:text-white">6h</button>
                     <button data-range="24h" class="time-filter-btn px-2 py-1 text-xs font-medium rounded-md transition bg-green-500/20 text-green-400">24h</button>
                     <button data-range="72h" class="time-filter-btn px-2 py-1 text-xs font-medium rounded-md transition text-gray-400 hover:text-white">72h</button>
@@ -184,7 +184,7 @@
             </div>
 
             {{-- Stats Row --}}
-            <div class="grid grid-cols-4 gap-2 pt-3 mt-3 border-t border-gray-700">
+            <div class="grid grid-cols-4 gap-2 pt-3 mt-3 border-t border-white/5">
                 <div class="text-center">
                     <p class="text-[10px] text-gray-500 uppercase tracking-wider">Average</p>
                     <p id="stat-average" class="text-sm font-bold text-white">{{ $stats['average'] ?? 0 }}</p>
@@ -212,9 +212,9 @@
         </div>
 
     {{-- Kill Feed Section --}}
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl" x-data="killFeedWidget()" x-init="init()">
-        <div class="flex items-center justify-between p-4 border-b border-gray-700">
-            <h2 class="text-lg font-semibold text-white flex items-center gap-2">
+    <div class="glass-card rounded-xl" x-data="killFeedWidget()" x-init="init()">
+        <div class="flex items-center justify-between p-4 border-b border-white/5">
+            <h2 class="text-sm font-semibold text-white uppercase tracking-wider flex items-center gap-2">
                 <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                 </svg>
@@ -222,11 +222,11 @@
             </h2>
             <div class="flex items-center gap-3">
                 <label class="flex items-center gap-1.5 text-xs text-gray-400 cursor-pointer">
-                    <input type="checkbox" x-model="hideAI" class="rounded bg-gray-700 border-gray-600 text-green-500 focus:ring-green-500 focus:ring-offset-0 w-3.5 h-3.5">
+                    <input type="checkbox" x-model="hideAI" class="rounded bg-white/5 border-white/10 text-green-500 focus:ring-green-500 focus:ring-offset-0 w-3.5 h-3.5">
                     Hide AI
                 </label>
                 <label class="flex items-center gap-1.5 text-xs text-gray-400 cursor-pointer">
-                    <input type="checkbox" x-model="headshotsOnly" class="rounded bg-gray-700 border-gray-600 text-green-500 focus:ring-green-500 focus:ring-offset-0 w-3.5 h-3.5">
+                    <input type="checkbox" x-model="headshotsOnly" class="rounded bg-white/5 border-white/10 text-green-500 focus:ring-green-500 focus:ring-offset-0 w-3.5 h-3.5">
                     Headshots
                 </label>
                 <span class="relative flex h-2 w-2">
@@ -235,9 +235,9 @@
                 </span>
             </div>
         </div>
-        <div class="divide-y divide-gray-700/50 max-h-80 overflow-y-auto">
+        <div class="divide-y divide-white/5 max-h-80 overflow-y-auto">
             <template x-for="kill in filteredKills" :key="kill.id">
-                <div class="px-4 py-2.5 hover:bg-gray-700/30 transition text-sm flex items-center gap-2">
+                <div class="px-4 py-2.5 hover:bg-white/5 transition text-sm flex items-center gap-2">
                     {{-- Headshot badge --}}
                     <template x-if="kill.is_headshot">
                         <span class="text-yellow-400 text-xs" title="Headshot">HS</span>
@@ -269,24 +269,24 @@
                 No kills to display
             </div>
         </div>
-        <div class="px-4 py-2 border-t border-gray-700 text-center">
+        <div class="px-4 py-2 border-t border-white/5 text-center">
             <a href="{{ route('kill-feed') }}" class="text-xs text-green-400 hover:text-green-300">View full kill feed &rarr;</a>
         </div>
     </div>
 
     {{-- Sessions Section --}}
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl">
+    <div class="glass-card rounded-xl">
         <button id="toggle-sessions" class="w-full flex items-center justify-between p-4 text-left">
-            <h2 class="text-lg font-semibold text-white">Server Sessions</h2>
+            <h2 class="text-sm font-semibold text-white uppercase tracking-wider">Server Sessions</h2>
             <svg id="sessions-chevron" class="w-5 h-5 text-gray-400 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
             </svg>
         </button>
 
-        <div id="sessions-content" class="hidden border-t border-gray-700">
+        <div id="sessions-content" class="hidden border-t border-white/5">
             <div class="p-4 space-y-3">
                 @forelse($sessions as $index => $session)
-                <div class="bg-gray-700/50 rounded-lg p-4">
+                <div class="bg-white/3 rounded-lg p-4">
                     <div class="flex items-center justify-between mb-3">
                         <div class="flex items-center gap-2">
                             <span class="text-white font-medium">Session {{ $session['session_number'] ?? ($index + 1) }}</span>
@@ -328,33 +328,33 @@
     </div>
 
     {{-- Mods Section --}}
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between p-4 border-b border-gray-700 gap-4">
-            <h2 class="text-lg font-semibold text-white">Server Mods ({{ $mods->count() }})</h2>
+    <div class="glass-card rounded-xl">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between p-4 border-b border-white/5 gap-4">
+            <h2 class="text-sm font-semibold text-white uppercase tracking-wider">Server Mods ({{ $mods->count() }})</h2>
 
             <div class="flex items-center gap-2">
                 {{-- Sort Dropdown --}}
-                <select id="mod-sort" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg px-3 py-2 focus:ring-green-500 focus:border-green-500">
+                <select id="mod-sort" class="bg-white/5 border border-white/10 text-white text-sm rounded-lg px-3 py-2 focus:ring-green-500 focus:border-green-500">
                     <option value="load_order">By Load Order</option>
                     <option value="name">By Name</option>
                     <option value="updated">By Update Date</option>
                 </select>
 
                 {{-- View Toggle --}}
-                <div class="flex items-center bg-gray-700 rounded-lg p-1">
+                <div class="flex items-center bg-white/5 rounded-lg p-1">
                     <button id="view-list" class="view-toggle-btn px-3 py-1.5 text-xs font-medium rounded-md bg-green-500/20 text-green-400">List</button>
                     <button id="view-json" class="view-toggle-btn px-3 py-1.5 text-xs font-medium rounded-md text-gray-400 hover:text-white">JSON</button>
                 </div>
 
                 {{-- Copy Button --}}
-                <button id="copy-mods-btn" class="p-2 bg-gray-700 hover:bg-gray-600 text-gray-400 hover:text-white rounded-lg transition">
+                <button id="copy-mods-btn" class="p-2 bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white rounded-lg transition">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
                     </svg>
                 </button>
 
                 {{-- Download Button --}}
-                <a href="{{ route('servers.mods.download', $server->battlemetrics_id) }}" class="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-500 text-white text-sm font-medium rounded-lg transition">
+                <a href="{{ route('servers.mods.download', $server->battlemetrics_id) }}" class="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-500 text-white text-sm font-medium rounded-xl transition">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
                     </svg>
@@ -366,16 +366,16 @@
         {{-- Mods List View --}}
         <div id="mods-list-view">
             {{-- Header --}}
-            <div class="hidden sm:flex items-center px-3 py-2 bg-gray-700/50 text-xs text-gray-500 uppercase tracking-wider gap-4">
+            <div class="hidden sm:flex items-center px-3 py-2 bg-white/3 text-xs text-gray-500 uppercase tracking-wider gap-4">
                 <div class="flex-1">Name</div>
                 <div class="w-20">Version</div>
                 <div class="w-32">Author</div>
                 <div class="w-28">Updated</div>
                 <div class="w-20"></div>
             </div>
-            <div class="divide-y divide-gray-700">
+            <div class="divide-y divide-white/5">
             @forelse($mods as $mod)
-            <div class="mod-item flex items-center p-3 hover:bg-gray-700/30 transition gap-4" data-name="{{ strtolower($mod->name) }}" data-updated="{{ $mod->workshop_updated_at?->timestamp ?? 0 }}" data-order="{{ $mod->pivot->load_order }}">
+            <div class="mod-item flex items-center p-3 hover:bg-white/5 transition gap-4" data-name="{{ strtolower($mod->name) }}" data-updated="{{ $mod->workshop_updated_at?->timestamp ?? 0 }}" data-order="{{ $mod->pivot->load_order }}">
                 <div class="flex-1 min-w-0">
                     <span class="text-white font-medium truncate">{{ $mod->name }}</span>
                 </div>
@@ -410,18 +410,18 @@
         </div>
 
         {{-- Right Column: Server Information --}}
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl overflow-hidden">
+        <div class="glass-card rounded-xl overflow-hidden">
             {{-- Header --}}
-            <div class="flex items-center gap-2 p-4 border-b border-gray-700">
+            <div class="flex items-center gap-2 p-4 border-b border-white/5">
                 <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2"/>
                 </svg>
-                <h2 class="text-lg font-semibold text-white">Server Information</h2>
+                <h2 class="text-sm font-semibold text-white uppercase tracking-wider">Server Information</h2>
             </div>
 
             {{-- Tabs --}}
-            <div class="flex border-b border-gray-700">
-                <button id="tab-connection" class="info-tab flex-1 px-4 py-3 text-sm font-medium text-green-400 border-b-2 border-green-500 bg-gray-800/50 flex items-center justify-center gap-2">
+            <div class="flex border-b border-white/5">
+                <button id="tab-connection" class="info-tab flex-1 px-4 py-3 text-sm font-medium text-green-400 border-b-2 border-green-500 bg-white/3 flex items-center justify-center gap-2">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
                     </svg>
@@ -440,7 +440,7 @@
                 {{-- Host Address --}}
                 <div>
                     <label class="block text-xs text-gray-500 uppercase tracking-wider mb-1">Host Address</label>
-                    <div class="flex items-center justify-between bg-gray-700/50 rounded-lg px-3 py-2">
+                    <div class="flex items-center justify-between bg-white/3 rounded-lg px-3 py-2">
                         <code class="text-sm text-white font-mono">{{ $server->ip }}:{{ $server->port }}</code>
                         <button onclick="copyToClipboard('{{ $server->ip }}:{{ $server->port }}')" class="text-gray-400 hover:text-green-400 transition">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -453,7 +453,7 @@
                 {{-- Direct Join Code --}}
                 <div>
                     <label class="block text-xs text-gray-500 uppercase tracking-wider mb-1">Direct Join Code</label>
-                    <div class="flex items-center justify-between bg-gray-700/50 rounded-lg px-3 py-2">
+                    <div class="flex items-center justify-between bg-white/3 rounded-lg px-3 py-2">
                         <code class="text-sm text-white font-mono">{{ $server->direct_join_code ?? 'N/A' }}</code>
                         @if($server->direct_join_code)
                         <button onclick="copyToClipboard('{{ $server->direct_join_code }}')" class="text-gray-400 hover:text-green-400 transition">
@@ -468,7 +468,7 @@
                 {{-- Server ID --}}
                 <div>
                     <label class="block text-xs text-gray-500 uppercase tracking-wider mb-1">Server ID</label>
-                    <div class="flex items-center justify-between bg-gray-700/50 rounded-lg px-3 py-2">
+                    <div class="flex items-center justify-between bg-white/3 rounded-lg px-3 py-2">
                         <code class="text-sm text-white font-mono truncate">{{ $server->battlemetrics_id }}</code>
                         <button onclick="copyToClipboard('{{ $server->battlemetrics_id }}')" class="text-gray-400 hover:text-green-400 transition">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -479,7 +479,7 @@
                 </div>
 
                 {{-- Supported Platforms --}}
-                <div class="pt-4 border-t border-gray-700">
+                <div class="pt-4 border-t border-white/5">
                     <div class="flex items-center gap-2 mb-3">
                         <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
@@ -515,7 +515,7 @@
                 </div>
 
                 {{-- Server Status Badges --}}
-                <div class="pt-4 border-t border-gray-700">
+                <div class="pt-4 border-t border-white/5">
                     <div class="flex items-center gap-2 mb-3">
                         <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -523,26 +523,26 @@
                         <label class="text-xs text-gray-500 uppercase tracking-wider">Server Status</label>
                     </div>
                     <div class="flex flex-wrap gap-1.5">
-                        <span class="inline-flex items-center gap-1 px-2 py-1 text-[10px] rounded {{ $server->is_official ? 'bg-green-500/20 text-green-400' : 'bg-gray-700/50 text-gray-500' }}">
+                        <span class="inline-flex items-center gap-1 px-2 py-1 text-[10px] rounded {{ $server->is_official ? 'bg-green-500/20 text-green-400' : 'bg-white/3 text-gray-500' }}">
                             <i data-lucide="shield" class="w-3 h-3"></i>Official
                         </span>
-                        <span class="inline-flex items-center gap-1 px-2 py-1 text-[10px] rounded {{ $server->is_joinable ? 'bg-green-500/20 text-green-400' : 'bg-gray-700/50 text-gray-500' }}">
+                        <span class="inline-flex items-center gap-1 px-2 py-1 text-[10px] rounded {{ $server->is_joinable ? 'bg-green-500/20 text-green-400' : 'bg-white/3 text-gray-500' }}">
                             <i data-lucide="log-in" class="w-3 h-3"></i>Joinable
                         </span>
-                        <span class="inline-flex items-center gap-1 px-2 py-1 text-[10px] rounded {{ $server->is_visible ? 'bg-green-500/20 text-green-400' : 'bg-gray-700/50 text-gray-500' }}">
+                        <span class="inline-flex items-center gap-1 px-2 py-1 text-[10px] rounded {{ $server->is_visible ? 'bg-green-500/20 text-green-400' : 'bg-white/3 text-gray-500' }}">
                             <i data-lucide="eye" class="w-3 h-3"></i>Visible
                         </span>
-                        <span class="inline-flex items-center gap-1 px-2 py-1 text-[10px] rounded {{ $server->is_password_protected ? 'bg-yellow-500/20 text-yellow-400' : 'bg-gray-700/50 text-gray-500' }}">
+                        <span class="inline-flex items-center gap-1 px-2 py-1 text-[10px] rounded {{ $server->is_password_protected ? 'bg-yellow-500/20 text-yellow-400' : 'bg-white/3 text-gray-500' }}">
                             <i data-lucide="{{ $server->is_password_protected ? 'lock' : 'lock-open' }}" class="w-3 h-3"></i>Protected
                         </span>
-                        <span class="inline-flex items-center gap-1 px-2 py-1 text-[10px] rounded {{ $server->battleye_enabled ? 'bg-green-500/20 text-green-400' : 'bg-gray-700/50 text-gray-500' }}">
+                        <span class="inline-flex items-center gap-1 px-2 py-1 text-[10px] rounded {{ $server->battleye_enabled ? 'bg-green-500/20 text-green-400' : 'bg-white/3 text-gray-500' }}">
                             <i data-lucide="shield-check" class="w-3 h-3"></i>BattlEye
                         </span>
                     </div>
                 </div>
 
                 {{-- Server Sessions (Restart History) --}}
-                <div class="pt-4 border-t border-gray-700">
+                <div class="pt-4 border-t border-white/5">
                     <div class="flex items-center gap-2 mb-3">
                         <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
@@ -555,7 +555,7 @@
                     @endphp
 
                     @if($currentSession)
-                    <div class="bg-gray-700/30 rounded-lg p-3 mb-3">
+                    <div class="bg-white/3 rounded-lg p-3 mb-3">
                         <div class="flex items-center justify-between mb-2">
                             <span class="text-white font-medium text-sm">Current Session</span>
                             <span class="px-2 py-0.5 text-xs bg-green-500/20 text-green-400 rounded-full">
@@ -574,7 +574,7 @@
                                 <p class="text-gray-500">{{ \Carbon\Carbon::parse($currentSession['last_seen_at'])->format('M j, H:i') }}</p>
                             </div>
                         </div>
-                        <div class="flex items-center justify-between text-xs border-t border-gray-600 pt-2">
+                        <div class="flex items-center justify-between text-xs border-t border-white/5 pt-2">
                             <div class="text-center">
                                 <span class="text-gray-500">Avg Players</span>
                                 <span class="text-white ml-1">{{ $currentSession['average_players'] ?? 0 }}</span>
@@ -598,27 +598,27 @@
             {{-- Version Details Tab Content (Hidden by default) --}}
             <div id="content-version" class="p-4 space-y-4 hidden">
                 <div class="space-y-3">
-                    <div class="flex justify-between text-sm py-2 border-b border-gray-700/50">
+                    <div class="flex justify-between text-sm py-2 border-b border-white/5">
                         <span class="text-gray-400">Game Version</span>
                         <span class="text-white font-mono">{{ $server->game_version ?? 'Unknown' }}</span>
                     </div>
-                    <div class="flex justify-between text-sm py-2 border-b border-gray-700/50">
+                    <div class="flex justify-between text-sm py-2 border-b border-white/5">
                         <span class="text-gray-400">Host Type</span>
                         <span class="text-white">{{ $server->is_official ? 'Official' : 'Community' }}</span>
                     </div>
-                    <div class="flex justify-between text-sm py-2 border-b border-gray-700/50">
+                    <div class="flex justify-between text-sm py-2 border-b border-white/5">
                         <span class="text-gray-400">Scenario</span>
                         <span class="text-white text-right max-w-[60%] truncate">{{ $server->scenario_display_name ?? 'Unknown' }}</span>
                     </div>
-                    <div class="flex justify-between text-sm py-2 border-b border-gray-700/50">
+                    <div class="flex justify-between text-sm py-2 border-b border-white/5">
                         <span class="text-gray-400">Platform Hosted On</span>
                         <span class="text-white">{{ $server->country_flag }} {{ strtoupper($server->country_code ?? 'Unknown') }}</span>
                     </div>
-                    <div class="flex justify-between text-sm py-2 border-b border-gray-700/50">
+                    <div class="flex justify-between text-sm py-2 border-b border-white/5">
                         <span class="text-gray-400">Query Port</span>
                         <span class="text-white font-mono">{{ $server->query_port ?? $server->port }}</span>
                     </div>
-                    <div class="flex justify-between text-sm py-2 border-b border-gray-700/50">
+                    <div class="flex justify-between text-sm py-2 border-b border-white/5">
                         <span class="text-gray-400">Server ID</span>
                         <span class="text-white font-mono text-xs">{{ $server->battlemetrics_id }}</span>
                     </div>
@@ -635,7 +635,7 @@
 </div>
 
 {{-- Toast Notification --}}
-<div id="toast" class="fixed bottom-4 right-4 bg-gray-800 border border-gray-700 text-white px-4 py-3 rounded-lg shadow-xl transform translate-y-20 opacity-0 transition-all duration-300 z-50">
+<div id="toast" class="fixed bottom-4 right-4 bg-white/3 border border-white/5 text-white px-4 py-3 rounded-lg shadow-xl transform translate-y-20 opacity-0 transition-all duration-300 z-50">
     <span id="toast-message">Copied to clipboard!</span>
 </div>
 
@@ -792,18 +792,18 @@
     // Tabs
     function initTabs() {
         document.getElementById('tab-connection').addEventListener('click', function() {
-            this.classList.add('text-green-400', 'border-green-500', 'bg-gray-800/50');
+            this.classList.add('text-green-400', 'border-green-500', 'bg-white/3');
             this.classList.remove('text-gray-400', 'border-transparent');
-            document.getElementById('tab-version').classList.remove('text-green-400', 'border-green-500', 'bg-gray-800/50');
+            document.getElementById('tab-version').classList.remove('text-green-400', 'border-green-500', 'bg-white/3');
             document.getElementById('tab-version').classList.add('text-gray-400', 'border-transparent');
             document.getElementById('content-connection').classList.remove('hidden');
             document.getElementById('content-version').classList.add('hidden');
         });
 
         document.getElementById('tab-version').addEventListener('click', function() {
-            this.classList.add('text-green-400', 'border-green-500', 'bg-gray-800/50');
+            this.classList.add('text-green-400', 'border-green-500', 'bg-white/3');
             this.classList.remove('text-gray-400', 'border-transparent');
-            document.getElementById('tab-connection').classList.remove('text-green-400', 'border-green-500', 'bg-gray-800/50');
+            document.getElementById('tab-connection').classList.remove('text-green-400', 'border-green-500', 'bg-white/3');
             document.getElementById('tab-connection').classList.add('text-gray-400', 'border-transparent');
             document.getElementById('content-version').classList.remove('hidden');
             document.getElementById('content-connection').classList.add('hidden');

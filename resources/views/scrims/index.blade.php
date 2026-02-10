@@ -11,7 +11,7 @@
                     <p class="text-gray-400">Challenge other teams to practice matches. Stats tracked separately from ranked play.</p>
                 </div>
                 @if($userTeam && $userTeam->isUserCaptainOrOfficer(auth()->user()))
-                <a href="{{ route('scrims.create') }}" class="px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg transition flex items-center gap-2">
+                <a href="{{ route('scrims.create') }}" class="px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-xl transition flex items-center gap-2">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                     </svg>
@@ -36,7 +36,7 @@
         @endif
         {{-- Pending Invitations --}}
         @if($pendingInvitations->isNotEmpty())
-        <div class="bg-gray-800/50 backdrop-blur border border-blue-500/30 rounded-xl overflow-hidden">
+        <div class="glass-card backdrop-blur border border-blue-500/30 rounded-xl overflow-hidden">
             <div class="bg-blue-500/10 border-b border-blue-500/30 px-6 py-4">
                 <h2 class="text-xl font-bold text-white flex items-center gap-2">
                     <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -45,9 +45,9 @@
                     Pending Invitations ({{ $pendingInvitations->count() }})
                 </h2>
             </div>
-            <div class="divide-y divide-gray-700">
+            <div class="divide-y divide-white/5">
                 @foreach($pendingInvitations as $invitation)
-                <div class="p-6 hover:bg-gray-700/30 transition">
+                <div class="p-6 hover:bg-white/5 transition">
                     <div class="flex items-center justify-between gap-4">
                         <div class="flex-1">
                             <div class="flex items-center gap-3 mb-2">
@@ -80,13 +80,13 @@
                         <div class="flex gap-2">
                             <form action="{{ route('scrims.invitations.accept', $invitation) }}" method="POST">
                                 @csrf
-                                <button type="submit" class="px-4 py-2 bg-green-600/20 hover:bg-green-600/30 text-green-400 rounded-lg transition">
+                                <button type="submit" class="px-4 py-2 bg-green-600/20 hover:bg-green-600/30 text-green-400 rounded-xl transition">
                                     Accept
                                 </button>
                             </form>
                             <form action="{{ route('scrims.invitations.decline', $invitation) }}" method="POST">
                                 @csrf
-                                <button type="submit" class="px-4 py-2 bg-red-600/20 hover:bg-red-600/30 text-red-400 rounded-lg transition">
+                                <button type="submit" class="px-4 py-2 bg-red-600/20 hover:bg-red-600/30 text-red-400 rounded-xl transition">
                                     Decline
                                 </button>
                             </form>
@@ -98,13 +98,13 @@
         </div>
         @endif
         {{-- Upcoming Scrims --}}
-        <div class="bg-gray-800/50 backdrop-blur border border-gray-700 rounded-xl overflow-hidden">
-            <div class="bg-gray-900/50 border-b border-gray-700 px-6 py-4">
+        <div class="glass-card backdrop-blur rounded-xl overflow-hidden">
+            <div class="bg-gray-900/50 border-b border-white/5 px-6 py-4">
                 <h2 class="text-xl font-bold text-white">Upcoming Scrims</h2>
             </div>
             <div class="p-6">
                 @forelse($upcomingScrims as $scrim)
-                <a href="{{ route('scrims.show', $scrim) }}" class="block p-4 bg-gray-900/50 hover:bg-gray-700/30 rounded-lg mb-3 last:mb-0 transition">
+                <a href="{{ route('scrims.show', $scrim) }}" class="block p-4 bg-gray-900/50 hover:bg-white/5 rounded-lg mb-3 last:mb-0 transition">
                     <div class="flex items-center justify-between gap-4">
                         <div class="flex-1">
                             <div class="flex items-center gap-3 mb-2">
@@ -124,7 +124,7 @@
                                 @endif
                             </div>
                         </div>
-                        <span class="px-3 py-1 rounded-full text-xs font-semibold {{ $scrim->status_color }} bg-gray-700/50">
+                        <span class="px-3 py-1 rounded-full text-xs font-semibold {{ $scrim->status_color }} bg-white/3">
                             {{ $scrim->status_label }}
                         </span>
                     </div>
@@ -141,13 +141,13 @@
             </div>
         </div>
         {{-- Completed Scrims --}}
-        <div class="bg-gray-800/50 backdrop-blur border border-gray-700 rounded-xl overflow-hidden">
-            <div class="bg-gray-900/50 border-b border-gray-700 px-6 py-4">
+        <div class="glass-card backdrop-blur rounded-xl overflow-hidden">
+            <div class="bg-gray-900/50 border-b border-white/5 px-6 py-4">
                 <h2 class="text-xl font-bold text-white">Recent Scrims</h2>
             </div>
             <div class="p-6">
                 @forelse($completedScrims as $scrim)
-                <a href="{{ route('scrims.show', $scrim) }}" class="block p-4 bg-gray-900/50 hover:bg-gray-700/30 rounded-lg mb-3 last:mb-0 transition">
+                <a href="{{ route('scrims.show', $scrim) }}" class="block p-4 bg-gray-900/50 hover:bg-white/5 rounded-lg mb-3 last:mb-0 transition">
                     <div class="flex items-center justify-between gap-4">
                         <div class="flex-1">
                             <div class="flex items-center gap-3 mb-2">
@@ -167,7 +167,7 @@
                                 {{ $scrim->completed_at ? $scrim->completed_at->format('M j, Y @ g:i A') : $scrim->scheduled_at->format('M j, Y @ g:i A') }}
                             </div>
                         </div>
-                        <span class="px-3 py-1 rounded-full text-xs font-semibold {{ $scrim->status_color }} bg-gray-700/50">
+                        <span class="px-3 py-1 rounded-full text-xs font-semibold {{ $scrim->status_color }} bg-white/3">
                             {{ $scrim->status_label }}
                         </span>
                     </div>

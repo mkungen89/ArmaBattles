@@ -16,7 +16,7 @@
     @endphp
 
     <!-- Header -->
-    <div class="bg-gray-800 rounded-xl p-6 border border-gray-700">
+    <div class="glass-card rounded-xl p-6">
         <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             <div>
                 <h1 class="text-2xl font-bold mb-2">{{ $attr['name'] ?? 'Unknown Server' }}</h1>
@@ -28,26 +28,26 @@
                         </span>
                         {{ ($attr['status'] ?? '') === 'online' ? 'Online' : 'Offline' }}
                     </span>
-                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-700 text-gray-300">
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-white/5 text-gray-300">
                         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
                         </svg>
                         {{ $players }}/{{ $maxPlayers }}
                     </span>
-                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-700 text-gray-300">
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-white/5 text-gray-300">
                         {{ $percentage }}% Full
                     </span>
                 </div>
             </div>
             <div class="flex flex-wrap gap-2">
-                <a href="steam://connect/{{ $attr['ip'] ?? '' }}:{{ $attr['port'] ?? '' }}" class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-500 rounded-lg font-medium transition">
+                <a href="steam://connect/{{ $attr['ip'] ?? '' }}:{{ $attr['port'] ?? '' }}" class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-500 rounded-xl font-medium transition">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
                     Join Server
                 </a>
-                <button onclick="copyToClipboard('{{ $attr['ip'] ?? '' }}:{{ $attr['port'] ?? '' }}')" class="inline-flex items-center px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg font-medium transition">
+                <button onclick="copyToClipboard('{{ $attr['ip'] ?? '' }}:{{ $attr['port'] ?? '' }}')" class="inline-flex items-center px-4 py-2 bg-white/5 hover:bg-white/10 rounded-xl font-medium transition">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/>
                     </svg>
@@ -60,7 +60,7 @@
     <!-- Server Info Grid -->
     <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
         <!-- Connection Info -->
-        <div class="bg-gray-800 rounded-xl p-5 border border-gray-700">
+        <div class="glass-card rounded-xl p-5">
             <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wide mb-3">Connection</h3>
             <div class="space-y-3">
                 <div>
@@ -79,7 +79,7 @@
         </div>
 
         <!-- Version Info -->
-        <div class="bg-gray-800 rounded-xl p-5 border border-gray-700">
+        <div class="glass-card rounded-xl p-5">
             <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wide mb-3">Version</h3>
             <div class="space-y-3">
                 <div>
@@ -94,7 +94,7 @@
                     <p class="text-xs text-gray-500">Platforms</p>
                     <div class="flex gap-1 mt-1">
                         @foreach($reforger['supportedGameClientTypes'] ?? [] as $platform)
-                            <span class="px-2 py-0.5 bg-gray-700 rounded text-xs">
+                            <span class="px-2 py-0.5 bg-white/5 rounded text-xs">
                                 {{ str_replace('PLATFORM_', '', $platform) }}
                             </span>
                         @endforeach
@@ -104,7 +104,7 @@
         </div>
 
         <!-- Server Status -->
-        <div class="bg-gray-800 rounded-xl p-5 border border-gray-700">
+        <div class="glass-card rounded-xl p-5">
             <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wide mb-3">Status</h3>
             <div class="space-y-2">
                 <div class="flex items-center justify-between">
@@ -133,7 +133,7 @@
         </div>
 
         <!-- Location -->
-        <div class="bg-gray-800 rounded-xl p-5 border border-gray-700">
+        <div class="glass-card rounded-xl p-5">
             <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wide mb-3">Location</h3>
             <div class="space-y-3">
                 <div>
@@ -153,13 +153,13 @@
     </div>
 
     <!-- Player Count Graph -->
-    <div class="bg-gray-800 rounded-xl p-6 border border-gray-700">
+    <div class="glass-card rounded-xl p-6">
         <div class="flex items-center justify-between mb-4">
-            <h2 class="text-lg font-semibold">Player Count Over Time</h2>
+            <h2 class="text-sm font-semibold text-white uppercase tracking-wider">Player Count Over Time</h2>
             <div class="flex gap-2">
-                <button onclick="loadHistory('6h')" id="btn-6h" class="px-3 py-1 text-sm rounded-lg bg-gray-700 hover:bg-gray-600 transition">6h</button>
+                <button onclick="loadHistory('6h')" id="btn-6h" class="px-3 py-1 text-sm rounded-lg bg-white/5 hover:bg-white/10 transition">6h</button>
                 <button onclick="loadHistory('24h')" id="btn-24h" class="px-3 py-1 text-sm rounded-lg bg-green-600 text-white transition">24h</button>
-                <button onclick="loadHistory('72h')" id="btn-72h" class="px-3 py-1 text-sm rounded-lg bg-gray-700 hover:bg-gray-600 transition">72h</button>
+                <button onclick="loadHistory('72h')" id="btn-72h" class="px-3 py-1 text-sm rounded-lg bg-white/5 hover:bg-white/10 transition">72h</button>
             </div>
         </div>
         <div id="player-chart" class="h-64 relative">
@@ -172,22 +172,22 @@
 
     <!-- Mods Section -->
     @if(count($mods) > 0)
-    <div class="bg-gray-800 rounded-xl p-6 border border-gray-700">
+    <div class="glass-card rounded-xl p-6">
         <div class="flex items-center justify-between mb-4">
-            <h2 class="text-lg font-semibold">
+            <h2 class="text-sm font-semibold text-white uppercase tracking-wider">
                 Mods
-                <span class="ml-2 px-2 py-0.5 bg-gray-700 rounded-full text-sm font-normal">{{ count($mods) }}</span>
+                <span class="ml-2 px-2 py-0.5 bg-white/5 rounded-full text-sm font-normal">{{ count($mods) }}</span>
             </h2>
         </div>
         <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
             @foreach($mods as $mod)
-            <div class="bg-gray-700/50 rounded-lg p-4 hover:bg-gray-700 transition">
+            <div class="bg-white/3 rounded-lg p-4 hover:bg-white/5 transition">
                 <div class="flex items-start justify-between">
                     <div class="flex-1 min-w-0">
                         <h4 class="font-medium text-sm truncate">{{ $mod['name'] ?? 'Unknown Mod' }}</h4>
                         <p class="text-xs text-gray-400 mt-1">v{{ $mod['version'] ?? '?' }}</p>
                     </div>
-                    <a href="https://reforger.armaplatform.com/workshop/{{ $mod['modId'] ?? '' }}" target="_blank" class="ml-2 p-1.5 text-gray-400 hover:text-white hover:bg-gray-600 rounded transition" title="View in Workshop">
+                    <a href="https://reforger.armaplatform.com/workshop/{{ $mod['modId'] ?? '' }}" target="_blank" class="ml-2 p-1.5 text-gray-400 hover:text-white hover:bg-white/10 rounded transition" title="View in Workshop">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
                         </svg>
@@ -201,7 +201,7 @@
     @endif
 
     @else
-    <div class="bg-gray-800 rounded-xl p-12 border border-gray-700 text-center">
+    <div class="glass-card rounded-xl p-12 text-center">
         <svg class="w-16 h-16 mx-auto text-gray-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
         </svg>
@@ -230,7 +230,7 @@
             if (p === period) {
                 btn.className = 'px-3 py-1 text-sm rounded-lg bg-green-600 text-white transition';
             } else {
-                btn.className = 'px-3 py-1 text-sm rounded-lg bg-gray-700 hover:bg-gray-600 transition';
+                btn.className = 'px-3 py-1 text-sm rounded-lg bg-white/5 hover:bg-white/10 transition';
             }
         });
 

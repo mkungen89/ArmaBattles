@@ -29,26 +29,26 @@
     </div>
     @endif
 
-    <form action="{{ route('admin.weapons.update', $weapon) }}" method="POST" enctype="multipart/form-data" class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
+    <form action="{{ route('admin.weapons.update', $weapon) }}" method="POST" enctype="multipart/form-data" class="glass-card rounded-xl p-6">
         @csrf
         @method('PUT')
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
                 <label for="name" class="block text-sm font-medium text-gray-400 mb-2">Weapon Name (from game) *</label>
-                <input type="text" name="name" id="name" value="{{ old('name', $weapon->name) }}" required class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
+                <input type="text" name="name" id="name" value="{{ old('name', $weapon->name) }}" required class="w-full bg-white/5 border-white/10 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
                 <p class="text-xs text-gray-500 mt-1">The exact weapon name as it appears in game data</p>
             </div>
 
             <div>
                 <label for="display_name" class="block text-sm font-medium text-gray-400 mb-2">Display Name</label>
-                <input type="text" name="display_name" id="display_name" value="{{ old('display_name', $weapon->display_name) }}" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
+                <input type="text" name="display_name" id="display_name" value="{{ old('display_name', $weapon->display_name) }}" class="w-full bg-white/5 border-white/10 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
                 <p class="text-xs text-gray-500 mt-1">Optional friendly name to show in UI</p>
             </div>
 
             <div>
                 <label for="weapon_type" class="block text-sm font-medium text-gray-400 mb-2">Weapon Type</label>
-                <select name="weapon_type" id="weapon_type" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
+                <select name="weapon_type" id="weapon_type" class="w-full bg-white/5 border-white/10 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
                     <option value="">Select type...</option>
                     <option value="Assault Rifle" {{ old('weapon_type', $weapon->weapon_type) === 'Assault Rifle' ? 'selected' : '' }}>Assault Rifle</option>
                     <option value="Sniper Rifle" {{ old('weapon_type', $weapon->weapon_type) === 'Sniper Rifle' ? 'selected' : '' }}>Sniper Rifle</option>
@@ -67,7 +67,7 @@
 
             <div>
                 <label for="category" class="block text-sm font-medium text-gray-400 mb-2">Category</label>
-                <select name="category" id="category" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
+                <select name="category" id="category" class="w-full bg-white/5 border-white/10 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
                     <option value="">Select category...</option>
                     <option value="Primary" {{ old('category', $weapon->category) === 'Primary' ? 'selected' : '' }}>Primary</option>
                     <option value="Secondary" {{ old('category', $weapon->category) === 'Secondary' ? 'selected' : '' }}>Secondary</option>
@@ -98,7 +98,7 @@
                 <label for="image" class="block text-sm font-medium text-gray-400 mb-2">{{ $weapon->image_path ? 'Replace Image' : 'Upload Image' }}</label>
                 <div class="flex items-center gap-4">
                     <div class="flex-1">
-                        <input type="file" name="image" id="image" accept="image/png,image/jpeg,image/gif,image/webp" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:bg-green-600 file:text-white hover:file:bg-green-500">
+                        <input type="file" name="image" id="image" accept="image/png,image/jpeg,image/gif,image/webp" class="w-full bg-white/5 border-white/10 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:bg-green-600 file:text-white hover:file:bg-green-500">
                         <p class="text-xs text-gray-500 mt-1">Recommended: 256 x 256 px, transparent PNG. Max 2 MB.</p>
                     </div>
                     <div id="imagePreview" class="hidden w-24 h-24 bg-gray-900 rounded-lg flex items-center justify-center overflow-hidden">
@@ -109,10 +109,10 @@
         </div>
 
         <div class="mt-6 flex gap-3">
-            <button type="submit" class="px-6 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg transition">
+            <button type="submit" class="px-6 py-2 bg-green-600 hover:bg-green-500 text-white rounded-xl transition">
                 Save Changes
             </button>
-            <a href="{{ route('admin.weapons.index') }}" class="px-6 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition">
+            <a href="{{ route('admin.weapons.index') }}" class="px-6 py-2 bg-white/5 hover:bg-white/10 text-white rounded-xl transition">
                 Cancel
             </a>
         </div>

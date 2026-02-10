@@ -11,19 +11,19 @@
 
 <div class="flex items-center justify-between mb-6">
     <h1 class="text-2xl font-bold text-white">Matches</h1>
-    <a href="{{ route('tournaments.bracket', $tournament) }}" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition" target="_blank">
+    <a href="{{ route('tournaments.bracket', $tournament) }}" class="px-4 py-2 bg-white/5 hover:bg-white/10 text-white rounded-xl transition" target="_blank">
         View bracket
     </a>
 </div>
 
 @if($matches->count() > 0)
     @foreach($groupedMatches as $round => $roundMatches)
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6 mb-6">
-            <h2 class="text-lg font-semibold text-white mb-4">{{ $round }}</h2>
+        <div class="glass-card rounded-xl p-6 mb-6">
+            <h2 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">{{ $round }}</h2>
 
             <div class="space-y-3">
                 @foreach($roundMatches as $match)
-                    <div class="bg-gray-700/50 rounded-lg p-4">
+                    <div class="bg-white/3 rounded-lg p-4">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-4">
                                 <span class="text-xs text-gray-500">Match #{{ $match->match_number }}</span>
@@ -43,7 +43,7 @@
                                 </span>
                             </div>
 
-                            <a href="{{ route('admin.matches.edit', $match) }}" class="px-3 py-1 bg-gray-600 hover:bg-gray-500 text-white rounded text-sm">
+                            <a href="{{ route('admin.matches.edit', $match) }}" class="px-3 py-1 bg-white/5 hover:bg-white/10 text-white rounded text-sm">
                                 Edit
                             </a>
                         </div>
@@ -59,7 +59,7 @@
         </div>
     @endforeach
 @else
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-12 text-center">
+    <div class="glass-card rounded-xl p-12 text-center">
         <p class="text-gray-400">No bracket has been generated yet.</p>
         <a href="{{ route('admin.tournaments.show', $tournament) }}" class="text-green-400 hover:text-green-300 mt-2 inline-block">
             Go back to generate bracket

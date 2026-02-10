@@ -103,6 +103,20 @@ class WarmLeaderboardCache extends Command
             $warmed++;
         }
 
+        // Ranked leaderboard
+        foreach ([50, 100] as $limit) {
+            $this->warmCache("ranked_leaderboard:{$limit}", function () use ($limit) {
+                return DB::table('player_ratings')
+                    ->whereNotNull('opted_in_at')
+                    ->where('is_placed', true)
+                    ->join('users', 'player_ratings.user_id', '=', 'users.id')
+                    ->orderByDesc('player_ratings.rating')
+                    ->limit($limit)
+                    ->get(['player_ratings.*', 'users.name', 'users.avatar', 'users.avatar_full']);
+            });
+            $warmed++;
+        }
+
         $this->info("✓ Warmed {$warmed} leaderboard caches (5 minute TTL)");
 
         return Command::SUCCESS;

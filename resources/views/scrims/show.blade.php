@@ -2,7 +2,7 @@
 @section('title', 'Scrim Details')
 @section('content')
 <div class="py-12">
-    
+
         {{-- Header --}}
         <div class="flex items-center justify-between">
             <div class="flex items-center gap-4">
@@ -13,7 +13,7 @@
                 </a>
                 <h1 class="text-3xl font-bold text-white">Scrim Details</h1>
             </div>
-            <span class="px-4 py-2 rounded-full text-sm font-semibold {{ $scrim->status_color }} bg-gray-700/50">
+            <span class="px-4 py-2 rounded-full text-sm font-semibold {{ $scrim->status_color }} bg-white/3">
                 {{ $scrim->status_label }}
             </span>
         </div>
@@ -71,19 +71,19 @@
         </div>
         {{-- Actions --}}
         @if($canManage && ($scrim->isScheduled() || $scrim->isInProgress()))
-        <div class="bg-gray-800/50 backdrop-blur border border-gray-700 rounded-xl p-6">
-            <h3 class="text-lg font-bold text-white mb-4">Match Actions</h3>
+        <div class="glass-card backdrop-blur rounded-xl p-6">
+            <h3 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">Match Actions</h3>
             <div class="flex flex-wrap gap-3">
                 @if(!$scrim->isCompleted() && !$scrim->isCancelled())
                 <button onclick="document.getElementById('reportResultModal').classList.remove('hidden')"
-                        class="px-4 py-2 bg-green-600/20 hover:bg-green-600/30 text-green-400 rounded-lg transition">
+                        class="px-4 py-2 bg-green-600/20 hover:bg-green-600/30 text-green-400 rounded-xl transition">
                     Report Result
                 </button>
                 @endif
                 @if(!$scrim->isCompleted())
                 <form action="{{ route('scrims.cancel', $scrim) }}" method="POST" onsubmit="return confirm('Are you sure you want to cancel this scrim?')">
                     @csrf
-                    <button type="submit" class="px-4 py-2 bg-red-600/20 hover:bg-red-600/30 text-red-400 rounded-lg transition">
+                    <button type="submit" class="px-4 py-2 bg-red-600/20 hover:bg-red-600/30 text-red-400 rounded-xl transition">
                         Cancel Scrim
                     </button>
                 </form>
@@ -94,8 +94,8 @@
         {{-- Match Details --}}
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             {{-- Info --}}
-            <div class="bg-gray-800/50 backdrop-blur border border-gray-700 rounded-xl p-6">
-                <h3 class="text-lg font-bold text-white mb-4">Match Information</h3>
+            <div class="glass-card backdrop-blur rounded-xl p-6">
+                <h3 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">Match Information</h3>
                 <div class="space-y-3 text-sm">
                     <div class="flex justify-between">
                         <span class="text-gray-400">Scheduled:</span>
@@ -131,7 +131,7 @@
                     @endif
                 </div>
                 @if($scrim->notes)
-                <div class="mt-4 pt-4 border-t border-gray-700">
+                <div class="mt-4 pt-4 border-t border-white/5">
                     <p class="text-gray-400 text-sm mb-2">Notes:</p>
                     <p class="text-white">{{ $scrim->notes }}</p>
                 </div>
@@ -139,8 +139,8 @@
             </div>
             {{-- Invitation Status --}}
             @if($scrim->invitation)
-            <div class="bg-gray-800/50 backdrop-blur border border-gray-700 rounded-xl p-6">
-                <h3 class="text-lg font-bold text-white mb-4">Invitation Status</h3>
+            <div class="glass-card backdrop-blur rounded-xl p-6">
+                <h3 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">Invitation Status</h3>
                 <div class="space-y-3 text-sm">
                     <div class="flex justify-between">
                         <span class="text-gray-400">Inviting Team:</span>
@@ -174,7 +174,7 @@
     </div>
 {{-- Report Result Modal --}}
 <div id="reportResultModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-    <div class="bg-gray-800 border border-gray-700 rounded-xl max-w-md w-full p-6">
+    <div class="glass-card border border-white/5 rounded-xl max-w-md w-full p-6">
         <h3 class="text-xl font-bold text-white mb-4">Report Scrim Result</h3>
         <form action="{{ route('scrims.report', $scrim) }}" method="POST">
             @csrf
@@ -184,21 +184,21 @@
                         {{ $scrim->team1->name }} Score
                     </label>
                     <input type="number" name="team1_score" min="0" required
-                           class="w-full bg-gray-900/50 border border-gray-700 text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500">
+                           class="w-full bg-gray-900/50 border border-white/5 text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-300 mb-2">
                         {{ $scrim->team2->name }} Score
                     </label>
                     <input type="number" name="team2_score" min="0" required
-                           class="w-full bg-gray-900/50 border border-gray-700 text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500">
+                           class="w-full bg-gray-900/50 border border-white/5 text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500">
                 </div>
                 <div class="flex gap-3 pt-4">
-                    <button type="submit" class="flex-1 px-4 py-2 bg-green-600 hover:bg-green-500 text-white font-semibold rounded-lg transition">
+                    <button type="submit" class="flex-1 px-4 py-2 bg-green-600 hover:bg-green-500 text-white font-semibold rounded-xl transition">
                         Submit Result
                     </button>
                     <button type="button" onclick="document.getElementById('reportResultModal').classList.add('hidden')"
-                            class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg transition">
+                            class="px-4 py-2 bg-white/5 hover:bg-white/10 text-white font-semibold rounded-xl transition">
                         Cancel
                     </button>
                 </div>

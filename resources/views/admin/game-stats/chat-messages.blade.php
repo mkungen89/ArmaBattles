@@ -17,28 +17,28 @@
     </div>
 
     {{-- Filters --}}
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-4">
+    <div class="glass-card rounded-xl p-4">
         <form action="{{ route('admin.game-stats.chat') }}" method="GET" class="flex flex-wrap gap-4">
             <div class="flex-1 min-w-[200px]">
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="Search player or message..." class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Search player or message..." class="w-full bg-white/5 border-white/10 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
             </div>
-            <select name="channel" class="bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
+            <select name="channel" class="bg-white/5 border-white/10 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
                 <option value="">All Channels</option>
                 @foreach($channels as $channel)
                 <option value="{{ $channel }}" {{ request('channel') == $channel ? 'selected' : '' }}>{{ ucfirst($channel) }}</option>
                 @endforeach
             </select>
-            <select name="server_id" class="bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
+            <select name="server_id" class="bg-white/5 border-white/10 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
                 <option value="">All Servers</option>
                 @foreach($serverIds as $serverId)
                 <option value="{{ $serverId }}" {{ request('server_id') == $serverId ? 'selected' : '' }}>Server #{{ $serverId }}</option>
                 @endforeach
             </select>
-            <button type="submit" class="px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg transition">
+            <button type="submit" class="px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-xl transition">
                 Filter
             </button>
             @if(request()->hasAny(['search', 'channel', 'server_id']))
-            <a href="{{ route('admin.game-stats.chat') }}" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition">
+            <a href="{{ route('admin.game-stats.chat') }}" class="px-4 py-2 bg-white/5 hover:bg-white/10 text-white rounded-xl transition">
                 Clear
             </a>
             @endif
@@ -46,9 +46,9 @@
     </div>
 
     {{-- Chat Messages Table --}}
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl overflow-hidden">
+    <div class="glass-card rounded-xl overflow-hidden">
         <table class="w-full">
-            <thead class="bg-gray-700/50">
+            <thead class="bg-white/3">
                 <tr>
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Time</th>
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Player</th>
@@ -57,7 +57,7 @@
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Server</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-gray-700">
+            <tbody class="divide-y divide-white/5">
                 @forelse($messages as $message)
                 @php
                     $occurredAt = $message->occurred_at ? \Carbon\Carbon::parse($message->occurred_at) : null;
@@ -70,7 +70,7 @@
                     ];
                     $channelColor = $channelColors[$message->channel] ?? 'bg-gray-500/20 text-gray-400';
                 @endphp
-                <tr class="hover:bg-gray-700/30">
+                <tr class="hover:bg-white/5">
                     <td class="px-4 py-3">
                         @if($occurredAt)
                         <div class="text-sm text-white">{{ $occurredAt->format('M j, Y') }}</div>

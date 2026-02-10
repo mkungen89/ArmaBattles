@@ -7,7 +7,7 @@
     {{-- Header --}}
     <div class="flex items-center justify-between">
         <div class="flex items-center gap-4">
-            <a href="{{ route('admin.server.dashboard') }}" class="p-2 bg-gray-700 hover:bg-gray-600 text-gray-400 hover:text-white rounded-lg transition">
+            <a href="{{ route('admin.server.dashboard') }}" class="p-2 bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white rounded-xl transition">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 17l-5-5m0 0l5-5m-5 5h12"/>
                 </svg>
@@ -19,17 +19,17 @@
         </div>
 
         {{-- Time Range Selector --}}
-        <div class="flex items-center gap-1 bg-gray-800/50 border border-gray-700 rounded-lg p-1">
-            <button @click="range = '6h'" :class="range === '6h' ? 'bg-green-600 text-white' : 'bg-gray-700 text-gray-400 hover:bg-gray-600'" class="px-3 py-1.5 rounded-md text-sm font-medium transition">6h</button>
-            <button @click="range = '24h'" :class="range === '24h' ? 'bg-green-600 text-white' : 'bg-gray-700 text-gray-400 hover:bg-gray-600'" class="px-3 py-1.5 rounded-md text-sm font-medium transition">24h</button>
-            <button @click="range = '72h'" :class="range === '72h' ? 'bg-green-600 text-white' : 'bg-gray-700 text-gray-400 hover:bg-gray-600'" class="px-3 py-1.5 rounded-md text-sm font-medium transition">72h</button>
+        <div class="flex items-center gap-1 glass-card rounded-lg p-1">
+            <button @click="range = '6h'" :class="range === '6h' ? 'bg-green-600 text-white' : 'bg-white/5 text-gray-400 hover:bg-white/10'" class="px-3 py-1.5 rounded-md text-sm font-medium transition">6h</button>
+            <button @click="range = '24h'" :class="range === '24h' ? 'bg-green-600 text-white' : 'bg-white/5 text-gray-400 hover:bg-white/10'" class="px-3 py-1.5 rounded-md text-sm font-medium transition">24h</button>
+            <button @click="range = '72h'" :class="range === '72h' ? 'bg-green-600 text-white' : 'bg-white/5 text-gray-400 hover:bg-white/10'" class="px-3 py-1.5 rounded-md text-sm font-medium transition">72h</button>
         </div>
     </div>
 
     {{-- Summary Stats Cards --}}
     <div class="grid grid-cols-2 lg:grid-cols-3 gap-4">
         {{-- FPS --}}
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-4">
+        <div class="glass-card rounded-xl p-4">
             <div class="flex items-center justify-between mb-3">
                 <span class="text-xs text-gray-500 uppercase tracking-wider">FPS</span>
                 <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -44,7 +44,7 @@
         </div>
 
         {{-- Memory --}}
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-4">
+        <div class="glass-card rounded-xl p-4">
             <div class="flex items-center justify-between mb-3">
                 <span class="text-xs text-gray-500 uppercase tracking-wider">Memory</span>
                 <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -59,7 +59,7 @@
         </div>
 
         {{-- Players --}}
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-4">
+        <div class="glass-card rounded-xl p-4">
             <div class="flex items-center justify-between mb-3">
                 <span class="text-xs text-gray-500 uppercase tracking-wider">Players</span>
                 <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -77,7 +77,7 @@
     {{-- Charts Grid --}}
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {{-- FPS Chart --}}
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
+        <div class="glass-card rounded-xl p-6">
             <h3 class="text-sm font-semibold text-white mb-4">FPS Over Time</h3>
             <div class="relative" style="height: 220px;">
                 <canvas id="fpsChart"></canvas>
@@ -85,7 +85,7 @@
         </div>
 
         {{-- Memory Chart --}}
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
+        <div class="glass-card rounded-xl p-6">
             <h3 class="text-sm font-semibold text-white mb-4">Memory Usage (MB)</h3>
             <div class="relative" style="height: 220px;">
                 <canvas id="memoryChart"></canvas>
@@ -93,7 +93,7 @@
         </div>
 
         {{-- Players Chart --}}
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
+        <div class="glass-card rounded-xl p-6">
             <h3 class="text-sm font-semibold text-white mb-4">Player Count</h3>
             <div class="relative" style="height: 220px;">
                 <canvas id="playersChart"></canvas>
@@ -101,7 +101,7 @@
         </div>
 
         {{-- Uptime Chart --}}
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
+        <div class="glass-card rounded-xl p-6">
             <h3 class="text-sm font-semibold text-white mb-4">Uptime (Hours)</h3>
             <div class="relative" style="height: 220px;">
                 <canvas id="uptimeChart"></canvas>
@@ -111,7 +111,7 @@
 
     {{-- Loading Overlay --}}
     <div x-show="loading" x-cloak class="fixed inset-0 bg-gray-900/50 flex items-center justify-center z-50">
-        <div class="bg-gray-800 border border-gray-700 rounded-xl p-6 flex items-center gap-3">
+        <div class="glass-card backdrop-blur-xl rounded-xl p-6 flex items-center gap-3">
             <svg class="w-5 h-5 text-green-500 animate-spin" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>

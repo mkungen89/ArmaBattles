@@ -26,7 +26,7 @@
                 </div>
             </div>
             {{-- Match Result --}}
-            <div class="bg-gray-800/50 backdrop-blur border border-gray-700 rounded-xl p-6 mb-6">
+            <div class="glass-card rounded-xl p-6 mb-6">
                 <h2 class="text-xl font-bold text-white mb-4">Match Result</h2>
                 <div class="flex items-center justify-center gap-6 py-6">
                     <div class="text-center">
@@ -43,13 +43,13 @@
                         </p>
                     </div>
                 </div>
-                <div class="text-center pt-4 border-t border-gray-700">
+                <div class="text-center pt-4 border-t border-white/5">
                     <p class="text-gray-400">Winner</p>
                     <p class="text-2xl font-bold text-green-400 mt-1">{{ $report->winningTeam->name }}</p>
                 </div>
             </div>
             {{-- Report Details --}}
-            <div class="bg-gray-800/50 backdrop-blur border border-gray-700 rounded-xl p-6 mb-6">
+            <div class="glass-card rounded-xl p-6 mb-6">
                 <h2 class="text-xl font-bold text-white mb-4">Report Details</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div>
@@ -62,7 +62,7 @@
                     </div>
                 </div>
                 @if($report->notes)
-                    <div class="pt-4 border-t border-gray-700">
+                    <div class="pt-4 border-t border-white/5">
                         <p class="text-sm text-gray-400 mb-2">Notes</p>
                         <p class="text-gray-300">{{ $report->notes }}</p>
                     </div>
@@ -76,7 +76,7 @@
                     </h2>
                     <div class="space-y-4">
                         @foreach($report->incidents as $index => $incident)
-                            <div class="bg-gray-900/50 border border-yellow-500/10 rounded-lg p-4">
+                            <div class="bg-white/3 border border-yellow-500/10 rounded-lg p-4">
                                 <div class="flex items-start justify-between mb-2">
                                     <div class="flex items-center gap-2">
                                         <span class="text-sm font-semibold text-yellow-400">
@@ -105,13 +105,13 @@
             @endif
             {{-- Actions --}}
             @if($report->status === 'submitted' && auth()->user()->isAdmin())
-                <div class="bg-gray-800/50 backdrop-blur border border-gray-700 rounded-xl p-6 mb-6">
+                <div class="glass-card rounded-xl p-6 mb-6">
                     <h2 class="text-xl font-bold text-white mb-4">Admin Actions</h2>
                     <div class="flex gap-3">
                         <form action="{{ route('referee.report.approve', $report->id) }}" method="POST">
                             @csrf
                             <button type="submit"
-                                    class="px-6 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg transition flex items-center gap-2">
+                                    class="px-6 py-2 bg-green-600 hover:bg-green-500 text-white rounded-xl transition flex items-center gap-2">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                 </svg>
@@ -120,7 +120,7 @@
                         </form>
                         <button type="button"
                                 onclick="document.getElementById('dispute-form').classList.toggle('hidden')"
-                                class="px-6 py-2 bg-red-600 hover:bg-red-500 text-white rounded-lg transition flex items-center gap-2">
+                                class="px-6 py-2 bg-red-600 hover:bg-red-500 text-white rounded-xl transition flex items-center gap-2">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
                             </svg>
@@ -133,10 +133,10 @@
                         <textarea name="dispute_reason"
                                   rows="3"
                                   placeholder="Explain why this report is being disputed"
-                                  class="w-full px-4 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:border-red-500 focus:ring-2 focus:ring-red-500/20 transition mb-3"
+                                  class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:border-red-500 focus:ring-2 focus:ring-red-500/20 transition mb-3"
                                   required></textarea>
                         <button type="submit"
-                                class="px-6 py-2 bg-red-600 hover:bg-red-500 text-white rounded-lg transition">
+                                class="px-6 py-2 bg-red-600 hover:bg-red-500 text-white rounded-xl transition">
                             Submit Dispute
                         </button>
                     </form>
@@ -145,7 +145,7 @@
             {{-- View Match Button --}}
             <div class="flex justify-center">
                 <a href="{{ route('matches.show', $report->match_id) }}"
-                   class="px-6 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition flex items-center gap-2">
+                   class="px-6 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl transition flex items-center gap-2">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>

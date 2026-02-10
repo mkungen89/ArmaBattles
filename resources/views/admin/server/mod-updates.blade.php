@@ -11,7 +11,7 @@
             <p class="text-sm text-gray-500 mt-1">Compare installed mod versions against the Workshop</p>
         </div>
         <div class="flex items-center gap-3">
-            <a href="{{ route('admin.server.dashboard') }}" class="px-3 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm transition">
+            <a href="{{ route('admin.server.dashboard') }}" class="px-3 py-2 bg-white/5 hover:bg-white/10 text-white rounded-xl text-sm transition">
                 <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 17l-5-5m0 0l5-5m-5 5h12"/>
                 </svg>
@@ -28,7 +28,7 @@
 
     @if(count($mods) === 0)
     {{-- Empty State --}}
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-12 text-center">
+    <div class="glass-card rounded-xl p-12 text-center">
         <svg class="w-12 h-12 text-gray-600 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
         </svg>
@@ -46,11 +46,11 @@
     </div>
 
     {{-- Mods Table --}}
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl overflow-hidden">
+    <div class="glass-card rounded-xl overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full">
                 <thead>
-                    <tr class="border-b border-gray-700">
+                    <tr class="border-b border-white/5">
                         <th class="text-left text-xs text-gray-500 uppercase tracking-wider px-6 py-3">Mod Name</th>
                         <th class="text-left text-xs text-gray-500 uppercase tracking-wider px-6 py-3">Mod ID</th>
                         <th class="text-left text-xs text-gray-500 uppercase tracking-wider px-6 py-3">Installed Version</th>
@@ -60,7 +60,7 @@
                 </thead>
                 <tbody>
                     @foreach($mods as $mod)
-                    <tr class="border-b border-gray-700/50 hover:bg-gray-700/20 transition">
+                    <tr class="border-b border-white/5 hover:bg-white/3 transition">
                         {{-- Mod Name --}}
                         <td class="px-6 py-3">
                             <a href="{{ $mod['workshop_url'] }}" target="_blank" class="text-sm text-white hover:text-green-400 transition font-medium">

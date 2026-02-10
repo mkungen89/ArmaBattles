@@ -9,7 +9,7 @@
         <div class="flex gap-2">
             <template x-for="r in ['6h', '24h', '72h']" :key="r">
                 <button @click="range = r; fetchData()"
-                        :class="range === r ? 'bg-green-500/20 text-green-400 border-green-500/50' : 'bg-gray-700/50 text-gray-400 border-gray-600 hover:text-white'"
+                        :class="range === r ? 'bg-green-500/20 text-green-400 border-green-500/50' : 'bg-white/3 text-gray-400 border-white/10 hover:text-white'"
                         class="px-3 py-1.5 rounded-lg text-sm font-medium transition border"
                         x-text="r"></button>
             </template>
@@ -18,35 +18,35 @@
 
     {{-- Summary Cards --}}
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-5 text-center">
+        <div class="glass-card rounded-xl p-5 text-center">
             <p class="text-3xl font-bold text-green-400" x-text="summary.avg_players || '0'"></p>
             <p class="text-sm text-gray-400">Avg Players</p>
         </div>
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-5 text-center">
+        <div class="glass-card rounded-xl p-5 text-center">
             <p class="text-3xl font-bold text-yellow-400" x-text="summary.peak_players || '0'"></p>
             <p class="text-sm text-gray-400">Peak Players</p>
         </div>
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-5 text-center">
+        <div class="glass-card rounded-xl p-5 text-center">
             <p class="text-3xl font-bold text-blue-400" x-text="summary.avg_fps || '0'"></p>
             <p class="text-sm text-gray-400">Avg FPS</p>
         </div>
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-5 text-center">
+        <div class="glass-card rounded-xl p-5 text-center">
             <p class="text-3xl font-bold text-red-400" x-text="summary.min_fps || '0'"></p>
             <p class="text-sm text-gray-400">Min FPS</p>
         </div>
     </div>
 
     {{-- Player Count Chart --}}
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
-        <h3 class="text-lg font-semibold text-white mb-4">Player Count</h3>
+    <div class="glass-card rounded-xl p-6">
+        <h3 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">Player Count</h3>
         <div class="relative" style="height: 300px;">
             <canvas id="playersChart"></canvas>
         </div>
     </div>
 
     {{-- FPS Chart --}}
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
-        <h3 class="text-lg font-semibold text-white mb-4">Server FPS</h3>
+    <div class="glass-card rounded-xl p-6">
+        <h3 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">Server FPS</h3>
         <div class="relative" style="height: 300px;">
             <canvas id="fpsChart"></canvas>
         </div>

@@ -17,15 +17,15 @@
 @if($registrations->count() > 0)
     <!-- Seeding Form -->
     @if($registrations->where('status', 'approved')->count() > 1 && !$tournament->matches()->exists())
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6 mb-6">
-            <h2 class="text-lg font-semibold text-white mb-4">Seeding</h2>
+        <div class="glass-card rounded-xl p-6 mb-6">
+            <h2 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">Seeding</h2>
             <p class="text-gray-400 text-sm mb-4">Drag and drop to change the order. Seed 1 faces the lowest seeded platoon in the bracket.</p>
 
             <form action="{{ route('admin.tournaments.seeding', $tournament) }}" method="POST" id="seeding-form">
                 @csrf
                 <div id="seeding-list" class="space-y-2 mb-4">
                     @foreach($registrations->where('status', 'approved')->sortBy('seed') as $registration)
-                        <div class="flex items-center gap-3 bg-gray-700/50 rounded-lg p-3 cursor-move" draggable="true" data-id="{{ $registration->id }}">
+                        <div class="flex items-center gap-3 bg-white/3 rounded-lg p-3 cursor-move" draggable="true" data-id="{{ $registration->id }}">
                             <span class="w-6 text-center text-gray-400 font-mono seeding-number">{{ $registration->seed ?? '-' }}</span>
                             <input type="hidden" name="seeds[]" value="{{ $registration->id }}">
                             <span class="text-white">{{ $registration->team->name }}</span>
@@ -33,7 +33,7 @@
                         </div>
                     @endforeach
                 </div>
-                <button type="submit" class="px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg transition">
+                <button type="submit" class="px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-xl transition">
                     Save seeding
                 </button>
             </form>
@@ -41,9 +41,9 @@
     @endif
 
     <!-- Registrations List -->
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl overflow-hidden">
+    <div class="glass-card rounded-xl overflow-hidden">
         <table class="w-full">
-            <thead class="bg-gray-700/50">
+            <thead class="bg-white/3">
                 <tr>
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Platoon</th>
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Captain</th>
@@ -53,9 +53,9 @@
                     <th class="px-4 py-3 text-right text-xs font-medium text-gray-400 uppercase">Actions</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-gray-700">
+            <tbody class="divide-y divide-white/5">
                 @foreach($registrations as $registration)
-                    <tr class="hover:bg-gray-700/30">
+                    <tr class="hover:bg-white/3">
                         <td class="px-4 py-3">
                             <div class="flex items-center gap-3">
                                 @if($registration->team->avatar_url)
@@ -80,13 +80,13 @@
                                 <div class="flex justify-end gap-2">
                                     <form action="{{ route('admin.registrations.approve', $registration) }}" method="POST">
                                         @csrf
-                                        <button type="submit" class="px-3 py-1 bg-green-600 hover:bg-green-500 text-white rounded text-sm">
+                                        <button type="submit" class="px-3 py-1 bg-green-600 hover:bg-green-500 text-white rounded-xl text-sm">
                                             Approve
                                         </button>
                                     </form>
                                     <form action="{{ route('admin.registrations.reject', $registration) }}" method="POST" class="inline">
                                         @csrf
-                                        <button type="submit" class="px-3 py-1 bg-red-600 hover:bg-red-500 text-white rounded text-sm"
+                                        <button type="submit" class="px-3 py-1 bg-red-600 hover:bg-red-500 text-white rounded-xl text-sm"
                                             onclick="return confirm('Reject registration?')">
                                             Reject
                                         </button>
@@ -102,7 +102,7 @@
         </table>
     </div>
 @else
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-12 text-center">
+    <div class="glass-card rounded-xl p-12 text-center">
         <p class="text-gray-400">No registrations yet.</p>
     </div>
 @endif

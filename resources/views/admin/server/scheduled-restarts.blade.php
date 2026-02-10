@@ -11,7 +11,7 @@
             <p class="text-sm text-gray-500 mt-1">Configure automated server restart schedules</p>
         </div>
         <div class="flex items-center gap-3">
-            <a href="{{ route('admin.server.dashboard') }}" class="px-3 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm transition">
+            <a href="{{ route('admin.server.dashboard') }}" class="px-3 py-2 bg-white/5 hover:bg-white/10 text-white rounded-xl text-sm transition">
                 <span class="flex items-center gap-2">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 17l-5-5m0 0l5-5m-5 5h12"/>
@@ -30,9 +30,9 @@
 
     {{-- Create Form (collapsible) --}}
     <div x-show="showForm" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 -translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 -translate-y-2" x-cloak>
-        <form method="POST" action="{{ route('admin.server.scheduled-restarts.store') }}" class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
+        <form method="POST" action="{{ route('admin.server.scheduled-restarts.store') }}" class="glass-card rounded-xl p-6">
             @csrf
-            <h2 class="text-lg font-semibold text-white mb-4">New Restart Schedule</h2>
+            <h2 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">New Restart Schedule</h2>
 
             <div class="grid lg:grid-cols-2 gap-6">
                 {{-- Left Column --}}
@@ -41,7 +41,7 @@
                     <div>
                         <label for="server_id" class="block text-sm text-gray-400 mb-1">Server</label>
                         <select name="server_id" id="server_id" required
-                                class="w-full px-3 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-sm text-white focus:outline-none focus:border-green-500/50">
+                                class="w-full px-3 py-2 bg-gray-900/50 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-green-500/50">
                             <option value="">Select a server...</option>
                             @foreach($servers as $server)
                                 <option value="{{ $server->id }}">{{ $server->name }}</option>
@@ -55,17 +55,17 @@
                         <div class="flex items-center gap-4">
                             <label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
                                 <input type="radio" name="schedule_type" value="daily" x-model="scheduleType"
-                                       class="w-4 h-4 bg-gray-700 border-gray-600 text-green-500 focus:ring-green-500 focus:ring-offset-gray-800">
+                                       class="w-4 h-4 bg-white/5 border-white/10 text-green-500 focus:ring-green-500 focus:ring-offset-gray-800">
                                 Daily
                             </label>
                             <label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
                                 <input type="radio" name="schedule_type" value="weekly" x-model="scheduleType"
-                                       class="w-4 h-4 bg-gray-700 border-gray-600 text-green-500 focus:ring-green-500 focus:ring-offset-gray-800">
+                                       class="w-4 h-4 bg-white/5 border-white/10 text-green-500 focus:ring-green-500 focus:ring-offset-gray-800">
                                 Weekly
                             </label>
                             <label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
                                 <input type="radio" name="schedule_type" value="custom" x-model="scheduleType"
-                                       class="w-4 h-4 bg-gray-700 border-gray-600 text-green-500 focus:ring-green-500 focus:ring-offset-gray-800">
+                                       class="w-4 h-4 bg-white/5 border-white/10 text-green-500 focus:ring-green-500 focus:ring-offset-gray-800">
                                 Custom
                             </label>
                         </div>
@@ -75,7 +75,7 @@
                     <div x-show="scheduleType === 'daily' || scheduleType === 'weekly'" x-transition>
                         <label for="restart_time" class="block text-sm text-gray-400 mb-1">Restart Time</label>
                         <input type="time" name="restart_time" id="restart_time"
-                               class="w-full px-3 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-sm text-white focus:outline-none focus:border-green-500/50">
+                               class="w-full px-3 py-2 bg-gray-900/50 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-green-500/50">
                     </div>
 
                     {{-- Day Checkboxes (weekly) --}}
@@ -88,7 +88,7 @@
                             @foreach($days as $value => $label)
                                 <label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
                                     <input type="checkbox" name="days[]" value="{{ $value }}"
-                                           class="w-4 h-4 rounded bg-gray-700 border-gray-600 text-green-500 focus:ring-green-500 focus:ring-offset-gray-800">
+                                           class="w-4 h-4 rounded bg-white/5 border-white/10 text-green-500 focus:ring-green-500 focus:ring-offset-gray-800">
                                     {{ $label }}
                                 </label>
                             @endforeach
@@ -99,7 +99,7 @@
                     <div x-show="scheduleType === 'custom'" x-transition>
                         <label for="cron_expression" class="block text-sm text-gray-400 mb-1">Cron Expression</label>
                         <input type="text" name="cron_expression" id="cron_expression" placeholder="0 4 * * *"
-                               class="w-full px-3 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-sm text-white font-mono focus:outline-none focus:border-green-500/50">
+                               class="w-full px-3 py-2 bg-gray-900/50 border border-white/10 rounded-lg text-sm text-white font-mono focus:outline-none focus:border-green-500/50">
                         <p class="text-xs text-gray-500 mt-1">Standard cron format: minute hour day month weekday</p>
                     </div>
                 </div>
@@ -110,7 +110,7 @@
                     <div>
                         <label for="warning_minutes" class="block text-sm text-gray-400 mb-1">Warning Minutes</label>
                         <input type="number" name="warning_minutes" id="warning_minutes" value="5" min="0" max="60"
-                               class="w-full px-3 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-sm text-white focus:outline-none focus:border-green-500/50">
+                               class="w-full px-3 py-2 bg-gray-900/50 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-green-500/50">
                         <p class="text-xs text-gray-500 mt-1">Minutes before restart to warn players. Set to 0 to disable.</p>
                     </div>
 
@@ -118,7 +118,7 @@
                     <div>
                         <label for="warning_message" class="block text-sm text-gray-400 mb-1">Warning Message</label>
                         <input type="text" name="warning_message" id="warning_message" placeholder="Server will restart in {minutes} minutes."
-                               class="w-full px-3 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-sm text-white focus:outline-none focus:border-green-500/50">
+                               class="w-full px-3 py-2 bg-gray-900/50 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-green-500/50">
                         <p class="text-xs text-gray-500 mt-1">Message sent to players before restart.</p>
                     </div>
 
@@ -138,7 +138,7 @@
 
     {{-- Existing Schedules --}}
     @if($restarts->isEmpty())
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-12 text-center">
+        <div class="glass-card rounded-xl p-12 text-center">
             <svg class="w-12 h-12 text-gray-600 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
             </svg>
@@ -148,7 +148,7 @@
     @else
         <div class="space-y-4">
             @foreach($restarts as $restart)
-                <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
+                <div class="glass-card rounded-xl p-6">
                     <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                         {{-- Schedule Info --}}
                         <div class="flex-1 min-w-0">
@@ -256,7 +256,7 @@
                                     <label class="relative inline-flex items-center cursor-pointer">
                                         <input type="checkbox" class="sr-only peer" {{ $restart->is_enabled ? 'checked' : '' }}
                                                onclick="this.closest('form').submit()">
-                                        <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
+                                        <div class="w-11 h-6 bg-white/5 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
                                     </label>
                                 </button>
                             </form>

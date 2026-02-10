@@ -9,10 +9,10 @@
         <p class="mt-4 text-2xl font-semibold text-white">Page Not Found</p>
         <p class="mt-2 text-gray-400">The page you are looking for does not exist or has been moved.</p>
         <div class="mt-8 flex items-center justify-center space-x-4">
-            <a href="{{ url()->previous() }}" class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg transition">
+            <a href="{{ url()->previous() }}" class="bg-white/5 hover:bg-white/10 text-white px-6 py-3 rounded-xl transition">
                 Go Back
             </a>
-            <a href="{{ route('home') }}" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg transition">
+            <a href="{{ route('home') }}" class="bg-green-600 hover:bg-green-500 text-white px-6 py-3 rounded-xl transition">
                 Go Home
             </a>
         </div>

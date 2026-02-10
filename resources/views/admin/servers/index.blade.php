@@ -18,7 +18,7 @@
     <div id="add-server-modal" class="hidden fixed inset-0 z-50 overflow-y-auto">
         <div class="flex items-center justify-center min-h-screen px-4">
             <div class="fixed inset-0 bg-black/70" onclick="document.getElementById('add-server-modal').classList.add('hidden')"></div>
-            <div class="relative bg-gray-800 border border-gray-700 rounded-xl p-6 w-full max-w-md">
+            <div class="relative glass-card backdrop-blur-xl rounded-xl p-6 w-full max-w-md">
                 <h3 class="text-lg font-bold text-white mb-4">Add Server</h3>
                 <form action="{{ route('admin.servers.store') }}" method="POST">
                     @csrf
@@ -26,19 +26,19 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-300 mb-2">BattleMetrics Server ID</label>
                             <input type="text" name="battlemetrics_id" required
-                                class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-green-500"
+                                class="w-full px-4 py-2 bg-white/5 border-white/10 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-green-500"
                                 placeholder="e.g., 37525380">
                             <p class="mt-1 text-xs text-gray-500">Find this in the BattleMetrics URL: battlemetrics.com/servers/arma-reforger/<strong>37525380</strong></p>
                         </div>
                         <div class="flex items-center gap-2">
                             <input type="checkbox" name="sync_mods" id="sync_mods" value="1" checked
-                                class="w-4 h-4 rounded border-gray-600 bg-gray-700 text-green-500 focus:ring-green-500">
+                                class="w-4 h-4 rounded border-white/10 bg-white/5 text-green-500 focus:ring-green-500">
                             <label for="sync_mods" class="text-sm text-gray-300">Sync mods from workshop after adding</label>
                         </div>
                     </div>
                     <div class="flex justify-end gap-3 mt-6">
                         <button type="button" onclick="document.getElementById('add-server-modal').classList.add('hidden')"
-                            class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white text-sm rounded-lg transition">
+                            class="px-4 py-2 bg-white/5 hover:bg-white/10 text-white text-sm rounded-xl transition">
                             Cancel
                         </button>
                         <button type="submit" class="px-4 py-2 bg-green-600 hover:bg-green-500 text-white text-sm font-medium rounded-lg transition">
@@ -53,7 +53,7 @@
     {{-- Servers Grid --}}
     <div class="grid gap-4">
         @forelse($servers as $server)
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
+        <div class="glass-card rounded-xl p-6">
             <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                 <div class="flex-1">
                     <div class="flex items-center gap-3 mb-2">
@@ -65,7 +65,7 @@
                     </div>
                     <p class="text-sm text-gray-400 mb-2">{{ $server->ip }}:{{ $server->port }}</p>
                     <div class="flex flex-wrap gap-2">
-                        <span class="px-2 py-1 text-xs bg-gray-700 text-gray-300 rounded">
+                        <span class="px-2 py-1 text-xs bg-white/5 text-gray-300 rounded">
                             @if($server->battlemetrics_id)
                                 BattleMetrics ID: {{ $server->battlemetrics_id }}
                             @else
@@ -81,19 +81,19 @@
                 </div>
 
                 <div class="grid grid-cols-4 gap-4 text-center">
-                    <div class="bg-gray-700/50 rounded-lg p-3">
+                    <div class="bg-white/3 rounded-lg p-3">
                         <p class="text-xl font-bold text-white">{{ $server->players }}</p>
                         <p class="text-xs text-gray-500">Players</p>
                     </div>
-                    <div class="bg-gray-700/50 rounded-lg p-3">
+                    <div class="bg-white/3 rounded-lg p-3">
                         <p class="text-xl font-bold text-white">{{ $server->sessions_count }}</p>
                         <p class="text-xs text-gray-500">Sessions</p>
                     </div>
-                    <div class="bg-gray-700/50 rounded-lg p-3">
+                    <div class="bg-white/3 rounded-lg p-3">
                         <p class="text-xl font-bold text-white">{{ number_format($server->statistics_count) }}</p>
                         <p class="text-xs text-gray-500">Stats</p>
                     </div>
-                    <div class="bg-gray-700/50 rounded-lg p-3">
+                    <div class="bg-white/3 rounded-lg p-3">
                         <p class="text-xl font-bold text-white">{{ $server->mods_count }}</p>
                         <p class="text-xs text-gray-500">Mods</p>
                     </div>
@@ -105,7 +105,7 @@
                             View Details
                         </a>
                     @else
-                        <span class="px-4 py-2 bg-gray-600 text-gray-400 text-sm rounded-lg text-center cursor-not-allowed" title="No BattleMetrics ID">
+                        <span class="px-4 py-2 bg-white/5 text-gray-400 text-sm rounded-lg text-center cursor-not-allowed" title="No BattleMetrics ID">
                             View Details
                         </span>
                     @endif
@@ -116,7 +116,7 @@
                                 Sync Mods
                             </button>
                         </form>
-                        <a href="{{ route('servers.debug', $server->battlemetrics_id) }}" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white text-sm rounded-lg transition text-center">
+                        <a href="{{ route('servers.debug', $server->battlemetrics_id) }}" class="px-4 py-2 bg-white/5 hover:bg-white/10 text-white text-sm rounded-xl transition text-center">
                             Debug API
                         </a>
                     @endif
@@ -131,13 +131,13 @@
             </div>
 
             @if($server->last_updated_at)
-            <div class="mt-4 pt-4 border-t border-gray-700 text-xs text-gray-500">
+            <div class="mt-4 pt-4 border-t border-white/5 text-xs text-gray-500">
                 Last updated: {{ $server->last_updated_at->diffForHumans() }}
             </div>
             @endif
         </div>
         @empty
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-8 text-center">
+        <div class="glass-card rounded-xl p-8 text-center">
             <svg class="w-12 h-12 mx-auto text-gray-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2"/>
             </svg>

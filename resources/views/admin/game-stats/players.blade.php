@@ -17,12 +17,12 @@
     </div>
 
     {{-- Filters --}}
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-4">
+    <div class="glass-card rounded-xl p-4">
         <form action="{{ route('admin.game-stats.players') }}" method="GET" class="flex flex-wrap gap-4">
             <div class="flex-1 min-w-[200px]">
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by name or UUID..." class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by name or UUID..." class="w-full bg-white/5 border-white/10 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
             </div>
-            <select name="sort" class="bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
+            <select name="sort" class="bg-white/5 border-white/10 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
                 <option value="last_seen_at" {{ request('sort', 'last_seen_at') === 'last_seen_at' ? 'selected' : '' }}>Last Seen</option>
                 <option value="player_name" {{ request('sort') === 'player_name' ? 'selected' : '' }}>Name</option>
                 <option value="playtime_seconds" {{ request('sort') === 'playtime_seconds' ? 'selected' : '' }}>Playtime</option>
@@ -30,15 +30,15 @@
                 <option value="deaths" {{ request('sort') === 'deaths' ? 'selected' : '' }}>Deaths</option>
                 <option value="headshots" {{ request('sort') === 'headshots' ? 'selected' : '' }}>Headshots</option>
             </select>
-            <select name="direction" class="bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
+            <select name="direction" class="bg-white/5 border-white/10 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
                 <option value="desc" {{ request('direction', 'desc') === 'desc' ? 'selected' : '' }}>Descending</option>
                 <option value="asc" {{ request('direction') === 'asc' ? 'selected' : '' }}>Ascending</option>
             </select>
-            <button type="submit" class="px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg transition">
+            <button type="submit" class="px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-xl transition">
                 Filter
             </button>
             @if(request()->hasAny(['search', 'sort', 'direction']))
-            <a href="{{ route('admin.game-stats.players') }}" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition">
+            <a href="{{ route('admin.game-stats.players') }}" class="px-4 py-2 bg-white/5 hover:bg-white/10 text-white rounded-xl transition">
                 Clear
             </a>
             @endif
@@ -46,9 +46,9 @@
     </div>
 
     {{-- Players Table --}}
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl overflow-hidden">
+    <div class="glass-card rounded-xl overflow-hidden">
         <table class="w-full">
-            <thead class="bg-gray-700/50">
+            <thead class="bg-white/3">
                 <tr>
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Player</th>
                     <th class="px-4 py-3 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">Playtime</th>
@@ -59,7 +59,7 @@
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Last Seen</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-gray-700">
+            <tbody class="divide-y divide-white/5">
                 @forelse($players as $player)
                 @php
                     $playtimeSeconds = $player->playtime_seconds ?? 0;
@@ -69,7 +69,7 @@
                     $kdRatio = $player->deaths > 0 ? round($player->kills / $player->deaths, 2) : $player->kills;
                     $lastSeen = $player->last_seen_at ? \Carbon\Carbon::parse($player->last_seen_at) : null;
                 @endphp
-                <tr class="hover:bg-gray-700/30">
+                <tr class="hover:bg-white/5">
                     <td class="px-4 py-3">
                         <a href="{{ route('admin.game-stats.player', $player->player_uuid) }}" class="text-white hover:text-green-400 font-medium transition">
                             {{ $player->player_name ?? 'Unknown' }}

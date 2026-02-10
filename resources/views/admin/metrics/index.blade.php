@@ -12,43 +12,43 @@
         </div>
 
         {{-- Time Range Selector --}}
-        <div class="flex items-center gap-1 bg-gray-800/50 border border-gray-700 rounded-lg p-1">
+        <div class="flex items-center gap-1 glass-card rounded-lg p-1">
             <template x-for="r in ['6h','24h','72h','7d']" :key="r">
-                <button @click="range = r" :class="range === r ? 'bg-green-600 text-white' : 'bg-gray-700 text-gray-400 hover:bg-gray-600'" class="px-3 py-1.5 rounded-md text-sm font-medium transition" x-text="r"></button>
+                <button @click="range = r" :class="range === r ? 'bg-green-600 text-white' : 'bg-white/5 text-gray-400 hover:bg-white/10'" class="px-3 py-1.5 rounded-md text-sm font-medium transition" x-text="r"></button>
             </template>
         </div>
     </div>
 
     {{-- Summary Stat Cards --}}
     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-4">
+        <div class="glass-card rounded-xl p-4">
             <span class="text-xs text-gray-500 uppercase tracking-wider">Page Views (24h)</span>
             <p class="text-2xl font-bold text-white mt-2">{{ number_format($pageViews24h) }}</p>
         </div>
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-4">
+        <div class="glass-card rounded-xl p-4">
             <span class="text-xs text-gray-500 uppercase tracking-wider">API Requests (24h)</span>
             <p class="text-2xl font-bold text-white mt-2">{{ number_format($apiRequests24h) }}</p>
         </div>
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-4">
+        <div class="glass-card rounded-xl p-4">
             <span class="text-xs text-gray-500 uppercase tracking-wider">Unique Visitors (24h)</span>
             <p class="text-2xl font-bold text-white mt-2">{{ number_format($uniqueVisitors24h) }}</p>
         </div>
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-4">
+        <div class="glass-card rounded-xl p-4">
             <span class="text-xs text-gray-500 uppercase tracking-wider">Feature Uses (24h)</span>
             <p class="text-2xl font-bold text-white mt-2">{{ number_format($featureUses24h) }}</p>
         </div>
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-4">
+        <div class="glass-card rounded-xl p-4">
             <span class="text-xs text-gray-500 uppercase tracking-wider">Tournament Regs (30d)</span>
             <p class="text-2xl font-bold text-white mt-2">{{ number_format($tournamentRegistrations30d) }}</p>
         </div>
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-4">
+        <div class="glass-card rounded-xl p-4">
             <span class="text-xs text-gray-500 uppercase tracking-wider">Team Apps (30d)</span>
             <p class="text-2xl font-bold text-white mt-2">{{ number_format($teamApplications30d) }}</p>
         </div>
     </div>
 
     {{-- Tabs --}}
-    <div class="border-b border-gray-700">
+    <div class="border-b border-white/5">
         <nav class="flex gap-6">
             <button @click="tab = 'analytics'" :class="tab === 'analytics' ? 'border-green-500 text-green-400' : 'border-transparent text-gray-400 hover:text-white'" class="pb-3 border-b-2 text-sm font-medium transition">Analytics</button>
             <button @click="tab = 'api'" :class="tab === 'api' ? 'border-green-500 text-green-400' : 'border-transparent text-gray-400 hover:text-white'" class="pb-3 border-b-2 text-sm font-medium transition">API Usage</button>
@@ -59,7 +59,7 @@
     {{-- Analytics Tab --}}
     <div x-show="tab === 'analytics'" x-cloak class="space-y-6">
         {{-- Page Views Chart --}}
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
+        <div class="glass-card rounded-xl p-6">
             <h3 class="text-sm font-semibold text-white mb-4">Page Views Over Time</h3>
             <div class="relative" style="height: 250px;">
                 <canvas id="pageViewsChart"></canvas>
@@ -68,12 +68,12 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {{-- Top Pages --}}
-            <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
+            <div class="glass-card rounded-xl p-6">
                 <h3 class="text-sm font-semibold text-white mb-4">Top Pages</h3>
                 <div class="overflow-x-auto">
                     <table class="w-full text-sm">
                         <thead>
-                            <tr class="border-b border-gray-700">
+                            <tr class="border-b border-white/5">
                                 <th class="text-left text-gray-500 pb-2 font-medium">Page</th>
                                 <th class="text-right text-gray-500 pb-2 font-medium">Views</th>
                                 <th class="text-right text-gray-500 pb-2 font-medium">Unique</th>
@@ -81,7 +81,7 @@
                         </thead>
                         <tbody>
                             <template x-for="page in analyticsData.top_pages" :key="page.event_name">
-                                <tr class="border-b border-gray-700/50">
+                                <tr class="border-b border-white/5">
                                     <td class="py-2 text-gray-300 truncate max-w-[200px]" x-text="page.event_name"></td>
                                     <td class="py-2 text-right text-white font-medium" x-text="Number(page.views).toLocaleString()"></td>
                                     <td class="py-2 text-right text-gray-400" x-text="Number(page.unique_visitors).toLocaleString()"></td>
@@ -96,12 +96,12 @@
             </div>
 
             {{-- Feature Adoption --}}
-            <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
+            <div class="glass-card rounded-xl p-6">
                 <h3 class="text-sm font-semibold text-white mb-4">Feature Adoption</h3>
                 <div class="overflow-x-auto">
                     <table class="w-full text-sm">
                         <thead>
-                            <tr class="border-b border-gray-700">
+                            <tr class="border-b border-white/5">
                                 <th class="text-left text-gray-500 pb-2 font-medium">Feature</th>
                                 <th class="text-right text-gray-500 pb-2 font-medium">Uses</th>
                                 <th class="text-right text-gray-500 pb-2 font-medium">Users</th>
@@ -109,7 +109,7 @@
                         </thead>
                         <tbody>
                             <template x-for="feat in analyticsData.feature_adoption" :key="feat.event_name">
-                                <tr class="border-b border-gray-700/50">
+                                <tr class="border-b border-white/5">
                                     <td class="py-2 text-gray-300" x-text="feat.event_name"></td>
                                     <td class="py-2 text-right text-white font-medium" x-text="Number(feat.uses).toLocaleString()"></td>
                                     <td class="py-2 text-right text-gray-400" x-text="Number(feat.unique_users).toLocaleString()"></td>
@@ -128,7 +128,7 @@
     {{-- API Usage Tab --}}
     <div x-show="tab === 'api'" x-cloak class="space-y-6">
         {{-- Error Rate Badge + API Requests Chart --}}
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
+        <div class="glass-card rounded-xl p-6">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-sm font-semibold text-white">API Requests Over Time</h3>
                 <div class="flex items-center gap-3">
@@ -145,12 +145,12 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {{-- Per-Token Usage --}}
-            <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
+            <div class="glass-card rounded-xl p-6">
                 <h3 class="text-sm font-semibold text-white mb-4">Requests by API Token</h3>
                 <div class="overflow-x-auto">
                     <table class="w-full text-sm">
                         <thead>
-                            <tr class="border-b border-gray-700">
+                            <tr class="border-b border-white/5">
                                 <th class="text-left text-gray-500 pb-2 font-medium">Token</th>
                                 <th class="text-right text-gray-500 pb-2 font-medium">Requests</th>
                                 <th class="text-right text-gray-500 pb-2 font-medium">Avg (ms)</th>
@@ -158,7 +158,7 @@
                         </thead>
                         <tbody>
                             <template x-for="token in apiData.per_token" :key="token.token_id">
-                                <tr class="border-b border-gray-700/50">
+                                <tr class="border-b border-white/5">
                                     <td class="py-2 text-gray-300 truncate max-w-[200px]" x-text="token.token_name"></td>
                                     <td class="py-2 text-right text-white font-medium" x-text="Number(token.requests).toLocaleString()"></td>
                                     <td class="py-2 text-right text-gray-400" x-text="token.avg_ms + 'ms'"></td>
@@ -173,12 +173,12 @@
             </div>
 
             {{-- Top Endpoints --}}
-            <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
+            <div class="glass-card rounded-xl p-6">
                 <h3 class="text-sm font-semibold text-white mb-4">Top API Endpoints</h3>
                 <div class="overflow-x-auto">
                     <table class="w-full text-sm">
                         <thead>
-                            <tr class="border-b border-gray-700">
+                            <tr class="border-b border-white/5">
                                 <th class="text-left text-gray-500 pb-2 font-medium">Endpoint</th>
                                 <th class="text-right text-gray-500 pb-2 font-medium">Reqs</th>
                                 <th class="text-right text-gray-500 pb-2 font-medium">Avg</th>
@@ -187,7 +187,7 @@
                         </thead>
                         <tbody>
                             <template x-for="ep in apiData.top_endpoints" :key="ep.event_name">
-                                <tr class="border-b border-gray-700/50">
+                                <tr class="border-b border-white/5">
                                     <td class="py-2 text-gray-300 truncate max-w-[180px]" x-text="ep.event_name"></td>
                                     <td class="py-2 text-right text-white font-medium" x-text="Number(ep.requests).toLocaleString()"></td>
                                     <td class="py-2 text-right text-gray-400" x-text="Math.round(ep.avg_ms) + 'ms'"></td>
@@ -208,19 +208,19 @@
     <div x-show="tab === 'performance'" x-cloak class="space-y-6">
         {{-- Performance Summary Cards --}}
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-4">
+            <div class="glass-card rounded-xl p-4">
                 <span class="text-xs text-gray-500 uppercase tracking-wider">API P50</span>
                 <p class="text-2xl font-bold text-white mt-2" x-text="perfData.summary?.api_p50 !== null ? perfData.summary.api_p50 + 'ms' : '--'">--</p>
             </div>
-            <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-4">
+            <div class="glass-card rounded-xl p-4">
                 <span class="text-xs text-gray-500 uppercase tracking-wider">API P95</span>
                 <p class="text-2xl font-bold text-white mt-2" x-text="perfData.summary?.api_p95 !== null ? perfData.summary.api_p95 + 'ms' : '--'">--</p>
             </div>
-            <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-4">
+            <div class="glass-card rounded-xl p-4">
                 <span class="text-xs text-gray-500 uppercase tracking-wider">Cache Hit Rate</span>
                 <p class="text-2xl font-bold text-white mt-2" x-text="perfData.summary?.cache_hit_rate !== null ? perfData.summary.cache_hit_rate + '%' : '--'">--</p>
             </div>
-            <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-4">
+            <div class="glass-card rounded-xl p-4">
                 <span class="text-xs text-gray-500 uppercase tracking-wider">Queue Size</span>
                 <p class="text-2xl font-bold text-white mt-2" x-text="perfData.summary?.queue_size !== null ? perfData.summary.queue_size : '--'">--</p>
             </div>
@@ -228,28 +228,28 @@
 
         {{-- Performance Charts --}}
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
+            <div class="glass-card rounded-xl p-6">
                 <h3 class="text-sm font-semibold text-white mb-4">API Response Times (ms)</h3>
                 <div class="relative" style="height: 220px;">
                     <canvas id="apiResponseChart"></canvas>
                 </div>
             </div>
 
-            <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
+            <div class="glass-card rounded-xl p-6">
                 <h3 class="text-sm font-semibold text-white mb-4">Cache Hit Rate (%)</h3>
                 <div class="relative" style="height: 220px;">
                     <canvas id="cacheChart"></canvas>
                 </div>
             </div>
 
-            <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
+            <div class="glass-card rounded-xl p-6">
                 <h3 class="text-sm font-semibold text-white mb-4">System Memory (MB)</h3>
                 <div class="relative" style="height: 220px;">
                     <canvas id="sysMemoryChart"></canvas>
                 </div>
             </div>
 
-            <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
+            <div class="glass-card rounded-xl p-6">
                 <h3 class="text-sm font-semibold text-white mb-4">Queue Jobs</h3>
                 <div class="relative" style="height: 220px;">
                     <canvas id="queueChart"></canvas>
@@ -260,7 +260,7 @@
 
     {{-- Loading Overlay --}}
     <div x-show="loading" x-cloak class="fixed inset-0 bg-gray-900/50 flex items-center justify-center z-50">
-        <div class="bg-gray-800 border border-gray-700 rounded-xl p-6 flex items-center gap-3">
+        <div class="glass-card backdrop-blur-xl rounded-xl p-6 flex items-center gap-3">
             <svg class="w-5 h-5 text-green-500 animate-spin" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>

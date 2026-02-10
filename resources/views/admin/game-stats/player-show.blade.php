@@ -22,7 +22,7 @@
         $kdRatio = ($player->deaths ?? 0) > 0 ? round(($player->kills ?? 0) / $player->deaths, 2) : ($player->kills ?? 0);
         $lastSeen = $player->last_seen_at ? \Carbon\Carbon::parse($player->last_seen_at) : null;
     @endphp
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
+    <div class="glass-card rounded-xl p-6">
         <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
             <div>
                 <p class="text-sm text-gray-400">UUID</p>
@@ -50,7 +50,7 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6 mt-6 pt-6 border-t border-gray-700">
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6 mt-6 pt-6 border-t border-white/5">
             <div>
                 <p class="text-sm text-gray-400">Team Kills</p>
                 <p class="text-orange-400 font-medium">{{ number_format($player->team_kills ?? 0) }}</p>
@@ -79,7 +79,7 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6 mt-6 pt-6 border-t border-gray-700">
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6 mt-6 pt-6 border-t border-white/5">
             <div>
                 <p class="text-sm text-gray-400">Total XP</p>
                 <p class="text-cyan-400 font-bold text-xl">{{ number_format($player->xp_total ?? 0) }}</p>
@@ -102,18 +102,18 @@
             </div>
         </div>
 
-        <div class="mt-4 pt-4 border-t border-gray-700 flex gap-6 text-sm text-gray-400">
+        <div class="mt-4 pt-4 border-t border-white/5 flex gap-6 text-sm text-gray-400">
             <span>Last seen: {{ $lastSeen ? $lastSeen->format('M j, Y H:i') : 'Unknown' }}</span>
         </div>
     </div>
 
     {{-- Kills by Victim Type --}}
     @if($killsByVictimType->count() > 0)
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
-        <h2 class="text-lg font-semibold text-white mb-4">Kills by Type</h2>
+    <div class="glass-card rounded-xl p-6">
+        <h2 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">Kills by Type</h2>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
             @foreach($killsByVictimType as $killType)
-            <div class="bg-gray-700/50 rounded-lg p-4 text-center">
+            <div class="bg-white/3 rounded-lg p-4 text-center">
                 <p class="text-2xl font-bold {{ $killType->victim_type === 'AI' ? 'text-yellow-400' : 'text-red-400' }}">
                     {{ number_format($killType->total) }}
                 </p>
@@ -126,8 +126,8 @@
 
     {{-- Top Weapons --}}
     @if($topWeapons->count() > 0)
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
-        <h2 class="text-lg font-semibold text-white mb-4">Top Weapons</h2>
+    <div class="glass-card rounded-xl p-6">
+        <h2 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">Top Weapons</h2>
         <div class="space-y-3">
             @foreach($topWeapons as $weapon)
             @php
@@ -139,7 +139,7 @@
                     @if(isset($weaponImages[$weapon->weapon_name]))
                     <img src="{{ Storage::url($weaponImages[$weapon->weapon_name]) }}" alt="{{ $weapon->weapon_name }}" class="max-h-[60px] max-w-20 object-contain">
                     @else
-                    <div class="w-6 h-6 bg-gray-700 rounded flex items-center justify-center">
+                    <div class="w-6 h-6 bg-white/5 rounded flex items-center justify-center">
                         <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                         </svg>
@@ -147,7 +147,7 @@
                     @endif
                 </div>
                 <div class="w-32 text-sm text-gray-300 truncate">{{ $weapon->weapon_name }}</div>
-                <div class="flex-1 bg-gray-700 rounded-full h-4">
+                <div class="flex-1 bg-white/5 rounded-full h-4">
                     <div class="bg-green-500 h-4 rounded-full" style="width: {{ $percentage }}%"></div>
                 </div>
                 <div class="w-12 text-right text-sm text-gray-400">{{ $weapon->total }}</div>
@@ -159,8 +159,8 @@
 
     {{-- Hit Zone Distribution --}}
     @if($hitZonesDealt->count() > 0 || $hitZonesReceived->count() > 0)
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
-        <h2 class="text-lg font-semibold text-white mb-4">Hit Zone Distribution</h2>
+    <div class="glass-card rounded-xl p-6">
+        <h2 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">Hit Zone Distribution</h2>
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {{-- Damage Dealt --}}
             <div>
@@ -179,7 +179,7 @@
                     @endphp
                     <div class="flex items-center gap-3">
                         <div class="w-28 text-sm text-gray-300 truncate">{{ $zone->hit_zone_name }}</div>
-                        <div class="flex-1 bg-gray-700 rounded-full h-4">
+                        <div class="flex-1 bg-white/5 rounded-full h-4">
                             <div class="bg-red-500 h-4 rounded-full" style="width: {{ $barWidth }}%"></div>
                         </div>
                         <div class="w-20 text-right text-sm text-gray-400">{{ $zone->count }} ({{ $pct }}%)</div>
@@ -208,7 +208,7 @@
                     @endphp
                     <div class="flex items-center gap-3">
                         <div class="w-28 text-sm text-gray-300 truncate">{{ $zone->hit_zone_name }}</div>
-                        <div class="flex-1 bg-gray-700 rounded-full h-4">
+                        <div class="flex-1 bg-white/5 rounded-full h-4">
                             <div class="bg-blue-500 h-4 rounded-full" style="width: {{ $barWidth }}%"></div>
                         </div>
                         <div class="w-20 text-right text-sm text-gray-400">{{ $zone->count }} ({{ $pct }}%)</div>
@@ -225,8 +225,8 @@
 
     {{-- XP Breakdown --}}
     @if($xpByType->count() > 0)
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
-        <h2 class="text-lg font-semibold text-white mb-4">XP Breakdown</h2>
+    <div class="glass-card rounded-xl p-6">
+        <h2 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">XP Breakdown</h2>
         <div class="space-y-2">
             @php
                 $xpMax = $xpByType->max('total_xp') ?: 1;
@@ -239,7 +239,7 @@
             @endphp
             <div class="flex items-center gap-3">
                 <div class="w-28 text-sm text-gray-300 truncate">{{ $xp->reward_type ?? 'Unknown' }}</div>
-                <div class="flex-1 bg-gray-700 rounded-full h-4">
+                <div class="flex-1 bg-white/5 rounded-full h-4">
                     <div class="bg-cyan-500 h-4 rounded-full" style="width: {{ $barWidth }}%"></div>
                 </div>
                 <div class="w-32 text-right text-sm text-gray-400">{{ number_format($xp->total_xp) }} XP ({{ $pct }}%)</div>
@@ -251,12 +251,12 @@
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {{-- Recent Kill Events --}}
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl overflow-hidden">
-            <div class="px-4 py-3 border-b border-gray-700">
-                <h2 class="text-lg font-semibold text-white">Recent Kills</h2>
+        <div class="glass-card rounded-xl overflow-hidden">
+            <div class="px-4 py-3 border-b border-white/5">
+                <h2 class="text-sm font-semibold text-white uppercase tracking-wider">Recent Kills</h2>
             </div>
             <table class="w-full">
-                <thead class="bg-gray-700/50">
+                <thead class="bg-white/3">
                     <tr>
                         <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase">Time</th>
                         <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase">Victim</th>
@@ -264,12 +264,12 @@
                         <th class="px-4 py-2 text-right text-xs font-medium text-gray-400 uppercase">Distance</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-700">
+                <tbody class="divide-y divide-white/5">
                     @forelse($recentKillEvents as $kill)
                     @php
                         $killedAt = $kill->killed_at ? \Carbon\Carbon::parse($kill->killed_at) : null;
                     @endphp
-                    <tr class="hover:bg-gray-700/30">
+                    <tr class="hover:bg-white/5">
                         <td class="px-4 py-2 text-sm text-gray-400">
                             {{ $killedAt ? $killedAt->diffForHumans() : '-' }}
                         </td>
@@ -306,24 +306,24 @@
         </div>
 
         {{-- Recent Connections --}}
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl overflow-hidden">
-            <div class="px-4 py-3 border-b border-gray-700">
-                <h2 class="text-lg font-semibold text-white">Recent Connections</h2>
+        <div class="glass-card rounded-xl overflow-hidden">
+            <div class="px-4 py-3 border-b border-white/5">
+                <h2 class="text-sm font-semibold text-white uppercase tracking-wider">Recent Connections</h2>
             </div>
             <table class="w-full">
-                <thead class="bg-gray-700/50">
+                <thead class="bg-white/3">
                     <tr>
                         <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase">Time</th>
                         <th class="px-4 py-2 text-center text-xs font-medium text-gray-400 uppercase">Event</th>
                         <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase">Server</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-700">
+                <tbody class="divide-y divide-white/5">
                     @forelse($recentSessions as $session)
                     @php
                         $occurredAt = $session->occurred_at ? \Carbon\Carbon::parse($session->occurred_at) : null;
                     @endphp
-                    <tr class="hover:bg-gray-700/30">
+                    <tr class="hover:bg-white/5">
                         <td class="px-4 py-2 text-sm text-gray-400">
                             {{ $occurredAt ? $occurredAt->diffForHumans() : '-' }}
                         </td>

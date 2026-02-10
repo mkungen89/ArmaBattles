@@ -2,7 +2,7 @@
 @section('title', $team->name)
 @section('content')
     <!-- Header Banner -->
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl overflow-hidden mb-6">
+    <div class="glass-card rounded-xl overflow-hidden mb-6">
         <div class="relative h-48 sm:h-56">
             @if($team->header_image_url)
                 <img src="{{ $team->header_image_url }}" alt="{{ $team->name }} banner" class="w-full h-full object-cover">
@@ -15,9 +15,9 @@
             <!-- Avatar -->
             <div class="-mt-16 mb-4">
                 @if($team->avatar_url)
-                    <img src="{{ $team->avatar_url }}" alt="{{ $team->name }}" class="w-28 h-28 rounded-xl object-cover border-4 border-gray-800 shadow-lg">
+                    <img src="{{ $team->avatar_url }}" alt="{{ $team->name }}" class="w-28 h-28 rounded-xl object-cover border-4 border-gray-900 shadow-lg">
                 @else
-                    <div class="w-28 h-28 rounded-xl bg-gray-700 border-4 border-gray-800 shadow-lg flex items-center justify-center text-3xl font-bold text-gray-400">
+                    <div class="w-28 h-28 rounded-xl bg-white/5 border-4 border-gray-900 shadow-lg flex items-center justify-center text-3xl font-bold text-gray-400">
                         {{ strtoupper(substr($team->tag, 0, 2)) }}
                     </div>
                 @endif
@@ -65,7 +65,7 @@
             @endphp
             @if(!$isMember && $team->is_active)
                 <div class="px-6 pb-6 pt-0">
-                    <div class="pt-6 border-t border-gray-700">
+                    <div class="pt-6 border-t border-white/5">
                         @if($team->is_recruiting)
                             @if($hasPendingApplication)
                                 <div class="flex items-center justify-between bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4">
@@ -75,13 +75,13 @@
                                 <div class="text-gray-400 text-sm">Leave your current platoon to apply here.</div>
                             @else
                                 @if($team->recruitment_message)
-                                    <div class="bg-gray-700/50 rounded-lg p-4 mb-4">
+                                    <div class="bg-white/3 rounded-lg p-4 mb-4">
                                         <h3 class="text-sm font-medium text-gray-300 mb-2">Recruitment Message</h3>
                                         <p class="text-gray-400">{{ $team->recruitment_message }}</p>
                                     </div>
                                 @endif
                                 <button onclick="document.getElementById('apply-modal').classList.remove('hidden')"
-                                        class="w-full px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition">
+                                        class="w-full px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-xl transition">
                                     Apply to Join
                                 </button>
                             @endif
@@ -94,7 +94,7 @@
         @else
             @if($team->is_recruiting)
                 <div class="px-6 pb-6 text-center">
-                    <div class="pt-6 border-t border-gray-700">
+                    <div class="pt-6 border-t border-white/5">
                         <a href="{{ route('auth.steam') }}" class="text-green-400 hover:text-green-300">
                             Login with Steam to apply
                         </a>
@@ -107,15 +107,15 @@
         <!-- Main Content -->
         <div class="lg:col-span-2 space-y-6">
             <!-- Members -->
-            <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
-                <h2 class="text-lg font-semibold text-white mb-4">
+            <div class="glass-card rounded-xl p-6">
+                <h2 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">
                     Members ({{ $team->activeMembers->count() }})
                 </h2>
                 <div class="space-y-3">
                     @foreach($team->activeMembers->sortBy(function($member) {
                         return ['captain' => 0, 'officer' => 1, 'member' => 2][$member->pivot->role] ?? 3;
                     }) as $member)
-                        <div class="flex items-center gap-4 bg-gray-700/50 rounded-lg p-3">
+                        <div class="flex items-center gap-4 bg-white/3 rounded-lg p-3">
                             <img src="{{ $member->avatar_display }}" alt="{{ $member->name }}" class="w-12 h-12 rounded-full">
                             <div class="flex-1 min-w-0">
                                 <div class="flex items-center gap-2">
@@ -141,32 +141,32 @@
             </div>
             <!-- Combat Statistics -->
             @if(isset($combatStats) && $combatStats['member_count'] > 0)
-            <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
-                <h2 class="text-lg font-semibold text-white mb-4">Combat Statistics</h2>
+            <div class="glass-card rounded-xl p-6">
+                <h2 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">Combat Statistics</h2>
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                    <div class="text-center bg-gray-700/50 rounded-lg p-3">
+                    <div class="text-center bg-white/3 rounded-lg p-3">
                         <div class="text-2xl font-bold text-green-400">{{ number_format($combatStats['total_kills']) }}</div>
                         <div class="text-xs text-gray-400">Total Kills</div>
                     </div>
-                    <div class="text-center bg-gray-700/50 rounded-lg p-3">
+                    <div class="text-center bg-white/3 rounded-lg p-3">
                         <div class="text-2xl font-bold text-red-400">{{ number_format($combatStats['total_deaths']) }}</div>
                         <div class="text-xs text-gray-400">Total Deaths</div>
                     </div>
-                    <div class="text-center bg-gray-700/50 rounded-lg p-3">
+                    <div class="text-center bg-white/3 rounded-lg p-3">
                         <div class="text-2xl font-bold text-yellow-400">{{ $combatStats['avg_kd'] }}</div>
                         <div class="text-xs text-gray-400">Avg K/D</div>
                     </div>
-                    <div class="text-center bg-gray-700/50 rounded-lg p-3">
+                    <div class="text-center bg-white/3 rounded-lg p-3">
                         <div class="text-2xl font-bold text-amber-400">{{ number_format($combatStats['total_headshots']) }}</div>
                         <div class="text-xs text-gray-400">Headshots</div>
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-4 mt-4">
-                    <div class="text-center bg-gray-700/50 rounded-lg p-3">
+                    <div class="text-center bg-white/3 rounded-lg p-3">
                         <div class="text-xl font-bold text-blue-400">{{ $combatStats['total_playtime_hours'] }}h</div>
                         <div class="text-xs text-gray-400">Total Playtime</div>
                     </div>
-                    <div class="text-center bg-gray-700/50 rounded-lg p-3">
+                    <div class="text-center bg-white/3 rounded-lg p-3">
                         <div class="text-xl font-bold text-green-400">{{ number_format($combatStats['avg_kills'], 0) }}</div>
                         <div class="text-xs text-gray-400">Avg Kills/Member</div>
                     </div>
@@ -178,13 +178,43 @@
                 </div>
             </div>
             @endif
+            <!-- Team Rating -->
+            @if(isset($teamRating) && $teamRating['rated_members'] > 0)
+            <div class="glass-card border-purple-500/20 rounded-xl p-6">
+                <h2 class="text-sm font-semibold text-white uppercase tracking-wider mb-3 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+                    Team Rating
+                </h2>
+                <div class="grid grid-cols-3 gap-4">
+                    <div class="text-center bg-white/3 rounded-lg p-3">
+                        @php $trTier = \App\Models\PlayerRating::TIERS[$teamRating['tier']] ?? \App\Models\PlayerRating::TIERS['unranked'] @endphp
+                        <div class="text-2xl font-bold {{ $trTier['color'] }}">{{ number_format($teamRating['avg_rating']) }}</div>
+                        <div class="text-xs text-gray-400">Avg Rating</div>
+                    </div>
+                    <div class="text-center bg-white/3 rounded-lg p-3">
+                        @if($trTier['icon'])
+                            <img src="{{ $trTier['icon'] }}" alt="{{ $trTier['label'] }}" class="w-12 h-12 object-contain mx-auto" title="{{ $trTier['label'] }}">
+                        @else
+                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border {{ $trTier['bg'] }} {{ $trTier['color'] }}">
+                                {{ $trTier['label'] }}
+                            </span>
+                        @endif
+                        <div class="text-xs text-gray-400 mt-1">Team Tier</div>
+                    </div>
+                    <div class="text-center bg-white/3 rounded-lg p-3">
+                        <div class="text-2xl font-bold text-purple-400">{{ $teamRating['rated_members'] }}/{{ $teamRating['total_members'] }}</div>
+                        <div class="text-xs text-gray-400">Rated Members</div>
+                    </div>
+                </div>
+            </div>
+            @endif
             <!-- Recent Matches -->
             @if($recentMatches->count() > 0)
-                <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
-                    <h2 class="text-lg font-semibold text-white mb-4">Recent Matches</h2>
+                <div class="glass-card rounded-xl p-6">
+                    <h2 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">Recent Matches</h2>
                     <div class="space-y-3">
                         @foreach($recentMatches as $match)
-                            <a href="{{ route('tournaments.match', [$match->tournament, $match]) }}" class="block bg-gray-700/50 rounded-lg p-4 hover:bg-gray-700 transition">
+                            <a href="{{ route('tournaments.match', [$match->tournament, $match]) }}" class="block bg-white/3 rounded-lg p-4 hover:bg-white/5 transition">
                                 <div class="text-xs text-gray-500 mb-2">{{ $match->tournament->name }}</div>
                                 <div class="flex items-center justify-between">
                                     <div class="flex items-center gap-3">
@@ -212,22 +242,22 @@
         <div class="space-y-6">
             <!-- Statistics -->
             @php $stats = $team->getStatistics(); $form = $team->getRecentForm(5); @endphp
-            <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
-                <h2 class="text-lg font-semibold text-white mb-4">Statistics</h2>
+            <div class="glass-card rounded-xl p-6">
+                <h2 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">Statistics</h2>
                 <div class="grid grid-cols-2 gap-4 mb-4">
-                    <div class="text-center bg-gray-700/50 rounded-lg p-3">
+                    <div class="text-center bg-white/3 rounded-lg p-3">
                         <div class="text-2xl font-bold text-white">{{ $stats['total_matches'] }}</div>
                         <div class="text-xs text-gray-400">Matches</div>
                     </div>
-                    <div class="text-center bg-gray-700/50 rounded-lg p-3">
+                    <div class="text-center bg-white/3 rounded-lg p-3">
                         <div class="text-2xl font-bold text-blue-400">{{ $stats['win_rate'] }}%</div>
                         <div class="text-xs text-gray-400">Win Rate</div>
                     </div>
-                    <div class="text-center bg-gray-700/50 rounded-lg p-3">
+                    <div class="text-center bg-white/3 rounded-lg p-3">
                         <div class="text-2xl font-bold text-green-400">{{ $stats['wins'] }}</div>
                         <div class="text-xs text-gray-400">Wins</div>
                     </div>
-                    <div class="text-center bg-gray-700/50 rounded-lg p-3">
+                    <div class="text-center bg-white/3 rounded-lg p-3">
                         <div class="text-2xl font-bold text-red-400">{{ $stats['losses'] }}</div>
                         <div class="text-xs text-gray-400">Losses</div>
                     </div>
@@ -252,7 +282,7 @@
                         </span>
                     </div>
                 @endif
-                <div class="mt-4 pt-4 border-t border-gray-700 grid grid-cols-2 gap-2 text-sm">
+                <div class="mt-4 pt-4 border-t border-white/5 grid grid-cols-2 gap-2 text-sm">
                     <div>
                         <span class="text-gray-400">Tournaments:</span>
                         <span class="text-white ml-1">{{ $stats['tournaments_participated'] }}</span>
@@ -264,8 +294,8 @@
                 </div>
             </div>
             <!-- Info -->
-            <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
-                <h2 class="text-lg font-semibold text-white mb-4">Information</h2>
+            <div class="glass-card rounded-xl p-6">
+                <h2 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">Information</h2>
                 <dl class="space-y-4">
                     <div>
                         <dt class="text-sm text-gray-400">Captain</dt>
@@ -296,8 +326,8 @@
             </div>
             <!-- Tournaments -->
             @if($team->tournaments->count() > 0)
-                <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
-                    <h2 class="text-lg font-semibold text-white mb-4">Tournaments</h2>
+                <div class="glass-card rounded-xl p-6">
+                    <h2 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">Tournaments</h2>
                     <div class="space-y-3">
                         @foreach($team->tournaments->take(5) as $tournament)
                             <a href="{{ route('tournaments.show', $tournament) }}" class="block hover:text-green-400 transition">
@@ -316,22 +346,22 @@
 <div id="apply-modal" class="hidden fixed inset-0 z-50 overflow-y-auto">
     <div class="flex items-center justify-center min-h-screen px-4">
         <div class="fixed inset-0 bg-black/70" onclick="document.getElementById('apply-modal').classList.add('hidden')"></div>
-        <div class="relative bg-gray-800 border border-gray-700 rounded-xl max-w-md w-full p-6">
-            <h3 class="text-lg font-semibold text-white mb-4">Apply to {{ $team->name }}</h3>
+        <div class="relative glass-card backdrop-blur-xl rounded-xl max-w-md w-full p-6">
+            <h3 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">Apply to {{ $team->name }}</h3>
             <form method="POST" action="{{ route('teams.apply', $team) }}">
                 @csrf
                 <div class="mb-4">
                     <label class="block text-sm text-gray-400 mb-2">Message (optional)</label>
                     <textarea name="message" rows="4"
-                              class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-green-500"
+                              class="w-full px-4 py-2 bg-white/5 border-white/10 rounded-lg text-white focus:outline-none focus:border-green-500"
                               placeholder="Tell the platoon leaders why you want to join..."></textarea>
                 </div>
                 <div class="flex gap-3">
                     <button type="button" onclick="document.getElementById('apply-modal').classList.add('hidden')"
-                            class="flex-1 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition">
+                            class="flex-1 px-4 py-2 bg-white/5 hover:bg-white/10 text-white rounded-xl transition">
                         Cancel
                     </button>
-                    <button type="submit" class="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition">
+                    <button type="submit" class="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-xl transition">
                         Submit Application
                     </button>
                 </div>

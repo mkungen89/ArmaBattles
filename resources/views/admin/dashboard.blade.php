@@ -8,7 +8,7 @@
 
     {{-- Stats Grid --}}
     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-4">
+        <div class="glass-card rounded-xl p-4">
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center">
                     <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -22,7 +22,7 @@
             </div>
         </div>
 
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-4">
+        <div class="glass-card rounded-xl p-4">
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center">
                     <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -36,7 +36,7 @@
             </div>
         </div>
 
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-4">
+        <div class="glass-card rounded-xl p-4">
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 bg-red-500/20 rounded-lg flex items-center justify-center">
                     <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -50,7 +50,7 @@
             </div>
         </div>
 
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-4">
+        <div class="glass-card rounded-xl p-4">
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center">
                     <svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -64,7 +64,7 @@
             </div>
         </div>
 
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-4">
+        <div class="glass-card rounded-xl p-4">
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 bg-yellow-500/20 rounded-lg flex items-center justify-center">
                     <svg class="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -78,7 +78,7 @@
             </div>
         </div>
 
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-4">
+        <div class="glass-card rounded-xl p-4">
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 bg-cyan-500/20 rounded-lg flex items-center justify-center">
                     <svg class="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -95,12 +95,12 @@
 
     <div class="grid lg:grid-cols-2 gap-6">
         {{-- Recent Users --}}
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl">
-            <div class="p-4 border-b border-gray-700 flex items-center justify-between">
-                <h2 class="text-lg font-semibold text-white">Recent Users</h2>
+        <div class="glass-card rounded-xl">
+            <div class="p-4 border-b border-white/5 flex items-center justify-between">
+                <h2 class="text-sm font-semibold text-white uppercase tracking-wider">Recent Users</h2>
                 <a href="{{ route('admin.users') }}" class="text-sm text-green-400 hover:text-green-300">View All</a>
             </div>
-            <div class="divide-y divide-gray-700">
+            <div class="divide-y divide-white/5">
                 @forelse($recentUsers as $user)
                 <div class="p-4 flex items-center justify-between">
                     <div class="flex items-center gap-3">
@@ -111,7 +111,7 @@
                         </div>
                     </div>
                     <div class="text-right">
-                        <span class="px-2 py-1 text-xs rounded-full {{ $user->role === 'admin' ? 'bg-green-500/20 text-green-400' : ($user->role === 'moderator' ? 'bg-blue-500/20 text-blue-400' : 'bg-gray-700 text-gray-400') }}">
+                        <span class="px-2 py-1 text-xs rounded-full {{ $user->role === 'admin' ? 'bg-green-500/20 text-green-400' : ($user->role === 'moderator' ? 'bg-blue-500/20 text-blue-400' : 'bg-white/5 text-gray-400') }}">
                             {{ ucfirst($user->role ?? 'user') }}
                         </span>
                         <p class="text-xs text-gray-500 mt-1">{{ $user->created_at->diffForHumans() }}</p>
@@ -124,12 +124,12 @@
         </div>
 
         {{-- Servers --}}
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl">
-            <div class="p-4 border-b border-gray-700 flex items-center justify-between">
-                <h2 class="text-lg font-semibold text-white">Tracked Servers</h2>
+        <div class="glass-card rounded-xl">
+            <div class="p-4 border-b border-white/5 flex items-center justify-between">
+                <h2 class="text-sm font-semibold text-white uppercase tracking-wider">Tracked Servers</h2>
                 <a href="{{ route('admin.servers') }}" class="text-sm text-green-400 hover:text-green-300">View All</a>
             </div>
-            <div class="divide-y divide-gray-700">
+            <div class="divide-y divide-white/5">
                 @forelse($servers as $server)
                 <div class="p-4 flex items-center justify-between">
                     <div>

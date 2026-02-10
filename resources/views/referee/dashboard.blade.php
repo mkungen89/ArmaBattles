@@ -35,7 +35,7 @@
             @endif
             {{-- Stats Cards --}}
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="bg-gray-800/50 backdrop-blur border border-gray-700 rounded-xl p-6">
+                <div class="glass-card rounded-xl p-6">
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-gray-400 text-sm mb-1">Active Tournaments</p>
@@ -48,7 +48,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="bg-gray-800/50 backdrop-blur border border-gray-700 rounded-xl p-6">
+                <div class="glass-card rounded-xl p-6">
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-gray-400 text-sm mb-1">Matches Needing Reports</p>
@@ -61,7 +61,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="bg-gray-800/50 backdrop-blur border border-gray-700 rounded-xl p-6">
+                <div class="glass-card rounded-xl p-6">
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-gray-400 text-sm mb-1">My Reports</p>
@@ -76,21 +76,21 @@
                 </div>
             </div>
             {{-- Upcoming Matches --}}
-            <div class="bg-gray-800/50 backdrop-blur border border-gray-700 rounded-xl p-6">
+            <div class="glass-card rounded-xl p-6">
                 <h2 class="text-2xl font-bold text-white mb-4">Matches Needing Reports</h2>
                 @if($upcomingMatches->isEmpty())
                     <p class="text-gray-400 text-center py-8">No matches currently need reporting.</p>
                 @else
                     <div class="space-y-4">
                         @foreach($upcomingMatches as $match)
-                            <div class="bg-gray-900/50 border border-gray-700 rounded-lg p-4 hover:border-blue-500/50 transition">
+                            <div class="bg-white/3 border border-white/5 rounded-lg p-4 hover:border-blue-500/50 transition">
                                 <div class="flex items-center justify-between flex-wrap gap-4">
                                     <div class="flex-1 min-w-0">
                                         <div class="flex items-center gap-2 mb-2">
                                             <span class="text-xs font-semibold px-2 py-1 rounded bg-blue-500/20 text-blue-400">
                                                 {{ $match->tournament->name }}
                                             </span>
-                                            <span class="text-xs font-semibold px-2 py-1 rounded bg-gray-700/50 text-gray-300">
+                                            <span class="text-xs font-semibold px-2 py-1 rounded bg-white/3 text-gray-300">
                                                 {{ $match->round_label }}
                                             </span>
                                             <span class="text-xs font-semibold px-2 py-1 rounded {{ $match->status_badge }}">
@@ -108,12 +108,12 @@
                                     </div>
                                     <div class="flex gap-2">
                                         <a href="{{ route('matches.show', $match->id) }}"
-                                           class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white text-sm rounded-lg transition">
+                                           class="px-4 py-2 bg-white/5 hover:bg-white/10 text-white text-sm rounded-xl transition">
                                             View Match
                                         </a>
                                         @if($match->status === 'in_progress' || $match->status === 'scheduled')
                                             <a href="{{ route('referee.match.report', $match->id) }}"
-                                               class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm rounded-lg transition flex items-center gap-2">
+                                               class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm rounded-xl transition flex items-center gap-2">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
                                                 </svg>
@@ -128,14 +128,14 @@
                 @endif
             </div>
             {{-- My Recent Reports --}}
-            <div class="bg-gray-800/50 backdrop-blur border border-gray-700 rounded-xl p-6">
+            <div class="glass-card rounded-xl p-6">
                 <h2 class="text-2xl font-bold text-white mb-4">My Recent Reports</h2>
                 @if($myReports->isEmpty())
                     <p class="text-gray-400 text-center py-8">You haven't submitted any reports yet.</p>
                 @else
                     <div class="space-y-4">
                         @foreach($myReports as $report)
-                            <div class="bg-gray-900/50 border border-gray-700 rounded-lg p-4">
+                            <div class="bg-white/3 border border-white/5 rounded-lg p-4">
                                 <div class="flex items-center justify-between flex-wrap gap-4">
                                     <div class="flex-1 min-w-0">
                                         <div class="flex items-center gap-2 mb-2">
@@ -162,7 +162,7 @@
                                         </p>
                                     </div>
                                     <a href="{{ route('referee.report.view', $report->id) }}"
-                                       class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white text-sm rounded-lg transition">
+                                       class="px-4 py-2 bg-white/5 hover:bg-white/10 text-white text-sm rounded-xl transition">
                                         View Report
                                     </a>
                                 </div>
@@ -173,11 +173,11 @@
             </div>
             {{-- Disputed Matches Section --}}
             @if($disputedMatches->count() > 0)
-                <div class="bg-gray-800/50 backdrop-blur border border-red-500/30 rounded-xl p-6">
+                <div class="glass-card border-red-500/30 rounded-xl p-6">
                     <h2 class="text-2xl font-bold text-red-400 mb-4">Disputed Matches</h2>
                     <div class="space-y-4">
                         @foreach($disputedMatches as $match)
-                            <div class="bg-gray-900/50 border border-red-500/30 rounded-lg p-4">
+                            <div class="bg-white/3 border border-red-500/30 rounded-lg p-4">
                                 <div class="flex items-center justify-between flex-wrap gap-4">
                                     <div class="flex-1 min-w-0">
                                         <div class="flex items-center gap-2 mb-2">
@@ -201,12 +201,12 @@
                                     </div>
                                     <div class="flex gap-2">
                                         <a href="{{ route('matches.show', $match->id) }}"
-                                           class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white text-sm rounded-lg transition">
+                                           class="px-4 py-2 bg-white/5 hover:bg-white/10 text-white text-sm rounded-xl transition">
                                             View Match
                                         </a>
                                         @if($match->reports->first())
                                             <a href="{{ route('referee.report.view', $match->reports->first()->id) }}"
-                                               class="px-4 py-2 bg-red-600 hover:bg-red-500 text-white text-sm rounded-lg transition">
+                                               class="px-4 py-2 bg-red-600 hover:bg-red-500 text-white text-sm rounded-xl transition">
                                                 View Report
                                             </a>
                                         @endif

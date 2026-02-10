@@ -19,7 +19,7 @@
 
     @if($tournament->format === 'round_robin' || $tournament->format === 'swiss')
         <!-- Standings-based formats -->
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6 mb-6">
+        <div class="glass-card rounded-xl p-6 mb-6">
             <p class="text-gray-400">
                 This is a {{ $tournament->format_text }} format.
                 <a href="{{ route('tournaments.standings', $tournament) }}" class="text-green-400 hover:text-green-300">View standings</a>
@@ -28,11 +28,11 @@
 
         <!-- Match List by Round -->
         @foreach($brackets['main'] as $round => $matches)
-            <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6 mb-6">
-                <h2 class="text-lg font-semibold text-white mb-4">Round {{ $round }}</h2>
+            <div class="glass-card rounded-xl p-6 mb-6">
+                <h2 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">Round {{ $round }}</h2>
                 <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
                     @foreach($matches as $match)
-                        <a href="{{ route('tournaments.match', [$tournament, $match]) }}" class="bg-gray-700/50 rounded-lg p-4 hover:bg-gray-700 transition">
+                        <a href="{{ route('tournaments.match', [$tournament, $match]) }}" class="bg-white/3 rounded-lg p-4 hover:bg-white/5 transition">
                             <div class="flex items-center justify-between mb-2">
                                 <span class="text-xs px-2 py-1 rounded-full {{ $match->status_badge }}">
                                     {{ $match->status_text }}
@@ -74,9 +74,9 @@
                         </h3>
                         @foreach($matches as $match)
                             <a href="{{ route('tournaments.match', [$tournament, $match]) }}"
-                               class="bg-gray-800 border border-gray-700 rounded-lg w-64 hover:border-green-500/50 transition"
+                               class="glass-card rounded-lg w-64 hover:border-green-500/30 transition"
                                style="margin-bottom: {{ pow(2, $round - 1) * 20 - 20 }}px;">
-                                <div class="p-3 border-b border-gray-700 {{ $match->winner_id === $match->team1_id ? 'bg-green-500/10' : '' }}">
+                                <div class="p-3 border-b border-white/5 {{ $match->winner_id === $match->team1_id ? 'bg-green-500/10' : '' }}">
                                     <div class="flex items-center justify-between">
                                         <div class="flex items-center gap-2 min-w-0">
                                             @if($match->team1?->logo_url)
@@ -165,8 +165,8 @@
                                 </h3>
                                 @foreach($matches as $match)
                                     <a href="{{ route('tournaments.match', [$tournament, $match]) }}"
-                                       class="bg-gray-800 border border-gray-700 rounded-lg w-64 hover:border-red-500/50 transition">
-                                        <div class="p-3 border-b border-gray-700 {{ $match->winner_id === $match->team1_id ? 'bg-green-500/10' : '' }}">
+                                       class="glass-card rounded-lg w-64 hover:border-red-500/50 transition">
+                                        <div class="p-3 border-b border-white/5 {{ $match->winner_id === $match->team1_id ? 'bg-green-500/10' : '' }}">
                                             <div class="flex items-center justify-between">
                                                 <span class="truncate {{ $match->winner_id === $match->team1_id ? 'text-green-400 font-semibold' : 'text-white' }}">
                                                     {{ $match->team1?->name ?? 'TBD' }}

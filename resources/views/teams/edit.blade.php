@@ -6,7 +6,7 @@
             &larr; Back to my platoon
         </a>
     </div>
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6 mb-6">
+    <div class="glass-card p-6 mb-6">
         <h1 class="text-2xl font-bold text-white mb-6">Edit platoon</h1>
         <form action="{{ route('teams.update', $team) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
             @csrf
@@ -14,7 +14,7 @@
             <div>
                 <label for="name" class="block text-sm font-medium text-gray-400 mb-2">Platoon name *</label>
                 <input type="text" name="name" id="name" value="{{ old('name', $team->name) }}" required
-                    class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
+                    class="w-full bg-white/5 border-white/10 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
                 @error('name')
                     <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
                 @enderror
@@ -22,7 +22,7 @@
             <div>
                 <label for="tag" class="block text-sm font-medium text-gray-400 mb-2">Tag (short name) *</label>
                 <input type="text" name="tag" id="tag" value="{{ old('tag', $team->tag) }}" required maxlength="10"
-                    class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500 uppercase">
+                    class="w-full bg-white/5 border-white/10 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500 uppercase">
                 @error('tag')
                     <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
                 @enderror
@@ -30,7 +30,7 @@
             <div>
                 <label for="description" class="block text-sm font-medium text-gray-400 mb-2">Description</label>
                 <textarea name="description" id="description" rows="4"
-                    class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">{{ old('description', $team->description) }}</textarea>
+                    class="w-full bg-white/5 border-white/10 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">{{ old('description', $team->description) }}</textarea>
                 @error('description')
                     <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
                 @enderror
@@ -38,7 +38,7 @@
             <div>
                 <label for="logo_url" class="block text-sm font-medium text-gray-400 mb-2">Logo URL</label>
                 <input type="url" name="logo_url" id="logo_url" value="{{ old('logo_url', $team->logo_url) }}"
-                    class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
+                    class="w-full bg-white/5 border-white/10 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
                 @error('logo_url')
                     <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
                 @enderror
@@ -53,7 +53,7 @@
             <div>
                 <label for="avatar" class="block text-sm font-medium text-gray-400 mb-2">Avatar image</label>
                 <input type="file" name="avatar" id="avatar" accept="image/jpeg,image/png,image/webp"
-                    class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500 file:mr-4 file:py-1 file:px-3 file:rounded file:border-0 file:text-sm file:bg-gray-600 file:text-white hover:file:bg-gray-500">
+                    class="w-full bg-white/5 border-white/10 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500 file:mr-4 file:py-1 file:px-3 file:rounded file:border-0 file:text-sm file:bg-white/10 file:text-white hover:file:bg-white/15">
                 <p class="mt-1 text-xs text-gray-500">Recommended: 200 x 200 px. JPG, PNG or WebP. Max 1 MB. Overrides logo URL if set.</p>
                 @error('avatar')
                     <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
@@ -65,7 +65,7 @@
                             <img src="{{ Storage::url($team->avatar_path) }}" alt="{{ $team->name }}" class="w-16 h-16 rounded-lg object-cover">
                         </div>
                         <label class="flex items-center gap-2 text-sm text-red-400 cursor-pointer">
-                            <input type="checkbox" name="remove_avatar" value="1" class="rounded bg-gray-700 border-gray-600 text-red-500 focus:ring-red-500">
+                            <input type="checkbox" name="remove_avatar" value="1" class="rounded bg-white/5 border-white/10 text-red-500 focus:ring-red-500">
                             Remove avatar
                         </label>
                     </div>
@@ -75,7 +75,7 @@
             <div>
                 <label for="header" class="block text-sm font-medium text-gray-400 mb-2">Header banner</label>
                 <input type="file" name="header" id="header" accept="image/jpeg,image/png,image/webp"
-                    class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500 file:mr-4 file:py-1 file:px-3 file:rounded file:border-0 file:text-sm file:bg-gray-600 file:text-white hover:file:bg-gray-500">
+                    class="w-full bg-white/5 border-white/10 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500 file:mr-4 file:py-1 file:px-3 file:rounded file:border-0 file:text-sm file:bg-white/10 file:text-white hover:file:bg-white/15">
                 <p class="mt-1 text-xs text-gray-500">JPG, PNG or WebP. Max 2MB. Recommended: 1200x400px.</p>
                 @error('header')
                     <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
@@ -85,7 +85,7 @@
                         <p class="text-sm text-gray-400 mb-2">Current header:</p>
                         <img src="{{ Storage::url($team->header_image) }}" alt="Header" class="w-full h-24 rounded-lg object-cover">
                         <label class="flex items-center gap-2 text-sm text-red-400 cursor-pointer mt-2">
-                            <input type="checkbox" name="remove_header" value="1" class="rounded bg-gray-700 border-gray-600 text-red-500 focus:ring-red-500">
+                            <input type="checkbox" name="remove_header" value="1" class="rounded bg-white/5 border-white/10 text-red-500 focus:ring-red-500">
                             Remove header
                         </label>
                     </div>
@@ -95,25 +95,25 @@
             <div>
                 <label for="website" class="block text-sm font-medium text-gray-400 mb-2">Website</label>
                 <input type="url" name="website" id="website" value="{{ old('website', $team->website) }}"
-                    class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500"
+                    class="w-full bg-white/5 border-white/10 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500"
                     placeholder="https://example.com">
                 @error('website')
                     <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
                 @enderror
             </div>
             <div class="flex gap-4">
-                <button type="submit" class="flex-1 px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg transition font-medium">
+                <button type="submit" class="flex-1 px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-xl transition font-medium">
                     Save changes
                 </button>
-                <a href="{{ route('teams.my') }}" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition">
+                <a href="{{ route('teams.my') }}" class="px-4 py-2 bg-white/5 hover:bg-white/10 text-white rounded-xl transition">
                     Cancel
                 </a>
             </div>
         </form>
     </div>
     <!-- Social Links -->
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
-        <h2 class="text-lg font-semibold text-white mb-4">Social media links</h2>
+    <div class="glass-card p-6">
+        <h2 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">Social media links</h2>
         <form action="{{ route('teams.social-links', $team) }}" method="POST" class="space-y-4">
             @csrf
             @php $socialLinks = old() ? old() : ($team->social_links ?? []); @endphp
@@ -123,7 +123,7 @@
                     Twitch
                 </label>
                 <input type="url" name="twitch" id="twitch" value="{{ $socialLinks['twitch'] ?? '' }}"
-                    class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500"
+                    class="w-full bg-white/5 border-white/10 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500"
                     placeholder="https://twitch.tv/...">
                 @error('twitch') <p class="mt-1 text-sm text-red-400">{{ $message }}</p> @enderror
             </div>
@@ -133,7 +133,7 @@
                     YouTube
                 </label>
                 <input type="url" name="youtube" id="youtube" value="{{ $socialLinks['youtube'] ?? '' }}"
-                    class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500"
+                    class="w-full bg-white/5 border-white/10 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500"
                     placeholder="https://youtube.com/...">
                 @error('youtube') <p class="mt-1 text-sm text-red-400">{{ $message }}</p> @enderror
             </div>
@@ -143,7 +143,7 @@
                     TikTok
                 </label>
                 <input type="url" name="tiktok" id="tiktok" value="{{ $socialLinks['tiktok'] ?? '' }}"
-                    class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500"
+                    class="w-full bg-white/5 border-white/10 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500"
                     placeholder="https://tiktok.com/@...">
                 @error('tiktok') <p class="mt-1 text-sm text-red-400">{{ $message }}</p> @enderror
             </div>
@@ -153,7 +153,7 @@
                     Kick
                 </label>
                 <input type="url" name="kick" id="kick" value="{{ $socialLinks['kick'] ?? '' }}"
-                    class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500"
+                    class="w-full bg-white/5 border-white/10 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500"
                     placeholder="https://kick.com/...">
                 @error('kick') <p class="mt-1 text-sm text-red-400">{{ $message }}</p> @enderror
             </div>
@@ -163,7 +163,7 @@
                     X (Twitter)
                 </label>
                 <input type="url" name="twitter" id="twitter" value="{{ $socialLinks['twitter'] ?? '' }}"
-                    class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500"
+                    class="w-full bg-white/5 border-white/10 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500"
                     placeholder="https://x.com/...">
                 @error('twitter') <p class="mt-1 text-sm text-red-400">{{ $message }}</p> @enderror
             </div>
@@ -173,7 +173,7 @@
                     Facebook
                 </label>
                 <input type="url" name="facebook" id="facebook" value="{{ $socialLinks['facebook'] ?? '' }}"
-                    class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500"
+                    class="w-full bg-white/5 border-white/10 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500"
                     placeholder="https://facebook.com/...">
                 @error('facebook') <p class="mt-1 text-sm text-red-400">{{ $message }}</p> @enderror
             </div>
@@ -183,11 +183,11 @@
                     Instagram
                 </label>
                 <input type="url" name="instagram" id="instagram" value="{{ $socialLinks['instagram'] ?? '' }}"
-                    class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500"
+                    class="w-full bg-white/5 border-white/10 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500"
                     placeholder="https://instagram.com/...">
                 @error('instagram') <p class="mt-1 text-sm text-red-400">{{ $message }}</p> @enderror
             </div>
-            <button type="submit" class="w-full px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg transition font-medium">
+            <button type="submit" class="w-full px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-xl transition font-medium">
                 Save social links
             </button>
         </form>

@@ -8,7 +8,7 @@
             <h1 class="text-2xl font-bold text-white">RCON Console</h1>
             <p class="text-gray-400 mt-1">Manage your game server remotely</p>
         </div>
-        <div id="connection-status" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-800/50 border border-gray-700">
+        <div id="connection-status" class="flex items-center gap-2 px-4 py-2 rounded-lg glass-card">
             <span class="w-3 h-3 rounded-full bg-gray-500" id="status-indicator"></span>
             <span class="text-gray-400" id="status-text">Checking...</span>
         </div>
@@ -18,16 +18,16 @@
         {{-- Left Column: Players & Commands --}}
         <div class="lg:col-span-2 space-y-6">
             {{-- Online Players --}}
-            <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
+            <div class="glass-card rounded-xl p-6">
                 <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-lg font-semibold text-white flex items-center gap-2">
+                    <h2 class="text-sm font-semibold text-white uppercase tracking-wider flex items-center gap-2">
                         <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
                         </svg>
                         Online Players
                         <span id="player-count" class="text-sm text-gray-500">(0)</span>
                     </h2>
-                    <button onclick="refreshPlayers()" class="px-3 py-1 text-sm bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition">
+                    <button onclick="refreshPlayers()" class="px-3 py-1 text-sm bg-white/5 hover:bg-white/10 text-white rounded-xl transition">
                         Refresh
                     </button>
                 </div>
@@ -37,8 +37,8 @@
             </div>
 
             {{-- Command Console --}}
-            <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
-                <h2 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+            <div class="glass-card rounded-xl p-6">
+                <h2 class="text-sm font-semibold text-white uppercase tracking-wider mb-3 flex items-center gap-2">
                     <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                     </svg>
@@ -49,7 +49,7 @@
                 </div>
                 <form id="command-form" class="flex gap-2">
                     <input type="text" id="command-input" placeholder="Enter RCON command..."
-                           class="flex-1 px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-green-500">
+                           class="flex-1 px-4 py-2 bg-gray-900 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-green-500">
                     <button type="submit" class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition">
                         Send
                     </button>
@@ -60,8 +60,8 @@
         {{-- Right Column: Quick Actions --}}
         <div class="space-y-6">
             {{-- Broadcast Message --}}
-            <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
-                <h2 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+            <div class="glass-card rounded-xl p-6">
+                <h2 class="text-sm font-semibold text-white uppercase tracking-wider mb-3 flex items-center gap-2">
                     <svg class="w-5 h-5 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/>
                     </svg>
@@ -69,7 +69,7 @@
                 </h2>
                 <form id="broadcast-form">
                     <textarea id="broadcast-message" rows="3" placeholder="Message to all players..."
-                              class="w-full px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-green-500 mb-3"></textarea>
+                              class="w-full px-4 py-2 bg-gray-900 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-green-500 mb-3"></textarea>
                     <button type="submit" class="w-full px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg transition">
                         Send Broadcast
                     </button>
@@ -77,27 +77,27 @@
             </div>
 
             {{-- Quick Commands --}}
-            <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
-                <h2 class="text-lg font-semibold text-white mb-4">Quick Commands</h2>
+            <div class="glass-card rounded-xl p-6">
+                <h2 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">Quick Commands</h2>
                 <div class="space-y-2">
-                    <button onclick="quickCommand('players')" class="w-full px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition text-left">
+                    <button onclick="quickCommand('players')" class="w-full px-4 py-2 bg-white/5 hover:bg-white/10 text-white rounded-xl transition text-left">
                         List Players
                     </button>
-                    <button onclick="quickCommand('bans')" class="w-full px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition text-left">
+                    <button onclick="quickCommand('bans')" class="w-full px-4 py-2 bg-white/5 hover:bg-white/10 text-white rounded-xl transition text-left">
                         List Bans
                     </button>
-                    <button onclick="quickCommand('admins')" class="w-full px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition text-left">
+                    <button onclick="quickCommand('admins')" class="w-full px-4 py-2 bg-white/5 hover:bg-white/10 text-white rounded-xl transition text-left">
                         List Admins
                     </button>
-                    <button onclick="quickCommand('missions')" class="w-full px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition text-left">
+                    <button onclick="quickCommand('missions')" class="w-full px-4 py-2 bg-white/5 hover:bg-white/10 text-white rounded-xl transition text-left">
                         List Missions
                     </button>
                 </div>
             </div>
 
             {{-- Server Info --}}
-            <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
-                <h2 class="text-lg font-semibold text-white mb-4">Server Info</h2>
+            <div class="glass-card rounded-xl p-6">
+                <h2 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">Server Info</h2>
                 <div id="server-info" class="space-y-2 text-sm">
                     <p class="text-gray-500">Loading...</p>
                 </div>
@@ -107,25 +107,25 @@
 
     {{-- Kick/Ban Modal --}}
     <div id="action-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
-        <div class="bg-gray-800 border border-gray-700 rounded-xl p-6 w-full max-w-md">
-            <h3 id="modal-title" class="text-lg font-semibold text-white mb-4">Action</h3>
+        <div class="glass-card backdrop-blur-xl rounded-xl p-6 w-full max-w-md">
+            <h3 id="modal-title" class="text-sm font-semibold text-white uppercase tracking-wider mb-3">Action</h3>
             <form id="action-form">
                 <input type="hidden" id="action-type">
                 <input type="hidden" id="action-player-id">
                 <div class="mb-4">
                     <label class="block text-sm text-gray-400 mb-2">Player</label>
-                    <input type="text" id="action-player-name" readonly class="w-full px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white">
+                    <input type="text" id="action-player-name" readonly class="w-full px-4 py-2 bg-gray-900 border border-white/10 rounded-lg text-white">
                 </div>
                 <div class="mb-4">
                     <label class="block text-sm text-gray-400 mb-2">Reason</label>
-                    <input type="text" id="action-reason" placeholder="Enter reason..." class="w-full px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-green-500">
+                    <input type="text" id="action-reason" placeholder="Enter reason..." class="w-full px-4 py-2 bg-gray-900 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-green-500">
                 </div>
                 <div id="ban-duration-field" class="mb-4 hidden">
                     <label class="block text-sm text-gray-400 mb-2">Duration (minutes, 0 = permanent)</label>
-                    <input type="number" id="action-duration" value="0" min="0" class="w-full px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-green-500">
+                    <input type="number" id="action-duration" value="0" min="0" class="w-full px-4 py-2 bg-gray-900 border border-white/10 rounded-lg text-white focus:outline-none focus:border-green-500">
                 </div>
                 <div class="flex gap-3">
-                    <button type="button" onclick="closeModal()" class="flex-1 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition">
+                    <button type="button" onclick="closeModal()" class="flex-1 px-4 py-2 bg-white/5 hover:bg-white/10 text-white rounded-xl transition">
                         Cancel
                     </button>
                     <button type="submit" id="modal-submit" class="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition">

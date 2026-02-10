@@ -14,9 +14,9 @@
         </span>
     </div>
     <!-- Standings Table -->
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl overflow-hidden">
+    <div class="glass-card rounded-xl overflow-hidden">
         <table class="w-full">
-            <thead class="bg-gray-700/50">
+            <thead class="bg-white/3">
                 <tr>
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">#</th>
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Platoon</th>
@@ -28,9 +28,9 @@
                     @endif
                 </tr>
             </thead>
-            <tbody class="divide-y divide-gray-700">
+            <tbody class="divide-y divide-white/5">
                 @foreach($standings as $index => $team)
-                    <tr class="hover:bg-gray-700/30 {{ $index < 3 ? 'bg-green-500/5' : '' }}">
+                    <tr class="hover:bg-white/3 {{ $index < 3 ? 'bg-green-500/5' : '' }}">
                         <td class="px-4 py-3">
                             <span class="font-mono {{ $index === 0 ? 'text-yellow-400' : ($index === 1 ? 'text-gray-300' : ($index === 2 ? 'text-orange-400' : 'text-gray-400')) }}">
                                 {{ $index + 1 }}
@@ -41,7 +41,7 @@
                                 @if($team->avatar_url)
                                     <img src="{{ $team->avatar_url }}" alt="{{ $team->name }}" class="w-8 h-8 rounded object-cover">
                                 @else
-                                    <div class="w-8 h-8 rounded bg-gray-700 flex items-center justify-center text-xs font-bold text-gray-400">
+                                    <div class="w-8 h-8 rounded bg-white/5 flex items-center justify-center text-xs font-bold text-gray-400">
                                         {{ strtoupper(substr($team->tag, 0, 2)) }}
                                     </div>
                                 @endif

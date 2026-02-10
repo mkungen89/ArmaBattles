@@ -24,11 +24,21 @@ class BroadcastNotificationCreated
             ? $notification->toArray($user)
             : [];
 
+        $metadata = [];
+        if (($data['type'] ?? '') === 'achievement_earned') {
+            $metadata = [
+                'achievement_name' => $data['achievement_name'] ?? null,
+                'achievement_icon' => $data['achievement_icon'] ?? null,
+                'achievement_color' => $data['achievement_color'] ?? null,
+            ];
+        }
+
         NewNotification::dispatch(
             $user->getKey(),
             $data['message'] ?? $data['title'] ?? 'New notification',
             $data['category'] ?? 'general',
             $data['action_url'] ?? $data['url'] ?? null,
+            $metadata,
         );
     }
 }

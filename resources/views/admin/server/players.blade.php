@@ -11,25 +11,25 @@
             <p class="text-sm text-gray-500 mt-1">Manage online players, bans, and broadcasts</p>
         </div>
         <div class="flex items-center gap-3">
-            <a href="{{ route('admin.server.dashboard') }}" class="px-3 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm transition">Dashboard</a>
-            <a href="{{ route('admin.server.logs') }}" class="px-3 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm transition">Logs</a>
-            <a href="{{ route('admin.server.mods') }}" class="px-3 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm transition">Mods</a>
-            <a href="{{ route('admin.server.config') }}" class="px-3 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm transition">Config</a>
+            <a href="{{ route('admin.server.dashboard') }}" class="px-3 py-2 bg-white/5 hover:bg-white/10 text-white rounded-xl text-sm transition">Dashboard</a>
+            <a href="{{ route('admin.server.logs') }}" class="px-3 py-2 bg-white/5 hover:bg-white/10 text-white rounded-xl text-sm transition">Logs</a>
+            <a href="{{ route('admin.server.mods') }}" class="px-3 py-2 bg-white/5 hover:bg-white/10 text-white rounded-xl text-sm transition">Mods</a>
+            <a href="{{ route('admin.server.config') }}" class="px-3 py-2 bg-white/5 hover:bg-white/10 text-white rounded-xl text-sm transition">Config</a>
         </div>
     </div>
 
     <div class="grid lg:grid-cols-3 gap-6">
         <div class="lg:col-span-2 space-y-6">
             {{-- Online Players --}}
-            <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
+            <div class="glass-card rounded-xl p-6">
                 <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-lg font-semibold text-white">
+                    <h2 class="text-sm font-semibold text-white uppercase tracking-wider">
                         Online Players
                         <span class="ml-2 text-sm font-normal text-gray-500" x-text="'(' + players.length + ')'"></span>
                     </h2>
                     <div class="flex items-center gap-2">
                         <span class="text-xs text-gray-500" x-text="lastRefresh ? 'Updated ' + lastRefresh : ''"></span>
-                        <button @click="fetchPlayers()" class="p-1.5 bg-gray-700 hover:bg-gray-600 text-gray-400 hover:text-white rounded-lg transition">
+                        <button @click="fetchPlayers()" class="p-1.5 bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white rounded-xl transition">
                             <svg class="w-4 h-4" :class="loading && 'animate-spin'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
                             </svg>
@@ -42,7 +42,7 @@
                 <div class="overflow-x-auto">
                     <table class="w-full" x-show="players.length > 0">
                         <thead>
-                            <tr class="border-b border-gray-700">
+                            <tr class="border-b border-white/5">
                                 <th class="text-left text-xs text-gray-500 uppercase tracking-wider pb-3 pr-4">ID</th>
                                 <th class="text-left text-xs text-gray-500 uppercase tracking-wider pb-3 pr-4">GUID</th>
                                 <th class="text-left text-xs text-gray-500 uppercase tracking-wider pb-3 pr-4">Name</th>
@@ -51,7 +51,7 @@
                         </thead>
                         <tbody>
                             <template x-for="player in players" :key="player.id">
-                                <tr class="border-b border-gray-700/50 hover:bg-gray-700/20 transition">
+                                <tr class="border-b border-white/5 hover:bg-white/3 transition">
                                     <td class="py-3 pr-4">
                                         <code class="text-xs text-gray-400" x-text="player.id"></code>
                                     </td>
@@ -88,9 +88,9 @@
             </div>
 
             {{-- Ban List --}}
-            <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
+            <div class="glass-card rounded-xl p-6">
                 <div class="flex items-center justify-between mb-4 cursor-pointer" @click="showBans = !showBans">
-                    <h2 class="text-lg font-semibold text-white">Ban List</h2>
+                    <h2 class="text-sm font-semibold text-white uppercase tracking-wider">Ban List</h2>
                     <svg class="w-5 h-5 text-gray-400 transition-transform" :class="showBans && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                     </svg>
@@ -108,7 +108,7 @@
 
                     <div x-show="!banListLoading" class="mt-3 flex items-center gap-2">
                         <input type="number" x-model="unbanIndex" placeholder="Ban index to remove" min="0"
-                               class="flex-1 px-3 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-sm text-white placeholder-gray-600 focus:outline-none focus:border-green-500/50">
+                               class="flex-1 px-3 py-2 bg-gray-900/50 border border-white/5 rounded-lg text-sm text-white placeholder-gray-600 focus:outline-none focus:border-green-500/50">
                         <button @click="submitUnban()" :disabled="unbanSubmitting"
                                 class="px-4 py-2 bg-green-600/20 border border-green-500/30 hover:bg-green-600/30 text-green-400 rounded-lg text-sm transition disabled:opacity-50">
                             <span x-show="!unbanSubmitting">Unban</span>
@@ -122,12 +122,12 @@
         {{-- Right Column --}}
         <div class="space-y-6">
             {{-- Broadcast --}}
-            <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
-                <h2 class="text-lg font-semibold text-white mb-4">Broadcast Message</h2>
+            <div class="glass-card rounded-xl p-6">
+                <h2 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">Broadcast Message</h2>
                 <form method="POST" action="{{ route('admin.server.players.broadcast') }}">
                     @csrf
                     <textarea name="message" rows="3" maxlength="500" required placeholder="Type your message..."
-                              class="w-full px-3 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-sm text-white placeholder-gray-600 focus:outline-none focus:border-green-500/50 resize-none"></textarea>
+                              class="w-full px-3 py-2 bg-gray-900/50 border border-white/5 rounded-lg text-sm text-white placeholder-gray-600 focus:outline-none focus:border-green-500/50 resize-none"></textarea>
                     <p class="text-xs text-gray-600 mt-1 mb-3">Max 500 characters. Sent to all players in-game.</p>
                     <button type="submit" class="w-full px-4 py-2 bg-blue-600/20 border border-blue-500/30 hover:bg-blue-600/30 text-blue-400 rounded-lg text-sm font-medium transition">
                         <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -139,8 +139,8 @@
             </div>
 
             {{-- Quick Stats --}}
-            <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
-                <h2 class="text-lg font-semibold text-white mb-4">Quick Stats</h2>
+            <div class="glass-card rounded-xl p-6">
+                <h2 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">Quick Stats</h2>
                 <div class="space-y-3">
                     <div class="flex items-center justify-between">
                         <span class="text-sm text-gray-400">Online Players</span>
@@ -158,17 +158,17 @@
     {{-- Kick Modal --}}
     <div x-show="kickModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4" @keydown.escape.window="kickModal = false">
         <div class="fixed inset-0 bg-black/60" @click="kickModal = false"></div>
-        <div class="relative bg-gray-800 border border-gray-700 rounded-xl p-6 w-full max-w-md" @click.stop>
-            <h3 class="text-lg font-semibold text-white mb-1">Kick Player</h3>
+        <div class="relative glass-card backdrop-blur-xl rounded-xl p-6 w-full max-w-md" @click.stop>
+            <h3 class="text-sm font-semibold text-white uppercase tracking-wider mb-1">Kick Player</h3>
             <p class="text-sm text-gray-400 mb-4">Kicking <span class="text-white font-medium" x-text="selectedPlayer?.name"></span> (ID: <span x-text="selectedPlayer?.id"></span>)</p>
 
             <form method="POST" action="{{ route('admin.server.players.kick') }}">
                 @csrf
                 <input type="hidden" name="player_id" :value="selectedPlayer?.id">
                 <label class="block text-sm text-gray-400 mb-1">Reason</label>
-                <input type="text" name="reason" value="Kicked by admin" class="w-full px-3 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-sm text-white focus:outline-none focus:border-green-500/50 mb-4">
+                <input type="text" name="reason" value="Kicked by admin" class="w-full px-3 py-2 bg-gray-900/50 border border-white/5 rounded-lg text-sm text-white focus:outline-none focus:border-green-500/50 mb-4">
                 <div class="flex items-center gap-3">
-                    <button type="button" @click="kickModal = false" class="flex-1 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm transition">Cancel</button>
+                    <button type="button" @click="kickModal = false" class="flex-1 px-4 py-2 bg-white/5 hover:bg-white/10 text-white rounded-xl text-sm transition">Cancel</button>
                     <button type="submit" class="flex-1 px-4 py-2 bg-yellow-600 hover:bg-yellow-500 text-white rounded-lg text-sm font-medium transition">Kick Player</button>
                 </div>
             </form>
@@ -178,8 +178,8 @@
     {{-- Ban Modal --}}
     <div x-show="banModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4" @keydown.escape.window="banModal = false">
         <div class="fixed inset-0 bg-black/60" @click="banModal = false"></div>
-        <div class="relative bg-gray-800 border border-gray-700 rounded-xl p-6 w-full max-w-md" @click.stop>
-            <h3 class="text-lg font-semibold text-white mb-1">Ban Player</h3>
+        <div class="relative glass-card backdrop-blur-xl rounded-xl p-6 w-full max-w-md" @click.stop>
+            <h3 class="text-sm font-semibold text-white uppercase tracking-wider mb-1">Ban Player</h3>
             <p class="text-sm text-gray-400 mb-4">Banning <span class="text-white font-medium" x-text="selectedPlayer?.name"></span> (ID: <span x-text="selectedPlayer?.id"></span>)</p>
 
             <form method="POST" action="{{ route('admin.server.players.ban') }}">
@@ -187,14 +187,14 @@
                 <input type="hidden" name="player_id" :value="selectedPlayer?.id">
 
                 <label class="block text-sm text-gray-400 mb-1">Duration (minutes)</label>
-                <input type="number" name="minutes" value="60" min="0" class="w-full px-3 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-sm text-white focus:outline-none focus:border-green-500/50 mb-1">
+                <input type="number" name="minutes" value="60" min="0" class="w-full px-3 py-2 bg-gray-900/50 border border-white/5 rounded-lg text-sm text-white focus:outline-none focus:border-green-500/50 mb-1">
                 <p class="text-xs text-gray-600 mb-4">0 = permanent ban</p>
 
                 <label class="block text-sm text-gray-400 mb-1">Reason</label>
-                <input type="text" name="reason" value="Banned by admin" class="w-full px-3 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-sm text-white focus:outline-none focus:border-green-500/50 mb-4">
+                <input type="text" name="reason" value="Banned by admin" class="w-full px-3 py-2 bg-gray-900/50 border border-white/5 rounded-lg text-sm text-white focus:outline-none focus:border-green-500/50 mb-4">
 
                 <div class="flex items-center gap-3">
-                    <button type="button" @click="banModal = false" class="flex-1 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm transition">Cancel</button>
+                    <button type="button" @click="banModal = false" class="flex-1 px-4 py-2 bg-white/5 hover:bg-white/10 text-white rounded-xl text-sm transition">Cancel</button>
                     <button type="submit" class="flex-1 px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded-lg text-sm font-medium transition">Ban Player</button>
                 </div>
             </form>

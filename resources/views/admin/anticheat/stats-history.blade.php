@@ -17,27 +17,27 @@
     </div>
 
     {{-- Filters --}}
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-4">
+    <div class="glass-card rounded-xl p-4">
         <form action="{{ route('admin.anticheat.stats-history') }}" method="GET" class="flex flex-wrap gap-4">
-            <select name="server_id" class="bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
+            <select name="server_id" class="bg-white/5 border-white/10 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
                 <option value="">All Servers</option>
                 @foreach($serverIds as $serverId)
                 <option value="{{ $serverId }}" {{ request('server_id') == $serverId ? 'selected' : '' }}>Server #{{ $serverId }}</option>
                 @endforeach
             </select>
-            <input type="date" name="date_from" value="{{ request('date_from') }}" class="bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
-            <input type="date" name="date_to" value="{{ request('date_to') }}" class="bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
-            <button type="submit" class="px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg transition">Filter</button>
+            <input type="date" name="date_from" value="{{ request('date_from') }}" class="bg-white/5 border-white/10 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
+            <input type="date" name="date_to" value="{{ request('date_to') }}" class="bg-white/5 border-white/10 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
+            <button type="submit" class="px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-xl transition">Filter</button>
             @if(request()->hasAny(['server_id', 'date_from', 'date_to']))
-            <a href="{{ route('admin.anticheat.stats-history') }}" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition">Clear</a>
+            <a href="{{ route('admin.anticheat.stats-history') }}" class="px-4 py-2 bg-white/5 hover:bg-white/10 text-white rounded-xl transition">Clear</a>
             @endif
         </form>
     </div>
 
     {{-- Stats Table --}}
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl overflow-hidden">
+    <div class="glass-card rounded-xl overflow-hidden">
         <table class="w-full">
-            <thead class="bg-gray-700/50">
+            <thead class="bg-white/3">
                 <tr>
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Time</th>
                     <th class="px-4 py-3 text-center text-xs font-medium text-gray-400 uppercase">Server</th>
@@ -49,14 +49,14 @@
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Potentials List</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-gray-700">
+            <tbody class="divide-y divide-white/5">
                 @forelse($statsHistory as $stat)
                 @php
                     $eventTime = $stat->event_time ? \Carbon\Carbon::parse($stat->event_time) : null;
                     $banned = json_decode($stat->banned_players, true) ?? [];
                     $potentials = json_decode($stat->potentials_list, true) ?? [];
                 @endphp
-                <tr class="hover:bg-gray-700/30">
+                <tr class="hover:bg-white/5">
                     <td class="px-4 py-3">
                         <div class="text-sm text-white">{{ $eventTime?->format('M j, Y') ?? 'N/A' }}</div>
                         <div class="text-xs text-gray-400">{{ $eventTime?->format('H:i:s') ?? '' }}</div>

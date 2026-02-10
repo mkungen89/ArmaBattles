@@ -14,11 +14,11 @@
             <label class="block text-sm font-medium text-gray-400 mb-2">Player {{ substr($key, 1) }}</label>
             <input type="text" x-model="query" @input.debounce.300ms="search()" @focus="if(results.length) showDropdown = true"
                    placeholder="Search player name..."
-                   class="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-green-500">
+                   class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-green-500">
             <div x-show="showDropdown" @click.outside="showDropdown = false" x-transition
-                 class="absolute z-10 w-full mt-1 bg-gray-800 border border-gray-700 rounded-xl shadow-xl overflow-hidden max-h-60 overflow-y-auto" style="display:none;">
+                 class="absolute z-10 w-full mt-1 bg-white/3 border border-white/5 rounded-xl shadow-xl overflow-hidden max-h-60 overflow-y-auto" style="display:none;">
                 <template x-for="p in results" :key="p.uuid">
-                    <button @click="select(p)" class="w-full px-4 py-2 text-left hover:bg-gray-700 transition flex items-center justify-between">
+                    <button @click="select(p)" class="w-full px-4 py-2 text-left hover:bg-white/5 transition flex items-center justify-between">
                         <span class="text-white" x-text="p.name"></span>
                         <span class="text-xs text-gray-500" x-text="p.kills + ' kills'"></span>
                     </button>
@@ -36,11 +36,11 @@
             </label>
             <input type="text" x-model="query" @input.debounce.300ms="search()" @focus="if(results.length) showDropdown = true"
                    placeholder="Search player name..."
-                   class="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-green-500">
+                   class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-green-500">
             <div x-show="showDropdown" @click.outside="showDropdown = false" x-transition
-                 class="absolute z-10 w-full mt-1 bg-gray-800 border border-gray-700 rounded-xl shadow-xl overflow-hidden max-h-60 overflow-y-auto" style="display:none;">
+                 class="absolute z-10 w-full mt-1 bg-white/3 border border-white/5 rounded-xl shadow-xl overflow-hidden max-h-60 overflow-y-auto" style="display:none;">
                 <template x-for="p in results" :key="p.uuid">
-                    <button @click="select(p)" class="w-full px-4 py-2 text-left hover:bg-gray-700 transition flex items-center justify-between">
+                    <button @click="select(p)" class="w-full px-4 py-2 text-left hover:bg-white/5 transition flex items-center justify-between">
                         <span class="text-white" x-text="p.name"></span>
                         <span class="text-xs text-gray-500" x-text="p.kills + ' kills'"></span>
                     </button>
@@ -52,10 +52,10 @@
 
     {{-- Add/Remove Player Buttons --}}
     <div class="flex gap-3">
-        <button x-show="!showExtraSlots" @click="showExtraSlots = true" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-lg text-sm transition" style="display:none;" x-transition>
+        <button x-show="!showExtraSlots" @click="showExtraSlots = true" class="px-4 py-2 bg-white/5 hover:bg-white/10 text-gray-300 rounded-xl text-sm transition" style="display:none;" x-transition>
             + Add More Players
         </button>
-        <button x-show="showExtraSlots" @click="hideExtraSlots()" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-lg text-sm transition" style="display:none;" x-transition>
+        <button x-show="showExtraSlots" @click="hideExtraSlots()" class="px-4 py-2 bg-white/5 hover:bg-white/10 text-gray-300 rounded-xl text-sm transition" style="display:none;" x-transition>
             &minus; Fewer Players
         </button>
     </div>
@@ -153,16 +153,16 @@
     </div>
 
     {{-- Radar Chart --}}
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
-        <h2 class="text-lg font-semibold text-white mb-4">Stat Radar</h2>
+    <div class="glass-card rounded-xl p-6">
+        <h2 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">Stat Radar</h2>
         <div class="max-w-lg mx-auto">
             <canvas id="radarChart"></canvas>
         </div>
     </div>
 
     {{-- Stat Bars --}}
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6 space-y-5">
-        <h2 class="text-lg font-semibold text-white mb-2">Stat Comparison</h2>
+    <div class="glass-card rounded-xl p-6 space-y-5">
+        <h2 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">Stat Comparison</h2>
         @foreach($statDefs as $stat)
         @php
             $values = [];
@@ -184,7 +184,7 @@
                 @endphp
                 <div class="flex items-center gap-3">
                     <span class="w-24 text-xs text-gray-400 truncate text-right">{{ $players[$key]->player_name }}</span>
-                    <div class="flex-1 bg-gray-700/50 rounded-full h-5 relative">
+                    <div class="flex-1 bg-white/3 rounded-full h-5 relative">
                         <div class="h-5 rounded-full transition-all flex items-center justify-end pr-2"
                              style="width: {{ max($pct, 2) }}%; background-color: {{ $isWinner ? $playerColors[$key] : $playerColors[$key] . '66' }};">
                             <span class="text-xs font-bold {{ $isWinner ? 'text-white' : 'text-gray-300' }}" style="{{ $pct < 15 ? 'position:absolute;left:calc(' . max($pct, 2) . '% + 8px);' : '' }}">{{ number_format($val, $decimals) }}</span>
@@ -202,19 +202,19 @@
     @php $pKeys = array_keys($players); @endphp
     <div x-data="headToHead('{{ $players[$pKeys[0]]->player_uuid }}', '{{ $players[$pKeys[1]]->player_uuid }}', '{{ $players[$pKeys[0]]->player_name }}', '{{ $players[$pKeys[1]]->player_name }}')"
          x-init="load()"
-         class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
-        <h2 class="text-lg font-semibold text-white mb-4">Head-to-Head Matchup</h2>
+         class="glass-card rounded-xl p-6">
+        <h2 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">Head-to-Head Matchup</h2>
 
         <div x-show="loading" class="py-4">
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
-                <div class="bg-gray-700/30 rounded-lg p-4">
+                <div class="bg-white/3 rounded-lg p-4">
                     <div class="skeleton skeleton-text-4xl w-16 mx-auto mb-2"></div>
                     <div class="skeleton skeleton-text w-3/4 mx-auto"></div>
                 </div>
                 <div class="flex items-center justify-center">
                     <div class="skeleton skeleton-text-lg w-12"></div>
                 </div>
-                <div class="bg-gray-700/30 rounded-lg p-4">
+                <div class="bg-white/3 rounded-lg p-4">
                     <div class="skeleton skeleton-text-4xl w-16 mx-auto mb-2"></div>
                     <div class="skeleton skeleton-text w-3/4 mx-auto"></div>
                 </div>
@@ -225,14 +225,14 @@
             <div class="space-y-6">
                 {{-- Kill Counts --}}
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
-                    <div class="bg-gray-700/30 rounded-lg p-4">
+                    <div class="bg-white/3 rounded-lg p-4">
                         <div class="text-3xl font-bold" style="color: {{ $playerColors[$pKeys[0]] }};" x-text="data.p1_killed_p2"></div>
                         <div class="text-sm text-gray-400 mt-1"><span class="font-medium text-white">{{ $players[$pKeys[0]]->player_name }}</span> killed <span class="font-medium text-white">{{ $players[$pKeys[1]]->player_name }}</span></div>
                     </div>
                     <div class="flex items-center justify-center">
                         <span class="text-2xl text-gray-600 font-bold">VS</span>
                     </div>
-                    <div class="bg-gray-700/30 rounded-lg p-4">
+                    <div class="bg-white/3 rounded-lg p-4">
                         <div class="text-3xl font-bold" style="color: {{ $playerColors[$pKeys[1]] }};" x-text="data.p2_killed_p1"></div>
                         <div class="text-sm text-gray-400 mt-1"><span class="font-medium text-white">{{ $players[$pKeys[1]]->player_name }}</span> killed <span class="font-medium text-white">{{ $players[$pKeys[0]]->player_name }}</span></div>
                     </div>
@@ -240,11 +240,11 @@
 
                 {{-- Top Weapons in Matchup --}}
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" x-show="data.p1_top_weapon || data.p2_top_weapon">
-                    <div class="bg-gray-700/20 rounded-lg p-3 text-center" x-show="data.p1_top_weapon">
+                    <div class="bg-white/3 rounded-lg p-3 text-center" x-show="data.p1_top_weapon">
                         <div class="text-xs text-gray-500 uppercase">{{ $players[$pKeys[0]]->player_name }}'s Favorite Weapon</div>
                         <div class="text-sm font-medium text-white mt-1" x-text="data.p1_top_weapon"></div>
                     </div>
-                    <div class="bg-gray-700/20 rounded-lg p-3 text-center" x-show="data.p2_top_weapon">
+                    <div class="bg-white/3 rounded-lg p-3 text-center" x-show="data.p2_top_weapon">
                         <div class="text-xs text-gray-500 uppercase">{{ $players[$pKeys[1]]->player_name }}'s Favorite Weapon</div>
                         <div class="text-sm font-medium text-white mt-1" x-text="data.p2_top_weapon"></div>
                     </div>
@@ -256,7 +256,7 @@
                     <div class="overflow-x-auto">
                         <table class="w-full text-sm">
                             <thead>
-                                <tr class="text-gray-500 text-xs uppercase border-b border-gray-700">
+                                <tr class="text-gray-500 text-xs uppercase border-b border-white/5">
                                     <th class="pb-2 text-left">Date</th>
                                     <th class="pb-2 text-left">Killer</th>
                                     <th class="pb-2 text-left">Victim</th>
@@ -267,7 +267,7 @@
                             </thead>
                             <tbody>
                                 <template x-for="enc in data.recent_encounters" :key="enc.created_at">
-                                    <tr class="border-b border-gray-700/50 hover:bg-gray-700/20">
+                                    <tr class="border-b border-white/5 hover:bg-white/5">
                                         <td class="py-2 text-gray-400" x-text="new Date(enc.created_at).toLocaleDateString()"></td>
                                         <td class="py-2 text-white font-medium" x-text="enc.killer_name"></td>
                                         <td class="py-2 text-gray-300" x-text="enc.victim_name"></td>
@@ -291,8 +291,8 @@
 
     {{-- Weapon Preference Comparison --}}
     @if(count($allWeaponNames) > 0)
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
-        <h2 class="text-lg font-semibold text-white mb-4">Weapon Preferences</h2>
+    <div class="glass-card rounded-xl p-6">
+        <h2 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">Weapon Preferences</h2>
         <div class="w-full" style="min-height: {{ max(count($allWeaponNames) * 35, 200) }}px;">
             <canvas id="weaponChart"></canvas>
         </div>
@@ -302,7 +302,7 @@
     {{-- Per-Player Top Weapons Lists --}}
     <div class="grid grid-cols-1 sm:grid-cols-2 {{ $playerCount > 2 ? 'lg:grid-cols-' . min($playerCount, 4) : '' }} gap-4">
         @foreach($players as $key => $player)
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-5">
+        <div class="glass-card rounded-xl p-5">
             <h3 class="text-base font-semibold text-white mb-3 flex items-center gap-2">
                 <span class="w-2.5 h-2.5 rounded-full inline-block" style="background-color: {{ $playerColors[$key] }};"></span>
                 {{ $player->player_name }}'s Top Weapons
@@ -310,7 +310,7 @@
             @if(isset($weapons[$key]) && $weapons[$key]->count() > 0)
             <div class="space-y-1.5">
                 @foreach($weapons[$key] as $weapon)
-                <div class="flex items-center justify-between bg-gray-700/30 rounded-lg px-3 py-2">
+                <div class="flex items-center justify-between bg-white/3 rounded-lg px-3 py-2">
                     <span class="text-sm text-gray-300 truncate">{{ $weapon->weapon_name }}</span>
                     <span class="text-sm font-bold" style="color: {{ $playerColors[$key] }};">{{ number_format($weapon->total) }}</span>
                 </div>

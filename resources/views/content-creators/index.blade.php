@@ -12,7 +12,7 @@
                 </div>
                 @auth
                 @if(!auth()->user()->isContentCreator())
-                <a href="{{ route('content-creators.create') }}" class="px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg transition">
+                <a href="{{ route('content-creators.create') }}" class="px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-xl transition">
                     Register as Creator
                 </a>
                 @endif
@@ -21,48 +21,48 @@
         </div>
         {{-- Stats --}}
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-4">
+            <div class="glass-card rounded-xl p-4">
                 <div class="text-3xl font-bold text-white">{{ $stats['total'] }}</div>
                 <div class="text-sm text-gray-400">Total Creators</div>
             </div>
-            <div class="bg-gray-800/50 border border-green-500/30 rounded-xl p-4">
+            <div class="glass-card border border-green-500/30 rounded-xl p-4">
                 <div class="text-3xl font-bold text-green-400">{{ $stats['live'] }}</div>
                 <div class="text-sm text-gray-400">Live Now</div>
             </div>
-            <div class="bg-gray-800/50 border border-blue-500/30 rounded-xl p-4">
+            <div class="glass-card border border-blue-500/30 rounded-xl p-4">
                 <div class="text-3xl font-bold text-blue-400">{{ $stats['verified'] }}</div>
                 <div class="text-sm text-gray-400">Verified</div>
             </div>
         </div>
         {{-- Filters --}}
         <div class="flex flex-wrap gap-3">
-            <a href="{{ route('content-creators.index') }}" class="px-4 py-2 rounded-lg {{ !request('filter') && !request('platform') ? 'bg-green-600 text-white' : 'bg-gray-800 text-gray-300 hover:bg-gray-700' }}">
+            <a href="{{ route('content-creators.index') }}" class="px-4 py-2 rounded-xl {{ !request('filter') && !request('platform') ? 'bg-green-600 text-white' : 'bg-white/3 text-gray-300 hover:bg-white/5' }}">
                 All
             </a>
-            <a href="{{ route('content-creators.index', ['filter' => 'live']) }}" class="px-4 py-2 rounded-lg {{ request('filter') === 'live' ? 'bg-green-600 text-white' : 'bg-gray-800 text-gray-300 hover:bg-gray-700' }}">
+            <a href="{{ route('content-creators.index', ['filter' => 'live']) }}" class="px-4 py-2 rounded-xl {{ request('filter') === 'live' ? 'bg-green-600 text-white' : 'bg-white/3 text-gray-300 hover:bg-white/5' }}">
                 Live Now
             </a>
-            <a href="{{ route('content-creators.index', ['filter' => 'verified']) }}" class="px-4 py-2 rounded-lg {{ request('filter') === 'verified' ? 'bg-blue-600 text-white' : 'bg-gray-800 text-gray-300 hover:bg-gray-700' }}">
+            <a href="{{ route('content-creators.index', ['filter' => 'verified']) }}" class="px-4 py-2 rounded-xl {{ request('filter') === 'verified' ? 'bg-blue-600 text-white' : 'bg-white/3 text-gray-300 hover:bg-white/5' }}">
                 Verified
             </a>
             <span class="text-gray-500">|</span>
-            <a href="{{ route('content-creators.index', ['platform' => 'twitch']) }}" class="px-4 py-2 rounded-lg {{ request('platform') === 'twitch' ? 'bg-green-600 text-white' : 'bg-gray-800 text-gray-300 hover:bg-gray-700' }}">
+            <a href="{{ route('content-creators.index', ['platform' => 'twitch']) }}" class="px-4 py-2 rounded-xl {{ request('platform') === 'twitch' ? 'bg-green-600 text-white' : 'bg-white/3 text-gray-300 hover:bg-white/5' }}">
                 Twitch
             </a>
-            <a href="{{ route('content-creators.index', ['platform' => 'youtube']) }}" class="px-4 py-2 rounded-lg {{ request('platform') === 'youtube' ? 'bg-red-600 text-white' : 'bg-gray-800 text-gray-300 hover:bg-gray-700' }}">
+            <a href="{{ route('content-creators.index', ['platform' => 'youtube']) }}" class="px-4 py-2 rounded-xl {{ request('platform') === 'youtube' ? 'bg-red-600 text-white' : 'bg-white/3 text-gray-300 hover:bg-white/5' }}">
                 YouTube
             </a>
-            <a href="{{ route('content-creators.index', ['platform' => 'tiktok']) }}" class="px-4 py-2 rounded-lg {{ request('platform') === 'tiktok' ? 'bg-pink-600 text-white' : 'bg-gray-800 text-gray-300 hover:bg-gray-700' }}">
+            <a href="{{ route('content-creators.index', ['platform' => 'tiktok']) }}" class="px-4 py-2 rounded-xl {{ request('platform') === 'tiktok' ? 'bg-pink-600 text-white' : 'bg-white/3 text-gray-300 hover:bg-white/5' }}">
                 TikTok
             </a>
-            <a href="{{ route('content-creators.index', ['platform' => 'kick']) }}" class="px-4 py-2 rounded-lg {{ request('platform') === 'kick' ? 'bg-green-600 text-white' : 'bg-gray-800 text-gray-300 hover:bg-gray-700' }}">
+            <a href="{{ route('content-creators.index', ['platform' => 'kick']) }}" class="px-4 py-2 rounded-xl {{ request('platform') === 'kick' ? 'bg-green-600 text-white' : 'bg-white/3 text-gray-300 hover:bg-white/5' }}">
                 Kick
             </a>
         </div>
         {{-- Creators Grid --}}
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             @forelse($creators as $creator)
-            <a href="{{ route('content-creators.show', $creator) }}" class="bg-gray-800/50 border border-gray-700 hover:border-green-500/50 rounded-xl p-6 transition group">
+            <a href="{{ route('content-creators.show', $creator) }}" class="glass-card hover:border-green-500/50 rounded-xl p-6 transition group">
                 <div class="flex items-start gap-4 mb-4">
                     <img src="{{ $creator->user->avatar_display }}" alt="{{ $creator->user->name }}" class="w-16 h-16 rounded-full">
                     <div class="flex-1 min-w-0">

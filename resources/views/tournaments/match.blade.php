@@ -8,7 +8,7 @@
         </a>
     </div>
     <!-- Match Header -->
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6 mb-6">
+    <div class="glass-card rounded-xl p-6 mb-6">
         <div class="text-center mb-4">
             <span class="px-3 py-1 text-sm rounded-full {{ $match->status_badge }}">
                 {{ $match->status_text }}
@@ -26,7 +26,7 @@
                         @if($match->team1->logo_url)
                             <img src="{{ $match->team1->logo_url }}" alt="{{ $match->team1->name }}" class="w-20 h-20 mx-auto rounded-xl object-cover mb-3">
                         @else
-                            <div class="w-20 h-20 mx-auto rounded-xl bg-gray-700 flex items-center justify-center text-2xl font-bold text-gray-400 mb-3">
+                            <div class="w-20 h-20 mx-auto rounded-xl bg-white/5 flex items-center justify-center text-2xl font-bold text-gray-400 mb-3">
                                 {{ strtoupper(substr($match->team1->tag, 0, 2)) }}
                             </div>
                         @endif
@@ -36,7 +36,7 @@
                         <p class="text-gray-400 text-sm">[{{ $match->team1->tag }}]</p>
                     </a>
                 @else
-                    <div class="w-20 h-20 mx-auto rounded-xl bg-gray-700/50 flex items-center justify-center text-gray-500 mb-3">
+                    <div class="w-20 h-20 mx-auto rounded-xl bg-white/3 flex items-center justify-center text-gray-500 mb-3">
                         ?
                     </div>
                     <h2 class="text-xl font-bold text-gray-500">TBD</h2>
@@ -62,7 +62,7 @@
                         @if($match->team2->logo_url)
                             <img src="{{ $match->team2->logo_url }}" alt="{{ $match->team2->name }}" class="w-20 h-20 mx-auto rounded-xl object-cover mb-3">
                         @else
-                            <div class="w-20 h-20 mx-auto rounded-xl bg-gray-700 flex items-center justify-center text-2xl font-bold text-gray-400 mb-3">
+                            <div class="w-20 h-20 mx-auto rounded-xl bg-white/5 flex items-center justify-center text-2xl font-bold text-gray-400 mb-3">
                                 {{ strtoupper(substr($match->team2->tag, 0, 2)) }}
                             </div>
                         @endif
@@ -72,7 +72,7 @@
                         <p class="text-gray-400 text-sm">[{{ $match->team2->tag }}]</p>
                     </a>
                 @else
-                    <div class="w-20 h-20 mx-auto rounded-xl bg-gray-700/50 flex items-center justify-center text-gray-500 mb-3">
+                    <div class="w-20 h-20 mx-auto rounded-xl bg-white/3 flex items-center justify-center text-gray-500 mb-3">
                         ?
                     </div>
                     <h2 class="text-xl font-bold text-gray-500">TBD</h2>
@@ -80,7 +80,7 @@
             </div>
         </div>
         @if($match->winner)
-            <div class="text-center mt-6 pt-6 border-t border-gray-700">
+            <div class="text-center mt-6 pt-6 border-t border-white/5">
                 <span class="text-green-400 font-semibold">
                     Winner: {{ $match->winner->name }}
                 </span>
@@ -88,7 +88,7 @@
         @endif
         {{-- Check-in Section --}}
         @if($match->status !== 'completed' && $match->status !== 'cancelled' && $match->team1 && $match->team2)
-            <div class="mt-6 pt-6 border-t border-gray-700">
+            <div class="mt-6 pt-6 border-t border-white/5">
                 <h3 class="text-sm font-medium text-gray-400 mb-4 text-center">Check-in Status</h3>
                 <div class="flex items-center justify-center gap-8">
                     {{-- Team 1 Check-in --}}
@@ -132,7 +132,7 @@
                                 @elseif($userTeam->isUserCaptainOrOfficer(auth()->user()))
                                     <form action="{{ route('matches.check-in', $match) }}" method="POST" class="inline">
                                         @csrf
-                                        <button type="submit" class="px-6 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg transition font-medium">
+                                        <button type="submit" class="px-6 py-2 bg-green-600 hover:bg-green-500 text-white rounded-xl transition font-medium">
                                             Check In
                                         </button>
                                     </form>
@@ -156,11 +156,11 @@
     </div>
     <!-- Games (for best of X) -->
     @if($match->games->count() > 0)
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6 mb-6">
-            <h3 class="text-lg font-semibold text-white mb-4">Games</h3>
+        <div class="glass-card rounded-xl p-6 mb-6">
+            <h3 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">Games</h3>
             <div class="space-y-3">
                 @foreach($match->games as $game)
-                    <div class="bg-gray-700/50 rounded-lg p-4">
+                    <div class="bg-white/3 rounded-lg p-4">
                         <div class="flex items-center justify-between">
                             <div class="text-sm text-gray-400">Game {{ $game->game_number }}</div>
                             @if($game->map)
@@ -184,15 +184,15 @@
     <!-- Team Rosters -->
     <div class="grid md:grid-cols-2 gap-6">
         @if($match->team1)
-            <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
-                <h3 class="text-lg font-semibold text-white mb-4">{{ $match->team1->name }} Roster</h3>
+            <div class="glass-card rounded-xl p-6">
+                <h3 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">{{ $match->team1->name }} Roster</h3>
                 <div class="space-y-2">
                     @foreach($match->team1->activeMembers as $member)
                         <div class="flex items-center gap-3">
                             <img src="{{ $member->avatar_display }}" alt="{{ $member->name }}" class="w-8 h-8 rounded-full">
                             <span class="text-white">{{ $member->name }}</span>
                             @if($member->pivot->role !== 'member')
-                                <span class="text-xs px-2 py-0.5 rounded bg-gray-700 text-gray-400">
+                                <span class="text-xs px-2 py-0.5 rounded bg-white/5 text-gray-400">
                                     {{ ucfirst($member->pivot->role) }}
                                 </span>
                             @endif
@@ -202,15 +202,15 @@
             </div>
         @endif
         @if($match->team2)
-            <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
-                <h3 class="text-lg font-semibold text-white mb-4">{{ $match->team2->name }} Roster</h3>
+            <div class="glass-card rounded-xl p-6">
+                <h3 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">{{ $match->team2->name }} Roster</h3>
                 <div class="space-y-2">
                     @foreach($match->team2->activeMembers as $member)
                         <div class="flex items-center gap-3">
                             <img src="{{ $member->avatar_display }}" alt="{{ $member->name }}" class="w-8 h-8 rounded-full">
                             <span class="text-white">{{ $member->name }}</span>
                             @if($member->pivot->role !== 'member')
-                                <span class="text-xs px-2 py-0.5 rounded bg-gray-700 text-gray-400">
+                                <span class="text-xs px-2 py-0.5 rounded bg-white/5 text-gray-400">
                                     {{ ucfirst($member->pivot->role) }}
                                 </span>
                             @endif
@@ -221,8 +221,8 @@
         @endif
     </div>
     @if($match->notes && auth()->user()?->isAdmin())
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6 mt-6">
-            <h3 class="text-lg font-semibold text-white mb-2">Admin Notes</h3>
+        <div class="glass-card rounded-xl p-6 mt-6">
+            <h3 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">Admin Notes</h3>
             <p class="text-gray-400">{{ $match->notes }}</p>
         </div>
     @endif

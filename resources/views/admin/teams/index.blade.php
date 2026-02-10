@@ -7,38 +7,38 @@
 
 <!-- Stats -->
 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-4 text-center">
+    <div class="glass-card rounded-xl p-4 text-center">
         <div class="text-2xl font-bold text-white">{{ $stats['total'] }}</div>
         <div class="text-sm text-gray-400">Total</div>
     </div>
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-4 text-center">
+    <div class="glass-card rounded-xl p-4 text-center">
         <div class="text-2xl font-bold text-green-400">{{ $stats['active'] }}</div>
         <div class="text-sm text-gray-400">Active</div>
     </div>
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-4 text-center">
+    <div class="glass-card rounded-xl p-4 text-center">
         <div class="text-2xl font-bold text-blue-400">{{ $stats['verified'] }}</div>
         <div class="text-sm text-gray-400">Verified</div>
     </div>
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-4 text-center">
+    <div class="glass-card rounded-xl p-4 text-center">
         <div class="text-2xl font-bold text-red-400">{{ $stats['disbanded'] }}</div>
         <div class="text-sm text-gray-400">Disbanded</div>
     </div>
 </div>
 
 <!-- Filters -->
-<div class="bg-gray-800/50 border border-gray-700 rounded-xl p-4 mb-6">
+<div class="glass-card rounded-xl p-4 mb-6">
     <form method="GET" class="flex flex-wrap gap-4">
         <div class="flex-1 min-w-[200px]">
             <input type="text" name="search" value="{{ request('search') }}" placeholder="Search teams..."
-                class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
+                class="w-full bg-white/5 border-white/10 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
         </div>
-        <select name="status" class="bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
+        <select name="status" class="bg-white/5 border-white/10 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
             <option value="">All statuses</option>
             <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Active</option>
             <option value="verified" {{ request('status') === 'verified' ? 'selected' : '' }}>Verified</option>
             <option value="disbanded" {{ request('status') === 'disbanded' ? 'selected' : '' }}>Disbanded</option>
         </select>
-        <button type="submit" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition">
+        <button type="submit" class="px-4 py-2 bg-white/5 hover:bg-white/10 text-white rounded-xl transition">
             Search
         </button>
         @if(request()->hasAny(['search', 'status']))
@@ -51,9 +51,9 @@
 
 <!-- Teams List -->
 @if($teams->count() > 0)
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl overflow-hidden">
+    <div class="glass-card rounded-xl overflow-hidden">
         <table class="w-full">
-            <thead class="bg-gray-700/50">
+            <thead class="bg-white/3">
                 <tr>
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Platoon</th>
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Captain</th>
@@ -63,15 +63,15 @@
                     <th class="px-4 py-3 text-right text-xs font-medium text-gray-400 uppercase">Actions</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-gray-700">
+            <tbody class="divide-y divide-white/5">
                 @foreach($teams as $team)
-                    <tr class="hover:bg-gray-700/30">
+                    <tr class="hover:bg-white/3">
                         <td class="px-4 py-3">
                             <div class="flex items-center gap-3">
                                 @if($team->avatar_url)
                                     <img src="{{ $team->avatar_url }}" class="w-8 h-8 rounded object-cover">
                                 @else
-                                    <div class="w-8 h-8 rounded bg-gray-700 flex items-center justify-center text-xs font-bold text-gray-400">
+                                    <div class="w-8 h-8 rounded bg-white/5 flex items-center justify-center text-xs font-bold text-gray-400">
                                         {{ strtoupper(substr($team->tag, 0, 2)) }}
                                     </div>
                                 @endif
@@ -140,7 +140,7 @@
         {{ $teams->withQueryString()->links() }}
     </div>
 @else
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-12 text-center">
+    <div class="glass-card rounded-xl p-12 text-center">
         <p class="text-gray-400">No platoons found.</p>
     </div>
 @endif

@@ -14,7 +14,7 @@
         @if($team->avatar_url)
             <img src="{{ $team->avatar_url }}" alt="{{ $team->name }}" class="w-16 h-16 rounded-xl object-cover">
         @else
-            <div class="w-16 h-16 rounded-xl bg-gray-700 flex items-center justify-center text-xl font-bold text-gray-400">
+            <div class="w-16 h-16 rounded-xl bg-white/5 flex items-center justify-center text-xl font-bold text-gray-400">
                 {{ strtoupper(substr($team->tag, 0, 2)) }}
             </div>
         @endif
@@ -33,29 +33,29 @@
     </div>
 
     <div class="flex flex-wrap gap-2">
-        <a href="{{ route('teams.show', $team) }}" class="px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition text-sm" target="_blank">
+        <a href="{{ route('teams.show', $team) }}" class="px-3 py-1.5 bg-white/5 hover:bg-white/10 text-white rounded-xl transition text-sm" target="_blank">
             View public
         </a>
         @if($team->is_active)
             @if($team->is_verified)
                 <form action="{{ route('admin.teams.unverify', $team) }}" method="POST" class="inline">
                     @csrf
-                    <button type="submit" class="px-3 py-1.5 bg-yellow-600 hover:bg-yellow-500 text-white rounded-lg transition text-sm">Unverify</button>
+                    <button type="submit" class="px-3 py-1.5 bg-yellow-600 hover:bg-yellow-500 text-white rounded-xl transition text-sm">Unverify</button>
                 </form>
             @else
                 <form action="{{ route('admin.teams.verify', $team) }}" method="POST" class="inline">
                     @csrf
-                    <button type="submit" class="px-3 py-1.5 bg-green-600 hover:bg-green-500 text-white rounded-lg transition text-sm">Verify</button>
+                    <button type="submit" class="px-3 py-1.5 bg-green-600 hover:bg-green-500 text-white rounded-xl transition text-sm">Verify</button>
                 </form>
             @endif
             <form action="{{ route('admin.teams.disband', $team) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to disband this platoon?')">
                 @csrf
-                <button type="submit" class="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-lg transition text-sm">Disband</button>
+                <button type="submit" class="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-xl transition text-sm">Disband</button>
             </form>
         @else
             <form action="{{ route('admin.teams.restore', $team) }}" method="POST" class="inline">
                 @csrf
-                <button type="submit" class="px-3 py-1.5 bg-green-600 hover:bg-green-500 text-white rounded-lg transition text-sm">Restore</button>
+                <button type="submit" class="px-3 py-1.5 bg-green-600 hover:bg-green-500 text-white rounded-xl transition text-sm">Restore</button>
             </form>
         @endif
         <form action="{{ route('admin.teams.destroy', $team) }}" method="POST" class="inline" onsubmit="return confirm('PERMANENTLY delete {{ $team->name }}? This cannot be undone!')">
@@ -70,8 +70,8 @@
     <!-- Main Content -->
     <div class="lg:col-span-2 space-y-6">
         <!-- Info -->
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
-            <h2 class="text-lg font-semibold text-white mb-4">Information</h2>
+        <div class="glass-card rounded-xl p-6">
+            <h2 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">Information</h2>
             <dl class="grid grid-cols-2 gap-4 text-sm">
                 <div>
                     <dt class="text-gray-400">Captain</dt>
@@ -99,18 +99,18 @@
                 @endif
             </dl>
             @if($team->description)
-                <div class="mt-4 pt-4 border-t border-gray-700">
+                <div class="mt-4 pt-4 border-t border-white/5">
                     <p class="text-gray-300 text-sm">{{ $team->description }}</p>
                 </div>
             @endif
         </div>
 
         <!-- Members -->
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
-            <h2 class="text-lg font-semibold text-white mb-4">Members ({{ $team->members->where('pivot.status', 'active')->count() }})</h2>
+        <div class="glass-card rounded-xl p-6">
+            <h2 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">Members ({{ $team->members->where('pivot.status', 'active')->count() }})</h2>
             <div class="space-y-2">
                 @foreach($team->members->sortBy(function($m) { return ['captain' => 0, 'officer' => 1, 'member' => 2, 'active' => 3][$m->pivot->role] ?? 4; }) as $member)
-                    <div class="flex items-center gap-3 bg-gray-700/50 rounded-lg p-3">
+                    <div class="flex items-center gap-3 bg-white/3 rounded-lg p-3">
                         <img src="{{ $member->avatar_display }}" alt="{{ $member->name }}" class="w-8 h-8 rounded-full">
                         <div class="flex-1">
                             <span class="text-white text-sm">{{ $member->name }}</span>
@@ -130,11 +130,11 @@
 
         <!-- Tournament Registrations -->
         @if($team->registrations->count() > 0)
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
-            <h2 class="text-lg font-semibold text-white mb-4">Tournament Registrations</h2>
+        <div class="glass-card rounded-xl p-6">
+            <h2 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">Tournament Registrations</h2>
             <div class="space-y-2">
                 @foreach($team->registrations as $registration)
-                    <div class="flex items-center justify-between bg-gray-700/50 rounded-lg p-3">
+                    <div class="flex items-center justify-between bg-white/3 rounded-lg p-3">
                         <div>
                             <a href="{{ route('admin.tournaments.show', $registration->tournament) }}" class="text-white hover:text-green-400 transition text-sm">
                                 {{ $registration->tournament->name }}
@@ -154,11 +154,11 @@
     <div class="space-y-6">
         <!-- Pending Invitations -->
         @if($team->invitations->where('status', 'pending')->count() > 0)
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
-            <h2 class="text-lg font-semibold text-white mb-4">Pending Invitations</h2>
+        <div class="glass-card rounded-xl p-6">
+            <h2 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">Pending Invitations</h2>
             <div class="space-y-2">
                 @foreach($team->invitations->where('status', 'pending') as $invitation)
-                    <div class="flex items-center justify-between bg-gray-700/50 rounded-lg p-3 text-sm">
+                    <div class="flex items-center justify-between bg-white/3 rounded-lg p-3 text-sm">
                         <span class="text-white">{{ $invitation->user->name }}</span>
                         <span class="text-gray-400">by {{ $invitation->inviter->name }}</span>
                     </div>
@@ -168,8 +168,8 @@
         @endif
 
         <!-- IDs -->
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
-            <h2 class="text-lg font-semibold text-white mb-4">Internal</h2>
+        <div class="glass-card rounded-xl p-6">
+            <h2 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">Internal</h2>
             <dl class="space-y-3 text-sm">
                 <div>
                     <dt class="text-gray-400">Team ID</dt>

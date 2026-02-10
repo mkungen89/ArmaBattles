@@ -9,29 +9,29 @@
         </div>
         @auth
             @if(auth()->user()->hasTeam())
-                <a href="{{ route('teams.my') }}" class="px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg transition font-medium">
+                <a href="{{ route('teams.my') }}" class="px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-xl transition font-medium">
                     My Platoon
                 </a>
             @else
-                <a href="{{ route('teams.create') }}" class="px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg transition font-medium">
+                <a href="{{ route('teams.create') }}" class="px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-xl transition font-medium">
                     Create Platoon
                 </a>
             @endif
         @endauth
     </div>
     <!-- Search/Filters -->
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-4 mb-6">
+    <div class="glass-card rounded-xl p-4 mb-6">
         <form method="GET" class="flex flex-wrap gap-4">
             <div class="flex-1 min-w-[200px]">
                 <input type="text" name="search" value="{{ request('search') }}" placeholder="Search platoons..."
-                    class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
+                    class="w-full bg-white/5 border-white/10 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
             </div>
             <label class="flex items-center gap-2 text-gray-400">
                 <input type="checkbox" name="verified" value="1" {{ request('verified') ? 'checked' : '' }}
-                    class="rounded bg-gray-700 border-gray-600 text-green-500 focus:ring-green-500">
+                    class="rounded bg-white/5 border-white/10 text-green-500 focus:ring-green-500">
                 Verified only
             </label>
-            <button type="submit" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition">
+            <button type="submit" class="px-4 py-2 bg-white/5 hover:bg-white/10 text-white rounded-xl transition">
                 Search
             </button>
             @if(request()->hasAny(['search', 'verified']))
@@ -45,12 +45,12 @@
     @if($teams->count() > 0)
         <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             @foreach($teams as $team)
-                <a href="{{ route('teams.show', $team) }}" class="bg-gray-800/50 border border-gray-700 rounded-xl p-6 hover:border-green-500/50 transition group">
+                <a href="{{ route('teams.show', $team) }}" class="glass-card rounded-xl p-6 hover:border-green-500/30 transition group">
                     <div class="flex items-start gap-4">
                         @if($team->avatar_url)
                             <img src="{{ $team->avatar_url }}" alt="{{ $team->name }}" class="w-16 h-16 rounded-xl object-cover">
                         @else
-                            <div class="w-16 h-16 rounded-xl bg-gray-700 flex items-center justify-center text-2xl font-bold text-gray-400">
+                            <div class="w-16 h-16 rounded-xl bg-white/5 flex items-center justify-center text-2xl font-bold text-gray-400">
                                 {{ strtoupper(substr($team->tag, 0, 2)) }}
                             </div>
                         @endif
@@ -79,7 +79,7 @@
                     @if($team->description)
                         <p class="text-gray-400 text-sm mt-4 line-clamp-2">{{ $team->description }}</p>
                     @endif
-                    <div class="flex items-center gap-2 mt-4 pt-4 border-t border-gray-700">
+                    <div class="flex items-center gap-2 mt-4 pt-4 border-t border-white/5">
                         <img src="{{ $team->captain->avatar_display }}" alt="{{ $team->captain->name }}" class="w-6 h-6 rounded-full">
                         <span class="text-sm text-gray-400">Captain: {{ $team->captain->name }}</span>
                     </div>
@@ -91,14 +91,14 @@
             {{ $teams->withQueryString()->links() }}
         </div>
     @else
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-12 text-center">
+        <div class="glass-card rounded-xl p-12 text-center">
             <svg class="w-16 h-16 mx-auto text-gray-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
             </svg>
-            <h3 class="text-lg font-semibold text-white mb-2">No platoons found</h3>
+            <h3 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">No platoons found</h3>
             <p class="text-gray-400 mb-4">Be the first to create a platoon!</p>
             @auth
-                <a href="{{ route('teams.create') }}" class="inline-block px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg transition">
+                <a href="{{ route('teams.create') }}" class="inline-block px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-xl transition">
                     Create Platoon
                 </a>
             @endauth

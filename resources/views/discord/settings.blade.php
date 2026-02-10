@@ -31,7 +31,7 @@
         </div>
         {{-- Current Status --}}
         @if($presence && $presence->enabled)
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
+        <div class="glass-card rounded-xl p-6">
             <div class="flex items-center justify-between mb-4">
                 <h2 class="text-xl font-bold text-white">Current Status</h2>
                 <span class="flex items-center gap-2 px-3 py-1 bg-green-500/20 text-green-400 text-sm font-medium rounded-full">
@@ -40,7 +40,7 @@
                 </span>
             </div>
             @if($presence->current_activity)
-            <div class="bg-gray-900/50 rounded-lg p-4">
+            <div class="bg-white/3 rounded-lg p-4">
                 <div class="flex items-start gap-4">
                     <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center text-white font-bold text-xl">
                         AR
@@ -60,7 +60,7 @@
             <p class="text-gray-400 text-sm">No active presence. Visit a server or tournament page to set your status!</p>
             @endif
             @if($presence->discord_user_id)
-            <div class="mt-4 pt-4 border-t border-gray-700">
+            <div class="mt-4 pt-4 border-t border-white/5">
                 <p class="text-sm text-gray-400">
                     <strong class="text-white">Discord ID:</strong> {{ $presence->discord_user_id }}
                 </p>
@@ -69,7 +69,7 @@
         </div>
         @endif
         {{-- Settings Form --}}
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
+        <div class="glass-card rounded-xl p-6">
             <h2 class="text-xl font-bold text-white mb-4">Settings</h2>
             @if($presence && $presence->enabled)
             {{-- Disable Form --}}
@@ -79,7 +79,7 @@
                 <div class="mb-6">
                     <p class="text-gray-300 mb-4">Discord Rich Presence is currently <strong class="text-green-400">enabled</strong>. Your activity will be shown on Discord.</p>
                 </div>
-                <button type="submit" class="px-6 py-3 bg-red-600 hover:bg-red-500 text-white font-semibold rounded-lg transition">
+                <button type="submit" class="px-6 py-3 bg-red-600 hover:bg-red-500 text-white font-semibold rounded-xl transition">
                     Disable Discord Presence
                 </button>
             </form>
@@ -96,7 +96,7 @@
                         name="discord_user_id"
                         value="{{ old('discord_user_id', $presence->discord_user_id ?? '') }}"
                         placeholder="123456789012345678"
-                        class="w-full bg-gray-900/50 border border-gray-700 text-white rounded-lg px-4 py-2"
+                        class="w-full bg-white/5 border border-white/10 text-white rounded-lg px-4 py-2"
                     >
                     <p class="mt-2 text-xs text-gray-500">
                         Your Discord User ID can be found in Discord User Settings → Advanced → Developer Mode (enable) → Right-click your profile → Copy User ID
@@ -110,14 +110,14 @@
                         <strong>Note:</strong> Enabling this feature will allow your Discord status to update automatically based on your activity on this website.
                     </p>
                 </div>
-                <button type="submit" class="px-6 py-3 bg-purple-600 hover:bg-purple-500 text-white font-semibold rounded-lg transition">
+                <button type="submit" class="px-6 py-3 bg-purple-600 hover:bg-purple-500 text-white font-semibold rounded-xl transition">
                     Enable Discord Presence
                 </button>
             </form>
             @endif
         </div>
         {{-- How It Works --}}
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
+        <div class="glass-card rounded-xl p-6">
             <h2 class="text-xl font-bold text-white mb-4">How It Works</h2>
             <div class="space-y-4">
                 <div class="flex items-start gap-3">

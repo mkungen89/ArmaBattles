@@ -59,8 +59,9 @@ class TeamController extends Controller
             ->get();
 
         $combatStats = $team->getAggregatedGameStats();
+        $teamRating = $team->getTeamRating();
 
-        return view('teams.show', compact('team', 'recentMatches', 'combatStats'));
+        return view('teams.show', compact('team', 'recentMatches', 'combatStats', 'teamRating'));
     }
 
     public function create()

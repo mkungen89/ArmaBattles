@@ -10,7 +10,7 @@
             <h1 class="text-2xl font-bold text-white">Server Comparison</h1>
             <p class="text-sm text-gray-500 mt-1">Compare status and resources across managed servers</p>
         </div>
-        <a href="{{ route('admin.server.dashboard') }}" class="px-3 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm transition flex items-center gap-2">
+        <a href="{{ route('admin.server.dashboard') }}" class="px-3 py-2 bg-white/5 hover:bg-white/10 text-white rounded-xl text-sm transition flex items-center gap-2">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 17l-5-5m0 0l5-5m-5 5h12"/>
             </svg>
@@ -20,7 +20,7 @@
 
     @if($servers->isEmpty())
         {{-- No managed servers --}}
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
+        <div class="glass-card rounded-xl p-6">
             <div class="text-center py-8">
                 <svg class="w-12 h-12 text-gray-600 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2"/>
@@ -31,15 +31,15 @@
         </div>
     @else
         {{-- Server Selector --}}
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
-            <h2 class="text-lg font-semibold text-white mb-4">Select Servers to Compare</h2>
+        <div class="glass-card rounded-xl p-6">
+            <h2 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">Select Servers to Compare</h2>
             <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 mb-4">
                 @foreach($servers as $server)
-                    <label class="flex items-center gap-3 px-3 py-2 bg-gray-900/50 border border-gray-700 rounded-lg cursor-pointer hover:border-green-500/50 transition"
+                    <label class="flex items-center gap-3 px-3 py-2 bg-gray-900/50 border border-white/5 rounded-lg cursor-pointer hover:border-green-500/50 transition"
                            :class="selectedIds.includes({{ $server->id }}) ? 'border-green-500/70 bg-green-500/10' : ''">
                         <input type="checkbox"
                                value="{{ $server->id }}"
-                               class="rounded bg-gray-700 border-gray-600 text-green-500 focus:ring-green-500 focus:ring-offset-0"
+                               class="rounded bg-white/5 border-white/10 text-green-500 focus:ring-green-500 focus:ring-offset-0"
                                @change="toggleServer({{ $server->id }})">
                         <span class="text-sm text-white truncate">{{ $server->name }}</span>
                     </label>
@@ -47,7 +47,7 @@
             </div>
             <button @click="fetchData()"
                     :disabled="selectedIds.length === 0 || loading"
-                    class="px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-700 disabled:text-gray-500 text-white rounded-lg text-sm font-medium transition flex items-center gap-2">
+                    class="px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-white/5 disabled:text-gray-500 text-white rounded-lg text-sm font-medium transition flex items-center gap-2">
                 <svg x-show="loading" class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
@@ -63,10 +63,10 @@
         <div x-show="results.length > 0" x-cloak>
             <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                 <template x-for="server in results" :key="server.id">
-                    <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
+                    <div class="glass-card rounded-xl p-6">
                         {{-- Server Name --}}
                         <div class="flex items-center justify-between mb-4">
-                            <h3 class="text-lg font-semibold text-white truncate" x-text="server.name"></h3>
+                            <h3 class="text-sm font-semibold text-white uppercase tracking-wider truncate" x-text="server.name"></h3>
                             <span class="relative flex h-3 w-3 flex-shrink-0 ml-2">
                                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"
                                       :class="server.status === 'running' ? 'bg-green-400' : (server.status === 'unreachable' ? 'bg-yellow-400' : 'bg-red-400')"></span>
@@ -90,7 +90,7 @@
                         </div>
 
                         {{-- System Resources --}}
-                        <div class="border-t border-gray-700 pt-4 space-y-3">
+                        <div class="border-t border-white/5 pt-4 space-y-3">
                             <p class="text-xs text-gray-500 uppercase tracking-wider">System Resources</p>
 
                             {{-- CPU --}}
@@ -136,7 +136,7 @@
 
         {{-- Empty State --}}
         <div x-show="results.length === 0" x-cloak>
-            <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
+            <div class="glass-card rounded-xl p-6">
                 <div class="text-center py-8">
                     <svg class="w-12 h-12 text-gray-600 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>

@@ -10,7 +10,7 @@
         <h1 class="text-2xl font-bold text-white">News Hub</h1>
         @auth
             @if(auth()->user()->isGM())
-            <a href="{{ route('admin.news.create') }}" class="px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg transition font-medium text-sm flex items-center gap-2">
+            <a href="{{ route('admin.news.create') }}" class="px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-xl transition font-medium text-sm flex items-center gap-2">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                 Write Article
             </a>
@@ -24,7 +24,7 @@
     <div class="space-y-3">
 
         @forelse($articles as $article)
-            <a href="{{ route('news.show', $article) }}" class="group flex gap-0 rounded-xl overflow-hidden bg-gray-800/50 border {{ $article->is_pinned ? 'border-yellow-500/30 hover:border-yellow-500/50' : 'border-gray-700/50 hover:border-gray-600/50' }} hover:bg-gray-800/80 transition-all">
+            <a href="{{ route('news.show', $article) }}" class="group flex gap-0 rounded-xl overflow-hidden {{ $article->is_pinned ? 'glass-card border border-yellow-500/30 hover:border-yellow-500/50' : 'glass-card hover:border-white/10' }} hover:bg-white/5 transition-all">
                 {{-- Image --}}
                 <div class="relative w-72 md:w-96 h-36 flex-shrink-0 overflow-hidden">
                     @if($article->featured_image_url)
@@ -45,7 +45,7 @@
                         @if($article->isOfficial())
                             <span class="px-1.5 py-0.5 bg-blue-500/20 text-blue-400 rounded-sm text-[10px] font-bold uppercase">Official</span>
                             @if($article->category)
-                                <span class="px-1.5 py-0.5 bg-gray-700 text-gray-300 rounded-sm text-[10px] font-medium uppercase">{{ $article->category }}</span>
+                                <span class="px-1.5 py-0.5 bg-white/5 text-gray-300 rounded-sm text-[10px] font-medium uppercase">{{ $article->category }}</span>
                             @endif
                         @else
                             <span class="px-1.5 py-0.5 bg-green-500/15 text-green-400 rounded-sm text-[10px] font-bold uppercase">Community</span>
@@ -79,7 +79,7 @@
                 </div>
             </a>
         @empty
-            <div class="bg-gray-800/30 rounded-lg p-12 text-center">
+            <div class="bg-white/3 rounded-lg p-12 text-center">
                 <svg class="w-12 h-12 text-gray-600 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/>
                 </svg>

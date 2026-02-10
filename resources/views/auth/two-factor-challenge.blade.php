@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="max-w-md mx-auto mt-8">
-    <div class="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-8" x-data="{ recovery: false }">
+    <div class="glass-card rounded-xl p-8" x-data="{ recovery: false }">
         <div class="text-center mb-6">
             <div class="mx-auto w-12 h-12 bg-green-500/20 rounded-full flex items-center justify-center mb-4">
                 <svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -28,14 +28,14 @@
                 <input type="text" name="code" id="code" inputmode="numeric" autocomplete="one-time-code" autofocus
                        maxlength="6" pattern="[0-9]{6}"
                        placeholder="000000"
-                       class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white text-center text-2xl font-mono tracking-widest placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                       class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-center text-2xl font-mono tracking-widest placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
             </div>
 
             <div x-show="recovery" x-cloak>
                 <label for="recovery_code" class="block text-sm font-medium text-gray-300 mb-1">Recovery Code</label>
                 <input type="text" id="recovery_code" autocomplete="off"
                        placeholder="xxxxxxxxxx"
-                       class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white text-center font-mono tracking-wider placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                       class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-center font-mono tracking-wider placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
                 <input type="hidden" name="recovery" x-bind:value="recovery ? '1' : '0'">
             </div>
 
@@ -43,7 +43,7 @@
                 <p class="text-sm text-red-400">{{ $message }}</p>
             @enderror
 
-            <button type="submit" class="w-full py-2.5 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition">
+            <button type="submit" class="w-full py-2.5 bg-green-600 hover:bg-green-500 text-white font-semibold rounded-xl transition">
                 <span x-show="!recovery">Verify</span>
                 <span x-show="recovery" x-cloak>Use Recovery Code</span>
             </button>

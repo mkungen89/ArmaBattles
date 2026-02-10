@@ -2,7 +2,7 @@
 @section('title', 'Challenge Team to Scrim')
 @section('content')
 <div class="py-12">
-    
+
         {{-- Header --}}
         <div class="mb-6">
             <div class="flex items-center gap-4 mb-4">
@@ -16,7 +16,7 @@
             <p class="text-gray-400">Schedule a practice match with another team.</p>
         </div>
         {{-- Form --}}
-        <div class="bg-gray-800/50 backdrop-blur border border-gray-700 rounded-xl p-6">
+        <div class="glass-card backdrop-blur rounded-xl p-6">
             <form action="{{ route('scrims.store') }}" method="POST" class="space-y-6">
                 @csrf
                 {{-- Opponent Team --}}
@@ -25,7 +25,7 @@
                         Opponent Team *
                     </label>
                     <select name="opponent_team_id" id="opponent_team_id" required
-                            class="w-full bg-gray-900/50 border border-gray-700 text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                            class="w-full bg-gray-900/50 border border-white/5 text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent">
                         <option value="">Select a team...</option>
                         @foreach($teams as $team)
                         <option value="{{ $team->id }}" {{ old('opponent_team_id') == $team->id ? 'selected' : '' }}>
@@ -45,7 +45,7 @@
                     <input type="datetime-local" name="scheduled_at" id="scheduled_at" required
                            value="{{ old('scheduled_at', now()->addDays(1)->format('Y-m-d\TH:i')) }}"
                            min="{{ now()->format('Y-m-d\TH:i') }}"
-                           class="w-full bg-gray-900/50 border border-gray-700 text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                           class="w-full bg-gray-900/50 border border-white/5 text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent">
                     @error('scheduled_at')
                     <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
                     @enderror
@@ -58,7 +58,7 @@
                     </label>
                     <input type="text" name="map" id="map" value="{{ old('map') }}"
                            placeholder="e.g., Everon, Arland..."
-                           class="w-full bg-gray-900/50 border border-gray-700 text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                           class="w-full bg-gray-900/50 border border-white/5 text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent">
                     @error('map')
                     <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
                     @enderror
@@ -71,7 +71,7 @@
                     <input type="number" name="duration_minutes" id="duration_minutes"
                            value="{{ old('duration_minutes', 60) }}"
                            min="10" max="180" step="5"
-                           class="w-full bg-gray-900/50 border border-gray-700 text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                           class="w-full bg-gray-900/50 border border-white/5 text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent">
                     @error('duration_minutes')
                     <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
                     @enderror
@@ -84,7 +84,7 @@
                     </label>
                     <input type="text" name="password" id="password" value="{{ old('password') }}"
                            placeholder="Leave blank for public match"
-                           class="w-full bg-gray-900/50 border border-gray-700 text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                           class="w-full bg-gray-900/50 border border-white/5 text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent">
                     @error('password')
                     <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
                     @enderror
@@ -97,7 +97,7 @@
                     </label>
                     <textarea name="notes" id="notes" rows="4"
                               placeholder="Any additional details about the scrim..."
-                              class="w-full bg-gray-900/50 border border-gray-700 text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent">{{ old('notes') }}</textarea>
+                              class="w-full bg-gray-900/50 border border-white/5 text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent">{{ old('notes') }}</textarea>
                     @error('notes')
                     <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
                     @enderror
@@ -121,10 +121,10 @@
                 </div>
                 {{-- Submit --}}
                 <div class="flex gap-3">
-                    <button type="submit" class="flex-1 px-6 py-3 bg-green-600 hover:bg-green-500 text-white font-semibold rounded-lg transition">
+                    <button type="submit" class="flex-1 px-6 py-3 bg-green-600 hover:bg-green-500 text-white font-semibold rounded-xl transition">
                         Send Challenge
                     </button>
-                    <a href="{{ route('scrims.index') }}" class="px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg transition">
+                    <a href="{{ route('scrims.index') }}" class="px-6 py-3 bg-white/5 hover:bg-white/10 text-white font-semibold rounded-xl transition">
                         Cancel
                     </a>
                 </div>

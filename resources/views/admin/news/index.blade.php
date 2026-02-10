@@ -10,30 +10,30 @@
             <h1 class="text-2xl font-bold text-white">News</h1>
             <p class="text-gray-400 text-sm">Manage news articles</p>
         </div>
-        <a href="{{ route('admin.news.create') }}" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium transition flex items-center gap-2">
+        <a href="{{ route('admin.news.create') }}" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-xl text-sm font-medium transition flex items-center gap-2">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
             Create Article
         </a>
     </div>
 
     {{-- Filters --}}
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-4">
+    <div class="glass-card rounded-xl p-4">
         <form action="{{ route('admin.news.index') }}" method="GET" class="flex flex-wrap gap-3">
             <input type="text" name="search" value="{{ request('search') }}" placeholder="Search articles..."
-                class="flex-1 min-w-[200px] bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-400">
-            <select name="status" class="bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white">
+                class="flex-1 min-w-[200px] bg-white/5 border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-400">
+            <select name="status" class="bg-white/5 border-white/10 rounded-lg px-3 py-2 text-sm text-white">
                 <option value="">All Statuses</option>
                 <option value="draft" {{ request('status') === 'draft' ? 'selected' : '' }}>Draft</option>
                 <option value="published" {{ request('status') === 'published' ? 'selected' : '' }}>Published</option>
             </select>
-            <button type="submit" class="px-4 py-2 bg-gray-600 hover:bg-gray-500 rounded-lg text-sm text-white transition">Filter</button>
+            <button type="submit" class="px-4 py-2 bg-white/5 hover:bg-white/10 rounded-lg text-sm text-white transition">Filter</button>
         </form>
     </div>
 
     {{-- Articles Table --}}
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl overflow-hidden">
+    <div class="glass-card rounded-xl overflow-hidden">
         <table class="w-full text-sm">
-            <thead class="bg-gray-700/50">
+            <thead class="bg-white/3">
                 <tr>
                     <th class="px-4 py-3 text-left text-gray-400 font-medium">Title</th>
                     <th class="px-4 py-3 text-left text-gray-400 font-medium">Status</th>
@@ -44,9 +44,9 @@
                     <th class="px-4 py-3 text-right text-gray-400 font-medium">Actions</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-gray-700">
+            <tbody class="divide-y divide-white/5">
                 @forelse($articles as $article)
-                    <tr class="hover:bg-gray-700/30">
+                    <tr class="hover:bg-white/3">
                         <td class="px-4 py-3">
                             <div class="flex items-center gap-2">
                                 @if($article->is_pinned)

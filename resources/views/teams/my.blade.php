@@ -2,12 +2,12 @@
 @section('title', 'My Platoon')
 @section('content')
     <!-- Header -->
-    <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6 mb-6">
+    <div class="glass-card p-6 mb-6">
         <div class="flex flex-col sm:flex-row sm:items-center gap-6">
             @if($team->avatar_url)
                 <img src="{{ $team->avatar_url }}" alt="{{ $team->name }}" class="w-20 h-20 rounded-xl object-cover">
             @else
-                <div class="w-20 h-20 rounded-xl bg-gray-700 flex items-center justify-center text-2xl font-bold text-gray-400">
+                <div class="w-20 h-20 rounded-xl bg-white/5 flex items-center justify-center text-2xl font-bold text-gray-400">
                     {{ strtoupper(substr($team->tag, 0, 2)) }}
                 </div>
             @endif
@@ -23,11 +23,11 @@
                 <p class="text-gray-400">[{{ $team->tag }}]</p>
             </div>
             <div class="flex gap-2">
-                <a href="{{ route('teams.show', $team) }}" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition">
+                <a href="{{ route('teams.show', $team) }}" class="px-4 py-2 bg-white/5 hover:bg-white/10 text-white rounded-xl transition">
                     View Profile
                 </a>
                 @if($team->isUserCaptainOrOfficer(auth()->user()))
-                    <a href="{{ route('teams.edit', $team) }}" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition">
+                    <a href="{{ route('teams.edit', $team) }}" class="px-4 py-2 bg-white/5 hover:bg-white/10 text-white rounded-xl transition">
                         Edit
                     </a>
                 @endif
@@ -38,15 +38,15 @@
         <!-- Main Content -->
         <div class="lg:col-span-2 space-y-6">
             <!-- Members -->
-            <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
+            <div class="glass-card rounded-xl p-6">
                 <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-lg font-semibold text-white">Members ({{ $team->activeMembers->count() }})</h2>
+                    <h2 class="text-sm font-semibold text-white uppercase tracking-wider">Members ({{ $team->activeMembers->count() }})</h2>
                 </div>
                 <div class="space-y-3">
                     @foreach($team->activeMembers->sortBy(function($member) {
                         return ['captain' => 0, 'officer' => 1, 'member' => 2][$member->pivot->role] ?? 3;
                     }) as $member)
-                        <div class="flex items-center gap-4 bg-gray-700/50 rounded-lg p-3">
+                        <div class="flex items-center gap-4 bg-white/3 rounded-lg p-3">
                             <img src="{{ $member->avatar_display }}" alt="{{ $member->name }}" class="w-10 h-10 rounded-full">
                             <div class="flex-1 min-w-0">
                                 <div class="flex items-center gap-2">
@@ -90,13 +90,13 @@
                 </div>
                 <!-- Invite Form -->
                 @if($team->isUserCaptainOrOfficer(auth()->user()))
-                    <div class="mt-6 pt-6 border-t border-gray-700">
+                    <div class="mt-6 pt-6 border-t border-white/5">
                         <h3 class="text-sm font-medium text-white mb-3">Invite player</h3>
                         <form action="{{ route('teams.invite', $team) }}" method="POST" class="flex gap-3">
                             @csrf
                             <input type="text" name="steam_id" placeholder="Steam ID" required
-                                class="flex-1 bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
-                            <button type="submit" class="px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg transition">
+                                class="flex-1 bg-white/5 border-white/10 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
+                            <button type="submit" class="px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-xl transition">
                                 Invite
                             </button>
                         </form>
@@ -107,7 +107,7 @@
                             <h4 class="text-sm text-gray-400 mb-2">Pending invitations</h4>
                             <div class="space-y-2">
                                 @foreach($team->pendingInvitations as $invitation)
-                                    <div class="flex items-center justify-between bg-gray-700/30 rounded-lg p-2 text-sm">
+                                    <div class="flex items-center justify-between bg-white/3 rounded-lg p-2 text-sm">
                                         <span class="text-white">{{ $invitation->user->name }}</span>
                                         <form action="{{ route('teams.invitations.cancel', [$team, $invitation]) }}" method="POST">
                                             @csrf
@@ -120,11 +120,11 @@
                     @endif
                     <!-- Pending Applications -->
                     @if($team->pendingApplications->count() > 0)
-                        <div class="mt-6 pt-6 border-t border-gray-700">
+                        <div class="mt-6 pt-6 border-t border-white/5">
                             <h3 class="text-sm font-medium text-white mb-3">Pending Applications ({{ $team->pendingApplications->count() }})</h3>
                             <div class="space-y-3">
                                 @foreach($team->pendingApplications as $application)
-                                    <div class="bg-gray-700/50 rounded-lg p-4">
+                                    <div class="bg-white/3 rounded-lg p-4">
                                         <div class="flex items-center gap-3 mb-2">
                                             <img src="{{ $application->user->avatar_display }}" alt="{{ $application->user->name }}" class="w-10 h-10 rounded-full">
                                             <div class="flex-1">
@@ -157,12 +157,12 @@
                 @endif
             </div>
             <!-- Tournament Registrations -->
-            <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
-                <h2 class="text-lg font-semibold text-white mb-4">Tournament Registrations</h2>
+            <div class="glass-card rounded-xl p-6">
+                <h2 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">Tournament Registrations</h2>
                 @if($team->registrations->count() > 0)
                     <div class="space-y-3">
                         @foreach($team->registrations as $registration)
-                            <div class="flex items-center justify-between bg-gray-700/50 rounded-lg p-4">
+                            <div class="flex items-center justify-between bg-white/3 rounded-lg p-4">
                                 <div>
                                     <a href="{{ route('tournaments.show', $registration->tournament) }}" class="text-white font-medium hover:text-green-400 transition">
                                         {{ $registration->tournament->name }}
@@ -196,8 +196,8 @@
         <div class="space-y-6">
             <!-- Recruitment Settings -->
             @if($team->isUserCaptainOrOfficer(auth()->user()))
-                <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
-                    <h2 class="text-lg font-semibold text-white mb-4">Recruitment</h2>
+                <div class="glass-card rounded-xl p-6">
+                    <h2 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">Recruitment</h2>
                     <form action="{{ route('teams.recruitment', $team) }}" method="POST" class="space-y-4">
                         @csrf
                         <div class="flex items-center justify-between">
@@ -206,16 +206,16 @@
                                 <input type="hidden" name="is_recruiting" value="0">
                                 <input type="checkbox" name="is_recruiting" value="1" {{ $team->is_recruiting ? 'checked' : '' }}
                                        class="sr-only peer">
-                                <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
+                                <div class="w-11 h-6 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
                             </label>
                         </div>
                         <div>
                             <label class="block text-sm text-gray-400 mb-2">Recruitment message</label>
                             <textarea name="recruitment_message" rows="3"
-                                      class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 text-sm focus:ring-green-500 focus:border-green-500"
+                                      class="w-full bg-white/5 border-white/10 text-white rounded-lg px-4 py-2 text-sm focus:ring-green-500 focus:border-green-500"
                                       placeholder="Optional message for applicants...">{{ $team->recruitment_message }}</textarea>
                         </div>
-                        <button type="submit" class="w-full px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition text-sm">
+                        <button type="submit" class="w-full px-4 py-2 bg-white/5 hover:bg-white/10 text-white rounded-xl transition text-sm">
                             Save Settings
                         </button>
                     </form>
@@ -223,11 +223,11 @@
             @endif
             <!-- Register for Tournament -->
             @if($team->isUserCaptainOrOfficer(auth()->user()) && $availableTournaments->count() > 0)
-                <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
-                    <h2 class="text-lg font-semibold text-white mb-4">Register for tournament</h2>
+                <div class="glass-card rounded-xl p-6">
+                    <h2 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">Register for tournament</h2>
                     <form action="{{ route('teams.register', $team) }}" method="POST" class="space-y-4">
                         @csrf
-                        <select name="tournament_id" required class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
+                        <select name="tournament_id" required class="w-full bg-white/5 border-white/10 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
                             <option value="">Select tournament...</option>
                             @foreach($availableTournaments as $tournament)
                                 <option value="{{ $tournament->id }}">
@@ -235,7 +235,7 @@
                                 </option>
                             @endforeach
                         </select>
-                        <button type="submit" class="w-full px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg transition font-medium">
+                        <button type="submit" class="w-full px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-xl transition font-medium">
                             Register
                         </button>
                     </form>
@@ -243,41 +243,41 @@
             @endif
             <!-- Captain Actions -->
             @if($team->captain_id === auth()->id())
-                <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
-                    <h2 class="text-lg font-semibold text-white mb-4">Captain Actions</h2>
+                <div class="glass-card rounded-xl p-6">
+                    <h2 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">Captain Actions</h2>
                     <div class="space-y-3">
                         <!-- Transfer Captain -->
                         @if($team->activeMembers->count() > 1)
                             <form action="{{ route('teams.transfer-captain', $team) }}" method="POST" onsubmit="return confirm('Are you sure you want to transfer leadership?')">
                                 @csrf
                                 <label class="block text-sm text-gray-400 mb-2">Transfer leadership</label>
-                                <select name="new_captain_id" required class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500 mb-2">
+                                <select name="new_captain_id" required class="w-full bg-white/5 border-white/10 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500 mb-2">
                                     <option value="">Select new captain...</option>
                                     @foreach($team->activeMembers->where('id', '!=', auth()->id()) as $member)
                                         <option value="{{ $member->id }}">{{ $member->name }}</option>
                                     @endforeach
                                 </select>
-                                <button type="submit" class="w-full px-4 py-2 bg-yellow-600 hover:bg-yellow-500 text-white rounded-lg transition text-sm">
+                                <button type="submit" class="w-full px-4 py-2 bg-yellow-600 hover:bg-yellow-500 text-white rounded-xl transition text-sm">
                                     Transfer
                                 </button>
                             </form>
                         @endif
                         <!-- Disband -->
-                        <div class="pt-4 border-t border-gray-700">
+                        <div class="pt-4 border-t border-white/5">
                             <form action="{{ route('teams.disband', $team) }}" method="POST" onsubmit="return confirm('Are you sure you want to disband the platoon? Members will be removed.')">
                                 @csrf
-                                <button type="submit" class="w-full px-4 py-2 bg-yellow-600 hover:bg-yellow-500 text-white rounded-lg transition text-sm">
+                                <button type="submit" class="w-full px-4 py-2 bg-yellow-600 hover:bg-yellow-500 text-white rounded-xl transition text-sm">
                                     Disband platoon
                                 </button>
                             </form>
                             <p class="text-xs text-gray-500 mt-2">Disbands the platoon but keeps it in the system.</p>
                         </div>
                         <!-- Delete permanently -->
-                        <div class="pt-4 border-t border-gray-700">
+                        <div class="pt-4 border-t border-white/5">
                             <form action="{{ route('teams.destroy', $team) }}" method="POST" onsubmit="return confirm('PERMANENTLY delete {{ $team->name }}? All data, history and tournament records will be lost. This cannot be undone!')">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="w-full px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded-lg transition text-sm">
+                                <button type="submit" class="w-full px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded-xl transition text-sm">
                                     Delete platoon permanently
                                 </button>
                             </form>

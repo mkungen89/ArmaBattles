@@ -162,6 +162,9 @@ class ProfileController extends Controller
             ]
         );
 
+        // Competitive rating
+        $playerRating = $user->playerRating;
+
         return view('profile.show', [
             'user' => $user,
             'team' => $team,
@@ -182,6 +185,7 @@ class ProfileController extends Controller
             'playerAchievements' => $playerAchievements,
             'showcaseAchievements' => $showcaseAchievements,
             'reputation' => $reputation,
+            'playerRating' => $playerRating,
         ]);
     }
 
