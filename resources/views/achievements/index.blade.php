@@ -1,7 +1,10 @@
 @extends('layouts.app')
 @section('title', 'Achievements')
 @section('content')
-    <div class="py-12" x-data="{ showcaseOpen: false }" x-init="console.log('Alpine initialized, showcaseOpen:', showcaseOpen)">
+    <div class="py-12" x-data="{
+        showcaseOpen: false,
+        pinnedIds: @js(auth()->check() && auth()->user()->player_uuid ? (optional(\App\Models\AchievementShowcase::where('player_uuid', auth()->user()->player_uuid)->first())->pinned_achievements ?? []) : [])
+    }" x-init="console.log('Alpine initialized, showcaseOpen:', showcaseOpen, 'pinnedIds:', pinnedIds)">
 
             {{-- Header --}}
             <div class="bg-gradient-to-r from-green-600/10 to-emerald-600/10 border border-green-500/20 rounded-2xl p-6 mb-6">
@@ -168,8 +171,7 @@
                  @keydown.escape.window="showcaseOpen = false"
                  class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4"
                  style="z-index: 9999 !important;">
-                <div x-data="{ pinnedIds: @js(optional(\App\Models\AchievementShowcase::where('player_uuid', auth()->user()->player_uuid)->first())->pinned_achievements ?? []) }"
-                     x-init="console.log('Inner modal card rendered!')"
+                <div x-init="console.log('Inner modal card rendered!')"
                      @click.stop
                      class="bg-red-900 border-4 border-yellow-500 rounded-2xl p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto"
                      style="z-index: 10000 !important;">
