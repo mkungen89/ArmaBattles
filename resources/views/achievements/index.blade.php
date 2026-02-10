@@ -163,12 +163,16 @@
         @if(auth()->user()->player_uuid)
             <div x-show="showcaseOpen"
                  x-init="console.log('Modal div initialized, showcaseOpen:', showcaseOpen)"
+                 x-effect="console.log('Modal visibility changed, showcaseOpen:', showcaseOpen, 'display:', $el.style.display)"
                  @click.self="showcaseOpen = false"
                  @keydown.escape.window="showcaseOpen = false"
-                 class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+                 class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4"
+                 style="z-index: 9999 !important;">
                 <div x-data="{ pinnedIds: @js(optional(\App\Models\AchievementShowcase::where('player_uuid', auth()->user()->player_uuid)->first())->pinned_achievements ?? []) }"
+                     x-init="console.log('Inner modal card rendered!')"
                      @click.stop
-                     class="bg-gray-900 border border-white/5 rounded-2xl p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+                     class="bg-red-900 border-4 border-yellow-500 rounded-2xl p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto"
+                     style="z-index: 10000 !important;">
                     <div class="flex items-center justify-between mb-4">
                         <h2 class="text-2xl font-bold text-white">Achievement Showcase</h2>
                         <button type="button" @click="showcaseOpen = false" class="text-gray-400 hover:text-white transition">
