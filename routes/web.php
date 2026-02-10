@@ -29,6 +29,12 @@ use App\Http\Controllers\Admin\AdminReportController;
 use App\Http\Controllers\Admin\TeamAdminController;
 use App\Http\Controllers\Admin\ServerManagerController;
 use App\Http\Controllers\Admin\MetricsController;
+use App\Http\Controllers\Admin\ContentCreatorAdminController;
+use App\Http\Controllers\Admin\HighlightClipAdminController;
+use App\Http\Controllers\Admin\AchievementAdminController;
+use App\Http\Controllers\Admin\ReputationAdminController;
+use App\Http\Controllers\Admin\ScrimAdminController;
+use App\Http\Controllers\Admin\DiscordAdminController;
 use App\Http\Controllers\Admin\NewsAdminController;
 use App\Http\Controllers\NewsController;
 use Illuminate\Support\Facades\Route;
@@ -440,6 +446,54 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
         Route::get('/', [AdminReportController::class, 'index'])->name('admin.reports.index');
         Route::get('/{report}', [AdminReportController::class, 'show'])->name('admin.reports.show');
         Route::put('/{report}', [AdminReportController::class, 'update'])->name('admin.reports.update');
+    });
+
+    // Content Creators Admin
+    Route::prefix('creators')->group(function () {
+        Route::get('/', [ContentCreatorAdminController::class, 'index'])->name('admin.creators.index');
+        Route::post('/{creator}/verify', [ContentCreatorAdminController::class, 'verify'])->name('admin.creators.verify');
+        Route::post('/{creator}/unverify', [ContentCreatorAdminController::class, 'unverify'])->name('admin.creators.unverify');
+        Route::delete('/{creator}', [ContentCreatorAdminController::class, 'destroy'])->name('admin.creators.destroy');
+    });
+
+    // Highlight Clips Admin
+    Route::prefix('clips')->group(function () {
+        Route::get('/', [HighlightClipAdminController::class, 'index'])->name('admin.clips.index');
+        Route::post('/{clip}/feature', [HighlightClipAdminController::class, 'feature'])->name('admin.clips.feature');
+        Route::post('/{clip}/unfeature', [HighlightClipAdminController::class, 'unfeature'])->name('admin.clips.unfeature');
+        Route::delete('/{clip}', [HighlightClipAdminController::class, 'destroy'])->name('admin.clips.destroy');
+    });
+
+    // Achievements Admin
+    Route::prefix('achievements')->group(function () {
+        Route::get('/', [AchievementAdminController::class, 'index'])->name('admin.achievements.index');
+        Route::get('/create', [AchievementAdminController::class, 'create'])->name('admin.achievements.create');
+        Route::post('/', [AchievementAdminController::class, 'store'])->name('admin.achievements.store');
+        Route::get('/{achievement}/edit', [AchievementAdminController::class, 'edit'])->name('admin.achievements.edit');
+        Route::put('/{achievement}', [AchievementAdminController::class, 'update'])->name('admin.achievements.update');
+        Route::delete('/{achievement}', [AchievementAdminController::class, 'destroy'])->name('admin.achievements.destroy');
+        Route::delete('/{achievement}/badge', [AchievementAdminController::class, 'deleteBadge'])->name('admin.achievements.delete-badge');
+    });
+
+    // Reputation Admin
+    Route::prefix('reputation')->group(function () {
+        Route::get('/', [ReputationAdminController::class, 'index'])->name('admin.reputation.index');
+        Route::post('/{reputation}/reset', [ReputationAdminController::class, 'resetReputation'])->name('admin.reputation.reset');
+        Route::delete('/{reputation}', [ReputationAdminController::class, 'destroy'])->name('admin.reputation.destroy');
+    });
+
+    // Scrims Admin
+    Route::prefix('scrims')->group(function () {
+        Route::get('/', [ScrimAdminController::class, 'index'])->name('admin.scrims.index');
+        Route::post('/{scrim}/cancel', [ScrimAdminController::class, 'cancel'])->name('admin.scrims.cancel');
+        Route::delete('/{scrim}', [ScrimAdminController::class, 'destroy'])->name('admin.scrims.destroy');
+    });
+
+    // Discord RPC Admin
+    Route::prefix('discord')->group(function () {
+        Route::get('/', [DiscordAdminController::class, 'index'])->name('admin.discord.index');
+        Route::post('/{presence}/disable', [DiscordAdminController::class, 'disable'])->name('admin.discord.disable');
+        Route::delete('/{presence}', [DiscordAdminController::class, 'destroy'])->name('admin.discord.destroy');
     });
 
     // Metrics & Tracking

@@ -82,6 +82,31 @@
                 News
             </a>
 
+            <a href="{{ route('admin.creators.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition {{ request()->routeIs('admin.creators*') ? 'bg-green-500/20 text-green-400' : 'text-gray-400 hover:bg-gray-700/50 hover:text-white' }}">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                </svg>
+                Creators
+                @php $unverifiedCreators = \App\Models\ContentCreator::where('is_verified', false)->count(); @endphp
+                @if($unverifiedCreators > 0)
+                <span class="ml-auto px-1.5 py-0.5 bg-yellow-500/20 text-yellow-400 rounded-full text-[10px] font-bold">{{ $unverifiedCreators }}</span>
+                @endif
+            </a>
+
+            <a href="{{ route('admin.clips.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition {{ request()->routeIs('admin.clips*') ? 'bg-green-500/20 text-green-400' : 'text-gray-400 hover:bg-gray-700/50 hover:text-white' }}">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z"/>
+                </svg>
+                Clips
+            </a>
+
+            <a href="{{ route('admin.achievements.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition {{ request()->routeIs('admin.achievements*') ? 'bg-green-500/20 text-green-400' : 'text-gray-400 hover:bg-gray-700/50 hover:text-white' }}">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
+                </svg>
+                Achievements
+            </a>
+
             <div class="border-t border-gray-700/50 my-3"></div>
 
             <a href="{{ route('admin.game-stats.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition {{ request()->routeIs('admin.game-stats*') ? 'bg-green-500/20 text-green-400' : 'text-gray-400 hover:bg-gray-700/50 hover:text-white' }}">
@@ -89,6 +114,20 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
                 </svg>
                 Game Stats
+            </a>
+
+            <a href="{{ route('gm.sessions') }}" class="flex items-center gap-3 px-3 py-2 pl-8 rounded-lg text-sm transition {{ request()->routeIs('gm.sessions') ? 'bg-green-500/20 text-green-400' : 'text-gray-400 hover:bg-gray-700/50 hover:text-white' }}">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                GM Sessions
+            </a>
+
+            <a href="{{ route('gm.editor-actions') }}" class="flex items-center gap-3 px-3 py-2 pl-8 rounded-lg text-sm transition {{ request()->routeIs('gm.editor-actions') ? 'bg-green-500/20 text-green-400' : 'text-gray-400 hover:bg-gray-700/50 hover:text-white' }}">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                </svg>
+                Editor Actions
             </a>
 
             <a href="{{ route('admin.anticheat.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition {{ request()->routeIs('admin.anticheat*') ? 'bg-green-500/20 text-green-400' : 'text-gray-400 hover:bg-gray-700/50 hover:text-white' }}">
@@ -123,6 +162,24 @@
                 @endif
             </a>
 
+            <a href="{{ route('admin.reputation.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition {{ request()->routeIs('admin.reputation*') ? 'bg-green-500/20 text-green-400' : 'text-gray-400 hover:bg-gray-700/50 hover:text-white' }}">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                </svg>
+                Reputation
+                @php $flaggedCount = \App\Models\PlayerReputation::where('total_score', '<', -50)->count(); @endphp
+                @if($flaggedCount > 0)
+                <span class="ml-auto px-1.5 py-0.5 bg-red-500/20 text-red-400 rounded-full text-[10px] font-bold">{{ $flaggedCount }}</span>
+                @endif
+            </a>
+
+            <a href="{{ route('admin.scrims.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition {{ request()->routeIs('admin.scrims*') ? 'bg-green-500/20 text-green-400' : 'text-gray-400 hover:bg-gray-700/50 hover:text-white' }}">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+                Scrims
+            </a>
+
             <div class="border-t border-gray-700/50 my-3"></div>
 
             <a href="{{ route("admin.rcon.index") }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition {{ request()->routeIs("admin.rcon*") ? "bg-green-500/20 text-green-400" : "text-gray-400 hover:bg-gray-700/50 hover:text-white" }}">
@@ -144,6 +201,13 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
                 </svg>
                 Metrics
+            </a>
+
+            <a href="{{ route('admin.discord.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition {{ request()->routeIs('admin.discord*') ? 'bg-green-500/20 text-green-400' : 'text-gray-400 hover:bg-gray-700/50 hover:text-white' }}">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"/>
+                </svg>
+                Discord RPC
             </a>
 
             <a href="{{ route('admin.audit-log') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition {{ request()->routeIs('admin.audit-log') ? 'bg-green-500/20 text-green-400' : 'text-gray-400 hover:bg-gray-700/50 hover:text-white' }}">
