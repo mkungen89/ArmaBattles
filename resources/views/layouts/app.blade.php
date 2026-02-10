@@ -23,7 +23,13 @@
     <title>{{ site_setting('site_name', config('app.name')) }} - @yield('title', 'Home')</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script src="https://unpkg.com/lucide@latest"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js" defer></script>
+    <script>
+        // Test if Alpine is loaded
+        document.addEventListener('alpine:init', () => {
+            console.log('Alpine.js initialized successfully!');
+        });
+    </script>
     <script>
         // Simple sidebar toggle without Alpine store
         function setSidebarOpen(isOpen, options = {}) {
