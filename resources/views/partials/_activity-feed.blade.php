@@ -1,4 +1,4 @@
-<div class="activity-feed-wrapper glass rounded-xl p-5" x-data="activityFeed()" x-init="fetchEvents()">
+<div class="activity-feed-wrapper h-full" x-data="activityFeed()" x-init="fetchEvents()">
     {{-- Header --}}
     <div class="flex items-center gap-3 mb-5 flex-shrink-0">
         <div class="flex items-center gap-2.5">
@@ -13,9 +13,9 @@
     </div>
 
     {{-- Event list --}}
-    <div class="activity-feed-scroll space-y-1 max-h-96 overflow-y-auto">
+    <div class="activity-feed-scroll divide-y divide-white/5 max-h-96 overflow-y-auto">
         <template x-for="event in events" :key="event.occurred_at + event.actor + event.type">
-            <div class="group relative flex items-start gap-3 py-2.5 px-3 rounded-lg hover:bg-white/[0.03] transition-all duration-200">
+            <div class="group relative flex items-start gap-3 py-2.5 px-3 hover:bg-white/[0.03] transition-all duration-200">
                 {{-- Left accent + icon --}}
                 <div class="flex flex-col items-center flex-shrink-0 pt-0.5">
                     {{-- Kill icon --}}

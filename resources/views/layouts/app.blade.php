@@ -30,6 +30,7 @@
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('sidebar-overlay');
             const hamburger = document.getElementById('hamburger-icon');
+            const spacer = document.getElementById('left-sidebar-spacer');
             const isDesktop = window.innerWidth >= 1024;
             const silent = options.silent === true;
 
@@ -38,6 +39,16 @@
             sidebar.dataset.open = isOpen ? 'true' : 'false';
             sidebar.classList.remove('translate-x-0', '-translate-x-full');
             sidebar.classList.add(isOpen ? 'translate-x-0' : '-translate-x-full');
+
+            if (spacer) {
+                if (isOpen && isDesktop) {
+                    spacer.classList.remove('hidden');
+                    spacer.classList.add('block');
+                } else {
+                    spacer.classList.add('hidden');
+                    spacer.classList.remove('block');
+                }
+            }
 
             if (overlay) {
                 if (silent || isDesktop) {
@@ -56,6 +67,7 @@
                 }
                 hamburger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
             }
+
         }
 
         function toggleSidebar() {
@@ -100,6 +112,7 @@
             if (toggle) {
                 toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
             }
+
         }
 
         function toggleRightSidebar() {
@@ -121,6 +134,8 @@
             if (!sidebar) return;
             if (isDesktop) {
                 setSidebarOpen(true, { silent: true });
+            } else {
+                setSidebarOpen(false, { silent: true });
             }
 
             const rightSidebar = document.getElementById('right-sidebar');
@@ -132,6 +147,7 @@
             } else {
                 setRightSidebarOpen(false, { silent: true });
             }
+
         });
     </script>
     @if(site_setting('analytics_code'))
@@ -254,7 +270,7 @@
     </aside>
 
     {{-- Right Sidebar: Live Activity Feed (desktop only, fixed like left sidebar) --}}
-    <aside id="right-sidebar" class="fixed top-16 right-0 w-96 h-[calc(100vh-4rem)] flex-shrink-0 z-40 transition-transform duration-300 translate-x-full hidden glass-dark border-l border-white/5 p-4">
+    <aside id="right-sidebar" class="fixed top-16 right-0 w-80 h-[calc(100vh-4rem)] flex-shrink-0 z-40 transition-transform duration-300 translate-x-full hidden glass-dark border-l border-white/5 p-4">
         @include('partials._activity-feed')
     </aside>
     @endauth
@@ -684,13 +700,11 @@
     {{-- Content row: sidebar spacer + main --}}
     <div class="flex flex-1">
     @auth
-    <div class="hidden lg:block w-64 flex-shrink-0"></div>
+    <div id="left-sidebar-spacer" class="hidden w-64 flex-shrink-0"></div>
     @endauth
 
     <main class="flex-1 min-w-0 overflow-x-hidden relative py-6 px-4 sm:px-6 lg:px-8">
-        @guest
-        <div class="max-w-6xl mx-auto">
-        @endguest
+        <div id="main-inner" class="max-w-6xl mx-auto w-full">
         @if(session('success'))
             <div class="mb-4 p-4 bg-green-600 rounded-md">
                 {{ session('success') }}
@@ -704,40 +718,46 @@
         @endif
 
         @yield('content')
-        @guest
         </div>
-        @endguest
     </main>
 
     @auth
-    <div id="right-sidebar-spacer" class="hidden w-96 flex-shrink-0"></div>
+    <div id="right-sidebar-spacer" class="hidden w-80 flex-shrink-0"></div>
     @endauth
     </div>
 
     {{-- Footer: full width, outside sidebar+content wrapper --}}
-    <footer class="relative glass border-t border-white/5 mt-auto">
-        <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-green-500/20 to-transparent"></div>
-        <div class="py-6 px-4 sm:px-6 lg:px-8">
-            <div class="flex flex-wrap items-center justify-center gap-4 mb-3 text-sm">
-                <a href="{{ route('faq') }}" class="text-gray-400 hover:text-green-400 transition">FAQ</a>
-                <a href="{{ route('rules') }}" class="text-gray-400 hover:text-green-400 transition">Rules</a>
-                <a href="{{ route('privacy') }}" class="text-gray-400 hover:text-green-400 transition">Privacy Policy</a>
-                <a href="{{ route('terms') }}" class="text-gray-400 hover:text-green-400 transition">Terms of Service</a>
+    <footer class="relative glass-dark border-t border-white/10 mt-auto">
+        <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-green-500/30 to-transparent"></div>
+        <div class="py-8 px-4 sm:px-6 lg:px-8">
+            <div class="max-w-6xl mx-auto w-full">
+                <div class="flex flex-wrap items-center justify-center gap-5 text-sm text-gray-400">
+                    <a href="{{ route('faq') }}" class="hover:text-green-400 transition">FAQ</a>
+                    <span class="text-gray-700">•</span>
+                    <a href="{{ route('rules') }}" class="hover:text-green-400 transition">Rules</a>
+                    <span class="text-gray-700">•</span>
+                    <a href="{{ route('privacy') }}" class="hover:text-green-400 transition">Privacy Policy</a>
+                    <span class="text-gray-700">•</span>
+                    <a href="{{ route('terms') }}" class="hover:text-green-400 transition">Terms of Service</a>
+                </div>
+
+                <div class="glow-line my-4"></div>
+
+                @if(site_setting('custom_footer_text'))
+                <p class="text-center text-gray-300 text-sm mb-2">
+                    {{ site_setting('custom_footer_text') }}
+                </p>
+                @endif
+                <p class="text-center text-gray-500 text-xs mb-3">
+                    Built with ❤️ for <a href="https://reforger.armaplatform.com" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-white transition">Arma Reforger</a> and <a href="https://www.bohemia.net" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-white transition">Bohemia Interactive</a> for creating amazing games.
+                </p>
+                <p class="text-center text-gray-400 text-sm mb-1">
+                    &copy; {{ date('Y') }} {{ site_setting('site_name', config('app.name')) }}. All rights reserved.
+                </p>
+                <p class="text-center text-gray-600 text-xs">
+                    Not affiliated with Bohemia Interactive.
+                </p>
             </div>
-            @if(site_setting('custom_footer_text'))
-            <p class="text-center text-gray-400 text-sm mb-2">
-                {{ site_setting('custom_footer_text') }}
-            </p>
-            @endif
-            <p class="text-center text-gray-500 text-xs mb-3">
-                Built with ❤️ for <a href="https://reforger.armaplatform.com" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-white transition">Arma Reforger</a> and <a href="https://www.bohemia.net" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-white transition">Bohemia Interactive</a> for creating amazing games.
-            </p>
-            <p class="text-center text-gray-400 text-sm mb-1">
-                &copy; {{ date('Y') }} {{ site_setting('site_name', config('app.name')) }}. All rights reserved.
-            </p>
-            <p class="text-center text-gray-600 text-xs">
-                Not affiliated with Bohemia Interactive.
-            </p>
         </div>
     </footer>
     </div>

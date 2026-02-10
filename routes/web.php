@@ -626,3 +626,4 @@ Route::prefix('admin/server')->middleware(['auth', 'admin'])->group(function () 
     Route::get('/api/performance-data', [ServerManagerController::class, 'apiPerformanceData'])->name('admin.server.api.performance-data');
     Route::get('/api/compare-data', [ServerManagerController::class, 'apiServerCompareData'])->name('admin.server.api.compare-data');
 });
+Route::get('/test-modal', function() { return view('test-modal'); });
