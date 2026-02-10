@@ -4,7 +4,7 @@
     <div class="py-12" x-data="{
         showcaseOpen: false,
         pinnedIds: @js(auth()->check() && auth()->user()->player_uuid ? (optional(\App\Models\AchievementShowcase::where('player_uuid', auth()->user()->player_uuid)->first())->pinned_achievements ?? []) : [])
-    }" x-init="console.log('Alpine initialized, showcaseOpen:', showcaseOpen, 'pinnedIds:', pinnedIds)">
+    }">
 
             {{-- Header --}}
             <div class="bg-gradient-to-r from-green-600/10 to-emerald-600/10 border border-green-500/20 rounded-2xl p-6 mb-6">
@@ -22,7 +22,7 @@
                                     <p class="text-xs text-gray-500">{{ $achievements->count() > 0 ? round(($earnedAchievements->count() / $achievements->count()) * 100, 1) : 0 }}% Complete</p>
                                 </div>
                                 <button type="button"
-                                        @click="console.log('Button clicked'); showcaseOpen = true; console.log('showcaseOpen set to:', showcaseOpen)"
+                                        @click="showcaseOpen = true"
                                         class="px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-xl transition flex items-center gap-2">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
@@ -165,16 +165,12 @@
     @auth
         @if(auth()->user()->player_uuid)
             <div x-show="showcaseOpen"
-                 x-init="console.log('Modal div initialized, showcaseOpen:', showcaseOpen)"
-                 x-effect="console.log('Modal visibility changed, showcaseOpen:', showcaseOpen, 'display:', $el.style.display)"
                  @click.self="showcaseOpen = false"
                  @keydown.escape.window="showcaseOpen = false"
-                 class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4"
-                 style="z-index: 9999 !important;">
-                <div x-init="console.log('Inner modal card rendered!')"
-                     @click.stop
-                     class="bg-red-900 border-4 border-yellow-500 rounded-2xl p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto"
-                     style="z-index: 10000 !important;">
+                 class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+                 style="position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important;">
+                <div @click.stop
+                     class="bg-gray-900 border border-white/5 rounded-2xl p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto relative">
                     <div class="flex items-center justify-between mb-4">
                         <h2 class="text-2xl font-bold text-white">Achievement Showcase</h2>
                         <button type="button" @click="showcaseOpen = false" class="text-gray-400 hover:text-white transition">
