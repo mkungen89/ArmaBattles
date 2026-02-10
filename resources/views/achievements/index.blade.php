@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('title', 'Achievements')
 @section('content')
-    <div class="py-12">
+    <div class="py-12" x-data="{ showcaseOpen: false }">
 
             {{-- Header --}}
             <div class="bg-gradient-to-r from-green-600/10 to-emerald-600/10 border border-green-500/20 rounded-2xl p-6 mb-6">
@@ -18,7 +18,8 @@
                                     <p class="text-2xl font-bold text-white">{{ $earnedAchievements->count() }} / {{ $achievements->count() }}</p>
                                     <p class="text-xs text-gray-500">{{ $achievements->count() > 0 ? round(($earnedAchievements->count() / $achievements->count()) * 100, 1) : 0 }}% Complete</p>
                                 </div>
-                                <button onclick="document.getElementById('showcaseModal').classList.remove('hidden')"
+                                <button type="button"
+                                        @click="showcaseOpen = true"
                                         class="px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-xl transition flex items-center gap-2">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
@@ -160,13 +161,17 @@
     {{-- Showcase Management Modal (if logged in with player_uuid) --}}
     @auth
         @if(auth()->user()->player_uuid)
-            <div id="showcaseModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50"
-                 onclick="if(event.target===this)this.classList.add('hidden')">
+            <div x-show="showcaseOpen"
+                 x-cloak
+                 @click.self="showcaseOpen = false"
+                 @keydown.escape.window="showcaseOpen = false"
+                 class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+                 style="display: none;">
                 <div x-data="{ pinnedIds: @js(optional(\App\Models\AchievementShowcase::where('player_uuid', auth()->user()->player_uuid)->first())->pinned_achievements ?? []) }"
                      class="bg-gray-900 border border-white/5 rounded-2xl p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto">
                     <div class="flex items-center justify-between mb-4">
                         <h2 class="text-2xl font-bold text-white">Achievement Showcase</h2>
-                        <button onclick="document.getElementById('showcaseModal').classList.add('hidden')" class="text-gray-400 hover:text-white transition">
+                        <button type="button" @click="showcaseOpen = false" class="text-gray-400 hover:text-white transition">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                             </svg>
@@ -238,6 +243,7 @@
                 lucide.createIcons();
             }
         });
+
         // Re-initialize icons when Alpine components update
         document.addEventListener('alpine:initialized', () => {
             if (typeof lucide !== 'undefined') {
