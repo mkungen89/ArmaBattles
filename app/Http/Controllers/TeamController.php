@@ -123,9 +123,10 @@ class TeamController extends Controller
         $user = Auth::user();
         $team = $user->activeTeam;
 
-        if (!$team) {
+        if (! $team) {
             $pendingInvitations = $user->pendingInvitations()->with('team')->get();
             $pendingApplications = $user->pendingApplications()->with('team')->get();
+
             return view('teams.no-team', compact('pendingInvitations', 'pendingApplications'));
         }
 
@@ -150,7 +151,7 @@ class TeamController extends Controller
     {
         $user = Auth::user();
 
-        if (!$team->isUserCaptainOrOfficer($user)) {
+        if (! $team->isUserCaptainOrOfficer($user)) {
             abort(403, 'Only platoon leaders can edit the platoon.');
         }
 
@@ -161,13 +162,13 @@ class TeamController extends Controller
     {
         $user = Auth::user();
 
-        if (!$team->isUserCaptainOrOfficer($user)) {
+        if (! $team->isUserCaptainOrOfficer($user)) {
             abort(403, 'Only platoon leaders can edit the platoon.');
         }
 
         $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:teams,name,' . $team->id,
-            'tag' => 'required|string|max:10|unique:teams,tag,' . $team->id . '|alpha_num',
+            'name' => 'required|string|max:255|unique:teams,name,'.$team->id,
+            'tag' => 'required|string|max:10|unique:teams,tag,'.$team->id.'|alpha_num',
             'description' => 'nullable|string|max:1000',
             'logo_url' => 'nullable|url',
             'website' => 'nullable|url|max:255',
@@ -209,7 +210,7 @@ class TeamController extends Controller
     {
         $user = Auth::user();
 
-        if (!$team->isUserCaptainOrOfficer($user)) {
+        if (! $team->isUserCaptainOrOfficer($user)) {
             abort(403, 'Only platoon leaders can invite members.');
         }
 
@@ -247,14 +248,14 @@ class TeamController extends Controller
         // Send notification
         $invitee->notify(new TeamInvitationNotification($team, $user));
 
-        return back()->with('success', 'Invitation sent to ' . $invitee->name . '!');
+        return back()->with('success', 'Invitation sent to '.$invitee->name.'!');
     }
 
     public function acceptInvitation(TeamInvitation $invitation)
     {
         $user = Auth::user();
 
-        if ($invitation->user_id !== $user->id || !$invitation->isValid()) {
+        if ($invitation->user_id !== $user->id || ! $invitation->isValid()) {
             abort(403);
         }
 
@@ -271,7 +272,7 @@ class TeamController extends Controller
         $invitation->update(['status' => 'accepted']);
 
         return redirect()->route('teams.my')
-            ->with('success', 'You have joined ' . $invitation->team->name . '!');
+            ->with('success', 'You have joined '.$invitation->team->name.'!');
     }
 
     public function declineInvitation(TeamInvitation $invitation)
@@ -291,7 +292,7 @@ class TeamController extends Controller
     {
         $user = Auth::user();
 
-        if (!$team->isUserCaptainOrOfficer($user) || $invitation->team_id !== $team->id) {
+        if (! $team->isUserCaptainOrOfficer($user) || $invitation->team_id !== $team->id) {
             abort(403);
         }
 
@@ -304,7 +305,7 @@ class TeamController extends Controller
     {
         $user = Auth::user();
 
-        if (!$team->isUserMember($user)) {
+        if (! $team->isUserMember($user)) {
             abort(403);
         }
 
@@ -325,11 +326,11 @@ class TeamController extends Controller
     {
         $user = Auth::user();
 
-        if (!$team->isUserCaptainOrOfficer($user)) {
+        if (! $team->isUserCaptainOrOfficer($user)) {
             abort(403, 'Only platoon leaders can kick members.');
         }
 
-        if (!$team->isUserMember($member)) {
+        if (! $team->isUserMember($member)) {
             abort(403, 'User is not a member of this platoon.');
         }
 
@@ -346,7 +347,7 @@ class TeamController extends Controller
             'left_at' => now(),
         ]);
 
-        return back()->with('success', $member->name . ' has been kicked from the platoon.');
+        return back()->with('success', $member->name.' has been kicked from the platoon.');
     }
 
     public function promoteMember(Team $team, User $member)
@@ -357,7 +358,7 @@ class TeamController extends Controller
             abort(403, 'Only the platoon captain can promote members.');
         }
 
-        if (!$team->isUserMember($member)) {
+        if (! $team->isUserMember($member)) {
             abort(403, 'User is not a member of this platoon.');
         }
 
@@ -365,7 +366,8 @@ class TeamController extends Controller
 
         if ($currentRole === 'member') {
             $team->members()->updateExistingPivot($member->id, ['role' => 'officer']);
-            return back()->with('success', $member->name . ' is now an Officer.');
+
+            return back()->with('success', $member->name.' is now an Officer.');
         }
 
         return back()->with('error', 'Cannot promote this member.');
@@ -379,7 +381,7 @@ class TeamController extends Controller
             abort(403, 'Only the platoon captain can demote members.');
         }
 
-        if (!$team->isUserMember($member)) {
+        if (! $team->isUserMember($member)) {
             abort(403, 'User is not a member of this platoon.');
         }
 
@@ -387,7 +389,8 @@ class TeamController extends Controller
 
         if ($currentRole === 'officer') {
             $team->members()->updateExistingPivot($member->id, ['role' => 'member']);
-            return back()->with('success', $member->name . ' is now a regular member.');
+
+            return back()->with('success', $member->name.' is now a regular member.');
         }
 
         return back()->with('error', 'Cannot demote this member.');
@@ -407,7 +410,7 @@ class TeamController extends Controller
 
         $newCaptain = User::find($validated['new_captain_id']);
 
-        if (!$team->isUserMember($newCaptain)) {
+        if (! $team->isUserMember($newCaptain)) {
             return back()->with('error', 'The user must be a member of the platoon.');
         }
 
@@ -418,14 +421,14 @@ class TeamController extends Controller
         $team->members()->updateExistingPivot($user->id, ['role' => 'officer']);
         $team->members()->updateExistingPivot($newCaptain->id, ['role' => 'captain']);
 
-        return back()->with('success', $newCaptain->name . ' is now the platoon captain.');
+        return back()->with('success', $newCaptain->name.' is now the platoon captain.');
     }
 
     public function registerForTournament(Request $request, Team $team)
     {
         $user = Auth::user();
 
-        if (!$team->isUserCaptainOrOfficer($user)) {
+        if (! $team->isUserCaptainOrOfficer($user)) {
             abort(403, 'Only platoon leaders can register the platoon for tournaments.');
         }
 
@@ -435,7 +438,7 @@ class TeamController extends Controller
 
         $tournament = Tournament::findOrFail($validated['tournament_id']);
 
-        if (!$tournament->canTeamRegister($team)) {
+        if (! $tournament->canTeamRegister($team)) {
             return back()->with('error', 'Cannot register the platoon for this tournament.');
         }
 
@@ -454,7 +457,7 @@ class TeamController extends Controller
     {
         $user = Auth::user();
 
-        if (!$team->isUserCaptainOrOfficer($user)) {
+        if (! $team->isUserCaptainOrOfficer($user)) {
             abort(403);
         }
 
@@ -463,7 +466,7 @@ class TeamController extends Controller
             ->whereIn('status', ['pending', 'approved'])
             ->first();
 
-        if (!$registration) {
+        if (! $registration) {
             return back()->with('error', 'No active registration found.');
         }
 
@@ -480,7 +483,7 @@ class TeamController extends Controller
     {
         $user = Auth::user();
 
-        if (!$team->isUserCaptainOrOfficer($user)) {
+        if (! $team->isUserCaptainOrOfficer($user)) {
             abort(403, 'Only platoon leaders can edit the platoon.');
         }
 
@@ -502,7 +505,7 @@ class TeamController extends Controller
         }
 
         $team->update([
-            'social_links' => !empty($socialLinks) ? $socialLinks : null,
+            'social_links' => ! empty($socialLinks) ? $socialLinks : null,
         ]);
 
         return back()->with('success', 'Social media links updated successfully!');
@@ -590,11 +593,11 @@ class TeamController extends Controller
     {
         $user = Auth::user();
 
-        if (!$team->is_active) {
+        if (! $team->is_active) {
             return back()->with('error', 'This platoon is no longer active.');
         }
 
-        if (!$team->is_recruiting) {
+        if (! $team->is_recruiting) {
             return back()->with('error', 'This platoon is not accepting applications.');
         }
 
@@ -636,7 +639,7 @@ class TeamController extends Controller
     {
         $user = Auth::user();
 
-        if (!$team->isUserCaptainOrOfficer($user)) {
+        if (! $team->isUserCaptainOrOfficer($user)) {
             abort(403, 'Only platoon leaders can manage applications.');
         }
 
@@ -644,7 +647,7 @@ class TeamController extends Controller
             abort(403);
         }
 
-        if (!$application->isPending()) {
+        if (! $application->isPending()) {
             return back()->with('error', 'This application has already been processed.');
         }
 
@@ -657,6 +660,7 @@ class TeamController extends Controller
                 'reviewed_at' => now(),
                 'rejection_reason' => 'User joined another platoon.',
             ]);
+
             return back()->with('error', 'This user has joined another platoon.');
         }
 
@@ -676,14 +680,14 @@ class TeamController extends Controller
         // Notify the applicant
         $applicant->notify(new ApplicationResultNotification($team, 'accepted'));
 
-        return back()->with('success', $applicant->name . ' has been accepted into the platoon!');
+        return back()->with('success', $applicant->name.' has been accepted into the platoon!');
     }
 
     public function rejectApplication(Request $request, Team $team, TeamApplication $application)
     {
         $user = Auth::user();
 
-        if (!$team->isUserCaptainOrOfficer($user)) {
+        if (! $team->isUserCaptainOrOfficer($user)) {
             abort(403, 'Only platoon leaders can manage applications.');
         }
 
@@ -691,7 +695,7 @@ class TeamController extends Controller
             abort(403);
         }
 
-        if (!$application->isPending()) {
+        if (! $application->isPending()) {
             return back()->with('error', 'This application has already been processed.');
         }
 
@@ -720,7 +724,7 @@ class TeamController extends Controller
             abort(403);
         }
 
-        if (!$application->isPending()) {
+        if (! $application->isPending()) {
             return back()->with('error', 'This application has already been processed.');
         }
 
@@ -733,7 +737,7 @@ class TeamController extends Controller
     {
         $user = Auth::user();
 
-        if (!$team->isUserCaptainOrOfficer($user)) {
+        if (! $team->isUserCaptainOrOfficer($user)) {
             abort(403, 'Only platoon leaders can change recruitment settings.');
         }
 
@@ -754,7 +758,7 @@ class TeamController extends Controller
     {
         $user = Auth::user();
 
-        if (!$team->isUserCaptainOrOfficer($user)) {
+        if (! $team->isUserCaptainOrOfficer($user)) {
             abort(403);
         }
 
@@ -765,9 +769,9 @@ class TeamController extends Controller
         }
 
         $players = User::where(function ($q) use ($query) {
-                $q->where('name', 'like', "%{$query}%")
-                  ->orWhere('steam_id', 'like', "%{$query}%");
-            })
+            $q->where('name', 'like', "%{$query}%")
+                ->orWhere('steam_id', 'like', "%{$query}%");
+        })
             ->whereDoesntHave('teams', fn ($q) => $q->wherePivot('status', 'active'))
             ->whereNotIn('id', $team->pendingInvitations()->pluck('user_id'))
             ->where('is_banned', false)

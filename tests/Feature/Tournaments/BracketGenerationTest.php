@@ -2,9 +2,8 @@
 
 namespace Tests\Feature\Tournaments;
 
-use App\Models\Tournament;
 use App\Models\Team;
-use App\Models\TournamentMatch;
+use App\Models\Tournament;
 use App\Models\User;
 use App\Services\TournamentBracketService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -15,6 +14,7 @@ class BracketGenerationTest extends TestCase
     use RefreshDatabase;
 
     protected TournamentBracketService $bracketService;
+
     protected User $admin;
 
     protected function setUp(): void

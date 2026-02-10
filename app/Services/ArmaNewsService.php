@@ -3,12 +3,12 @@
 namespace App\Services;
 
 use App\Models\NewsArticle;
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
-use Carbon\Carbon;
 
 class ArmaNewsService
 {
@@ -31,7 +31,7 @@ class ArmaNewsService
 
                 $html = $response->body();
 
-                if (!preg_match('/<script id="__NEXT_DATA__" type="application\/json">(.*?)<\/script>/s', $html, $matches)) {
+                if (! preg_match('/<script id="__NEXT_DATA__" type="application\/json">(.*?)<\/script>/s', $html, $matches)) {
                     return collect();
                 }
 
@@ -46,7 +46,7 @@ class ArmaNewsService
                         'date' => Carbon::parse($post['date'] ?? now()),
                         'excerpt' => $post['excerpt'] ?? '',
                         'image_url' => $post['coverImage']['src'] ?? null,
-                        'url' => 'https://reforger.armaplatform.com/news/' . ($post['slug'] ?? ''),
+                        'url' => 'https://reforger.armaplatform.com/news/'.($post['slug'] ?? ''),
                     ];
                 });
             } catch (\Exception $e) {
@@ -75,7 +75,7 @@ class ArmaNewsService
                     ['external_slug' => $article['slug']],
                     [
                         'title' => $article['title'],
-                        'slug' => 'arma-' . Str::slug($article['slug']),
+                        'slug' => 'arma-'.Str::slug($article['slug']),
                         'source' => 'armaplatform',
                         'content' => $fullContent ?: $article['excerpt'] ?: null,
                         'excerpt' => $article['excerpt'] ?: null,
@@ -89,7 +89,7 @@ class ArmaNewsService
                 );
             }
         } catch (\Exception $e) {
-            Log::warning('Failed to sync Arma Platform news: ' . $e->getMessage());
+            Log::warning('Failed to sync Arma Platform news: '.$e->getMessage());
         }
     }
 
@@ -113,7 +113,7 @@ class ArmaNewsService
 
                 $html = $response->body();
 
-                if (!preg_match('/<script id="__NEXT_DATA__" type="application\/json">(.*?)<\/script>/s', $html, $matches)) {
+                if (! preg_match('/<script id="__NEXT_DATA__" type="application\/json">(.*?)<\/script>/s', $html, $matches)) {
                     return null;
                 }
 
@@ -122,7 +122,8 @@ class ArmaNewsService
 
                 return $content ?: null;
             } catch (\Exception $e) {
-                Log::warning("Failed to fetch article content for {$slug}: " . $e->getMessage());
+                Log::warning("Failed to fetch article content for {$slug}: ".$e->getMessage());
+
                 return null;
             }
         });

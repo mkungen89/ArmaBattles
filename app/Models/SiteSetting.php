@@ -16,7 +16,7 @@ class SiteSetting extends Model
     {
         $settings = static::getAllCached();
 
-        if (!isset($settings[$key])) {
+        if (! isset($settings[$key])) {
             return $default;
         }
 

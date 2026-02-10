@@ -10,7 +10,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('player_distance', function (Blueprint $table) {
-            if (!Schema::hasColumn('player_distance', 'occurred_at')) {
+            if (! Schema::hasColumn('player_distance', 'occurred_at')) {
                 $table->timestamp('occurred_at')->nullable()->after('is_final_log');
             }
         });
@@ -18,7 +18,7 @@ return new class extends Migration
         // Copy data from event_time to occurred_at if event_time exists
         if (Schema::hasColumn('player_distance', 'event_time')) {
             DB::table('player_distance')->whereNull('occurred_at')->update([
-                'occurred_at' => DB::raw('event_time')
+                'occurred_at' => DB::raw('event_time'),
             ]);
         }
     }

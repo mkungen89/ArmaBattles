@@ -45,7 +45,7 @@ class ContentCreator extends Model
      */
     public function getPlatformColorAttribute(): string
     {
-        return match($this->platform) {
+        return match ($this->platform) {
             'twitch' => 'text-purple-400',
             'youtube' => 'text-red-400',
             'tiktok' => 'text-pink-400',
@@ -59,7 +59,7 @@ class ContentCreator extends Model
      */
     public function getPlatformNameAttribute(): string
     {
-        return match($this->platform) {
+        return match ($this->platform) {
             'twitch' => 'Twitch',
             'youtube' => 'YouTube',
             'tiktok' => 'TikTok',
@@ -73,15 +73,15 @@ class ContentCreator extends Model
      */
     public function getEmbedUrlAttribute(): ?string
     {
-        if (!$this->is_live) {
+        if (! $this->is_live) {
             return null;
         }
 
         // Extract channel identifier from URL
         $identifier = $this->getChannelIdentifier();
 
-        return match($this->platform) {
-            'twitch' => "https://player.twitch.tv/?channel={$identifier}&parent=" . parse_url(config('app.url'), PHP_URL_HOST),
+        return match ($this->platform) {
+            'twitch' => "https://player.twitch.tv/?channel={$identifier}&parent=".parse_url(config('app.url'), PHP_URL_HOST),
             'youtube' => $this->extractYouTubeEmbedUrl(),
             default => null,
         };

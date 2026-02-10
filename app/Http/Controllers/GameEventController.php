@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class GameEventController extends Controller
 {
@@ -75,7 +75,7 @@ class GameEventController extends Controller
         if ($validated['is_team_kill'] ?? false) {
             $this->incrementPlayerStat($validated['server_id'], $validated['killer_uuid'], $validated['killer_name'], 'team_kills');
         }
-        if ($validated['victim_type'] === 'PLAYER' && !empty($validated['victim_uuid'])) {
+        if ($validated['victim_type'] === 'PLAYER' && ! empty($validated['victim_uuid'])) {
             $this->incrementPlayerStat($validated['server_id'], $validated['victim_uuid'], $validated['victim_name'] ?? 'Unknown', 'deaths');
         }
 
@@ -212,7 +212,7 @@ class GameEventController extends Controller
                 'player_name' => $validated['player_name'] ?? 'Unknown',
                 'kills' => $validated['kills'] ?? 0,
                 'deaths' => $validated['deaths'] ?? 0,
-                'playtime_seconds' => (int)($validated['playtime'] ?? 0),
+                'playtime_seconds' => (int) ($validated['playtime'] ?? 0),
                 'last_seen_at' => now(),
                 'updated_at' => now(),
             ]
@@ -253,7 +253,7 @@ class GameEventController extends Controller
         ]);
 
         $this->incrementPlayerStat($validated['server_id'], $validated['healer_uuid'], $validated['healer_name'], 'heals_given');
-        if (!$isSelfHeal) {
+        if (! $isSelfHeal) {
             $this->incrementPlayerStat($validated['server_id'], $validated['patient_uuid'], $validated['patient_name'], 'heals_received');
         }
 
@@ -331,6 +331,7 @@ class GameEventController extends Controller
     {
         $result = $this->recordWeaponUsage($request, 'shot_fired');
         $this->incrementPlayerStat($request->input('server_id'), $request->input('player_uuid'), $request->input('player_name'), 'shots_fired', $request->input('count', 1));
+
         return $result;
     }
 
@@ -338,6 +339,7 @@ class GameEventController extends Controller
     {
         $result = $this->recordWeaponUsage($request, 'grenade_thrown');
         $this->incrementPlayerStat($request->input('server_id'), $request->input('player_uuid'), $request->input('player_name'), 'grenades_thrown');
+
         return $result;
     }
 
@@ -764,7 +766,7 @@ class GameEventController extends Controller
             'heals_given'
         );
 
-        if (!$isSelfHeal && !empty($validated['target_uuid'])) {
+        if (! $isSelfHeal && ! empty($validated['target_uuid'])) {
             $this->incrementPlayerStat(
                 $validated['server_id'],
                 $validated['target_uuid'],
@@ -805,7 +807,7 @@ class GameEventController extends Controller
         ]);
 
         // Update vehicle destroyed stats
-        if ($validated['event_type'] === 'VEHICLE_DESTROYED' && !empty($validated['player_uuid'])) {
+        if ($validated['event_type'] === 'VEHICLE_DESTROYED' && ! empty($validated['player_uuid'])) {
             $this->incrementPlayerStat(
                 $validated['server_id'],
                 $validated['player_uuid'],
@@ -859,6 +861,7 @@ class GameEventController extends Controller
     {
         // Handle Server Admin Tools webhooks
         Log::info('Legacy webhook received', $request->all());
+
         return response()->json(['success' => true, 'message' => 'Event received']);
     }
 
@@ -868,8 +871,9 @@ class GameEventController extends Controller
     {
         // Handle both seconds and milliseconds
         if ($timestamp > 9999999999) {
-            $timestamp = (int)($timestamp / 1000);
+            $timestamp = (int) ($timestamp / 1000);
         }
+
         return date('Y-m-d H:i:s', $timestamp);
     }
 
@@ -902,7 +906,9 @@ class GameEventController extends Controller
 
     private function incrementPlayerStat(int $serverId, ?string $uuid, ?string $name, string $field, int $amount = 1): void
     {
-        if (!$uuid) return;
+        if (! $uuid) {
+            return;
+        }
 
         // Ensure player exists
         $this->ensurePlayerStats($serverId, $uuid, $name ?? 'Unknown');

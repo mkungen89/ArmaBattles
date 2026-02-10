@@ -200,7 +200,7 @@ class GameStatsAdminController extends Controller
     {
         $player = DB::table('player_stats')->where('player_uuid', $uuid)->first();
 
-        if (!$player) {
+        if (! $player) {
             abort(404);
         }
 
@@ -323,7 +323,7 @@ class GameStatsAdminController extends Controller
             ]
         );
 
-        $tokenName = $validated['token_name'] ?? 'game-server-api-' . now()->timestamp;
+        $tokenName = $validated['token_name'] ?? 'game-server-api-'.now()->timestamp;
         $tokenType = $validated['token_type'] ?? 'standard';
 
         // Define abilities based on token type

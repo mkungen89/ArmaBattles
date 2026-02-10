@@ -17,6 +17,7 @@ class ExecuteScheduledRestart implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public int $tries = 1;
+
     public int $timeout = 600;
 
     public function __construct(
@@ -26,7 +27,7 @@ class ExecuteScheduledRestart implements ShouldQueue
     public function handle(): void
     {
         $server = $this->restart->server;
-        $manager = (new GameServerManager())->forServer($server);
+        $manager = (new GameServerManager)->forServer($server);
 
         $warningMinutes = $this->restart->warning_minutes;
         $warningMessage = $this->restart->warning_message ?? "Server restarting in {$warningMinutes} minute(s)!";
@@ -52,7 +53,7 @@ class ExecuteScheduledRestart implements ShouldQueue
                 SendDiscordNotification::dispatch(
                     'Server Restart',
                     "**{$server->name}** is restarting (scheduled).",
-                    0x3b82f6,
+                    0x3B82F6,
                 );
             }
 

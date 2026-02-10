@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Services\PlayerHistoryService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class PlayerSearchController extends Controller
 {
@@ -46,6 +45,7 @@ class PlayerSearchController extends Controller
 
         $items = collect($results)->map(function ($r) use ($linkedUsers) {
             $user = $linkedUsers[$r->player_uuid] ?? null;
+
             return [
                 'name' => $r->player_name,
                 'uuid' => $r->player_uuid,

@@ -2,15 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Server;
 use App\Models\Mod;
-use App\Models\ServerSession;
-use App\Models\ServerStatistic;
+use App\Models\Server;
 use App\Models\Weapon;
 use App\Services\BattleMetricsService;
 use App\Services\ReforgerWorkshopService;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class ServerDetailController extends Controller
@@ -27,7 +25,7 @@ class ServerDetailController extends Controller
     {
         $bmServer = $this->battleMetrics->getServerWithDetails($serverId);
 
-        if (!$bmServer) {
+        if (! $bmServer) {
             abort(404, 'Server not found');
         }
 
@@ -38,7 +36,7 @@ class ServerDetailController extends Controller
         foreach ($mods as $modData) {
             $mod = Mod::syncFromBattleMetrics($modData);
 
-            if (!$server->mods()->where('mod_id', $mod->id)->exists()) {
+            if (! $server->mods()->where('mod_id', $mod->id)->exists()) {
                 $server->mods()->attach($mod->id, [
                     'load_order' => $modData['load_order'] ?? 0,
                     'is_required' => true,
@@ -46,7 +44,7 @@ class ServerDetailController extends Controller
             }
 
             // Sync additional data from Reforger Workshop if missing
-            if ($mod->workshop_id && (!$mod->author || !$mod->version)) {
+            if ($mod->workshop_id && (! $mod->author || ! $mod->version)) {
                 $this->workshop->syncMod($mod->workshop_id);
             }
         }
@@ -123,13 +121,13 @@ class ServerDetailController extends Controller
     {
         $range = $request->get('range', '24h');
 
-        $hours = match($range) {
+        $hours = match ($range) {
             '6h' => 6,
             '72h' => 72,
             default => 24,
         };
 
-        $resolution = match($range) {
+        $resolution = match ($range) {
             '6h' => 30,
             '72h' => 120,
             default => 60,
@@ -187,6 +185,7 @@ class ServerDetailController extends Controller
 
         // Fallback to BattleMetrics estimation
         $sessions = $this->battleMetrics->getServerSessions($serverId, 10);
+
         return response()->json($sessions);
     }
 
@@ -214,8 +213,8 @@ class ServerDetailController extends Controller
         $serverName = $server['attributes']['name'] ?? 'server';
 
         $content = "# Mods for: {$serverName}\n";
-        $content .= "# Generated: " . now()->toDateTimeString() . "\n";
-        $content .= "# Total mods: " . count($mods) . "\n\n";
+        $content .= '# Generated: '.now()->toDateTimeString()."\n";
+        $content .= '# Total mods: '.count($mods)."\n\n";
 
         foreach ($mods as $mod) {
             $content .= $mod['name'];
@@ -228,7 +227,7 @@ class ServerDetailController extends Controller
             $content .= "\n\n";
         }
 
-        $filename = preg_replace('/[^a-z0-9]+/i', '_', $serverName) . '_mods.txt';
+        $filename = preg_replace('/[^a-z0-9]+/i', '_', $serverName).'_mods.txt';
 
         return response($content)
             ->header('Content-Type', 'text/plain')
@@ -242,7 +241,7 @@ class ServerDetailController extends Controller
     {
         $server = $this->battleMetrics->getServer($serverId);
 
-        if (!$server) {
+        if (! $server) {
             return response()->json(['error' => 'Server not found'], 404);
         }
 
@@ -267,7 +266,7 @@ class ServerDetailController extends Controller
     {
         $bmServer = $this->battleMetrics->getServer($serverId);
 
-        if (!$bmServer) {
+        if (! $bmServer) {
             abort(404, 'Server not found');
         }
 
@@ -295,12 +294,12 @@ class ServerDetailController extends Controller
     public function heatmapPlayers(string $serverId): JsonResponse
     {
         $user = auth()->user();
-        if (!$user || !($user->isAdmin() || $user->role === 'gm' || $user->role === 'moderator')) {
+        if (! $user || ! ($user->isAdmin() || $user->role === 'gm' || $user->role === 'moderator')) {
             return response()->json(['error' => 'Forbidden'], 403);
         }
 
         $server = Server::where('battlemetrics_id', $serverId)->first();
-        if (!$server) {
+        if (! $server) {
             return response()->json(['error' => 'Server not found'], 404);
         }
 
@@ -386,7 +385,9 @@ class ServerDetailController extends Controller
         $result = [];
         foreach ($latest as $uuid => $row) {
             $pos = json_decode($row->position, true);
-            if (!$pos || count($pos) < 2) continue;
+            if (! $pos || count($pos) < 2) {
+                continue;
+            }
 
             $player = $playerMap[$uuid] ?? null;
             $result[] = [
@@ -408,7 +409,7 @@ class ServerDetailController extends Controller
     {
         $server = $this->battleMetrics->getServer($serverId);
 
-        if (!$server) {
+        if (! $server) {
             return response()->json(['error' => 'Server not found'], 404);
         }
 

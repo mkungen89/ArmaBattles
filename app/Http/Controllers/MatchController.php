@@ -13,11 +13,11 @@ class MatchController extends Controller
         $user = Auth::user();
         $team = $user->activeTeam;
 
-        if (!$team) {
+        if (! $team) {
             return back()->with('error', 'You must be in a platoon to check in.');
         }
 
-        if (!$team->isUserCaptainOrOfficer($user)) {
+        if (! $team->isUserCaptainOrOfficer($user)) {
             return back()->with('error', 'Only platoon leaders can check in for matches.');
         }
 
@@ -25,7 +25,7 @@ class MatchController extends Controller
             return back()->with('error', 'Your platoon is not participating in this match.');
         }
 
-        if (!$match->canCheckIn()) {
+        if (! $match->canCheckIn()) {
             return back()->with('error', 'Check-in is not currently open for this match.');
         }
 
@@ -43,7 +43,7 @@ class MatchController extends Controller
         $user = Auth::user();
         $team = $user->activeTeam;
 
-        if (!$team || !$team->isUserCaptainOrOfficer($user)) {
+        if (! $team || ! $team->isUserCaptainOrOfficer($user)) {
             return back()->with('error', 'Only platoon leaders can propose match schedules.');
         }
 

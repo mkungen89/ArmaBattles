@@ -53,6 +53,7 @@ class Player extends Model
         if ($this->deaths === 0) {
             return (float) $this->kills;
         }
+
         return round($this->kills / $this->deaths, 2);
     }
 
@@ -60,6 +61,7 @@ class Player extends Model
     {
         $hours = floor($this->total_playtime / 3600);
         $minutes = floor(($this->total_playtime % 3600) / 60);
+
         return "{$hours}h {$minutes}m";
     }
 }

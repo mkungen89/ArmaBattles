@@ -3,28 +3,28 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Kill;
-use App\Models\DamageEvent;
-use App\Models\Connection;
 use App\Models\BaseEvent;
 use App\Models\BuildingEvent;
-use App\Models\ConsciousnessEvent;
-use App\Models\GroupEvent;
-use App\Models\XpEvent;
 use App\Models\ChatEvent;
+use App\Models\Connection;
+use App\Models\ConsciousnessEvent;
+use App\Models\DamageEvent;
 use App\Models\EditorAction;
+use App\Models\GameEvent;
 use App\Models\GmSession;
+use App\Models\GroupEvent;
+use App\Models\Kill;
+use App\Models\KillLog;
+use App\Models\Player;
 use App\Models\PlayerDistance;
 use App\Models\PlayerGrenade;
-use App\Models\PlayerShooting;
 use App\Models\PlayerHealing;
+use App\Models\PlayerSession;
+use App\Models\PlayerShooting;
 use App\Models\PlayerStat;
 use App\Models\ServerStatus;
 use App\Models\SupplyDelivery;
-use App\Models\GameEvent;
-use App\Models\KillLog;
-use App\Models\Player;
-use App\Models\PlayerSession;
+use App\Models\XpEvent;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -579,7 +579,7 @@ class GameEventController extends Controller
         $serverId = $data['server_id'] ?? 1;
 
         // Update killer stats
-        if (!empty($data['killer_uuid'])) {
+        if (! empty($data['killer_uuid'])) {
             $killerStat = $this->getOrCreatePlayerStat(
                 $data['killer_uuid'],
                 $data['killer_name'] ?? 'Unknown',
@@ -588,7 +588,7 @@ class GameEventController extends Controller
             $killerStat->increment('kills');
 
             // Track team kills
-            if (!empty($data['is_team_kill']) && $data['is_team_kill']) {
+            if (! empty($data['is_team_kill']) && $data['is_team_kill']) {
                 $killerStat->increment('team_kills');
             }
 
@@ -599,7 +599,7 @@ class GameEventController extends Controller
         }
 
         // Update victim stats (deaths)
-        if (!empty($data['victim_uuid']) && empty($data['victim_is_ai'])) {
+        if (! empty($data['victim_uuid']) && empty($data['victim_is_ai'])) {
             $victimStat = $this->getOrCreatePlayerStat(
                 $data['victim_uuid'],
                 $data['victim_name'] ?? 'Unknown',
@@ -619,7 +619,7 @@ class GameEventController extends Controller
     private function updateHitZoneStats(array $events): void
     {
         foreach ($events as $event) {
-            if (!empty($event['killer_uuid']) && !empty($event['hit_zone_name'])) {
+            if (! empty($event['killer_uuid']) && ! empty($event['hit_zone_name'])) {
                 $serverId = $event['server_id'] ?? 1;
                 $hitZone = strtoupper($event['hit_zone_name']);
                 $damageAmount = $event['damage_amount'] ?? 0;
@@ -666,7 +666,7 @@ class GameEventController extends Controller
      */
     private function updatePlayerOnlineStatus(array $data): void
     {
-        if (!empty($data['player_uuid'])) {
+        if (! empty($data['player_uuid'])) {
             $serverId = $data['server_id'] ?? 1;
             $isConnect = $data['event_type'] === 'CONNECT';
 
@@ -699,7 +699,7 @@ class GameEventController extends Controller
      */
     private function updatePlayerXp(array $data): void
     {
-        if (!empty($data['player_uuid'])) {
+        if (! empty($data['player_uuid'])) {
             Player::where('uuid', $data['player_uuid'])
                 ->increment('xp', $data['xp_amount']);
         }
@@ -710,7 +710,7 @@ class GameEventController extends Controller
      */
     private function updatePlayerDistanceTotals(array $data): void
     {
-        if (!empty($data['player_uuid'])) {
+        if (! empty($data['player_uuid'])) {
             $serverId = $data['server_id'] ?? 1;
             $walkingDistance = $data['walking_distance'] ?? 0;
             $vehicleDistance = $data['total_vehicle_distance'] ?? 0;
@@ -740,7 +740,7 @@ class GameEventController extends Controller
      */
     private function updatePlayerShotCount(array $data): void
     {
-        if (!empty($data['player_uuid'])) {
+        if (! empty($data['player_uuid'])) {
             $serverId = $data['server_id'] ?? 1;
 
             $stat = $this->getOrCreatePlayerStat(
@@ -758,7 +758,7 @@ class GameEventController extends Controller
      */
     private function updatePlayerGrenadeStats(array $data): void
     {
-        if (!empty($data['player_uuid'])) {
+        if (! empty($data['player_uuid'])) {
             $serverId = $data['server_id'] ?? 1;
 
             $stat = $this->getOrCreatePlayerStat(
@@ -779,7 +779,7 @@ class GameEventController extends Controller
         $serverId = $data['server_id'] ?? 1;
 
         // Update healer stats
-        if (!empty($data['healer_uuid'])) {
+        if (! empty($data['healer_uuid'])) {
             $healerStat = $this->getOrCreatePlayerStat(
                 $data['healer_uuid'],
                 $data['healer_name'] ?? 'Unknown',
@@ -790,7 +790,7 @@ class GameEventController extends Controller
         }
 
         // Update patient stats (if not self-heal and not AI)
-        if (!empty($data['patient_uuid']) && empty($data['is_self']) && empty($data['patient_is_ai'])) {
+        if (! empty($data['patient_uuid']) && empty($data['is_self']) && empty($data['patient_is_ai'])) {
             $patientStat = $this->getOrCreatePlayerStat(
                 $data['patient_uuid'],
                 $data['patient_name'] ?? 'Unknown',
@@ -805,7 +805,7 @@ class GameEventController extends Controller
      */
     private function updatePlayerBaseCaptureStats(array $data): void
     {
-        if (!empty($data['player_uuid'])) {
+        if (! empty($data['player_uuid'])) {
             $serverId = $data['server_id'] ?? 1;
 
             $stat = $this->getOrCreatePlayerStat(
@@ -823,7 +823,7 @@ class GameEventController extends Controller
      */
     private function updatePlayerSupplyStats(array $data): void
     {
-        if (!empty($data['player_uuid'])) {
+        if (! empty($data['player_uuid'])) {
             $serverId = $data['server_id'] ?? 1;
             $amount = $data['estimated_amount'] ?? 1;
 
@@ -923,7 +923,7 @@ class GameEventController extends Controller
 
         $killerId = $data['instigator_identity'] ?? $data['instigatorIdentity'] ?? $data['killer_id'] ?? null;
         $victimId = $data['identity'] ?? $data['player_identity'] ?? $data['playerIdentity'] ?? $data['victim_id'] ?? null;
-        $victimIsAi = isset($data['player_is_ai']) ? (bool)$data['player_is_ai'] : false;
+        $victimIsAi = isset($data['player_is_ai']) ? (bool) $data['player_is_ai'] : false;
         $weapon = $data['weapon'] ?? $data['cause'] ?? null;
         $weaponPrefab = $data['weapon_prefab'] ?? $data['weaponPrefab'] ?? null;
         $distance = $data['distance'] ?? null;
@@ -943,14 +943,14 @@ class GameEventController extends Controller
             'event_timestamp' => $timestamp,
         ]);
 
-        if ($killerId && !$killerIsAi) {
+        if ($killerId && ! $killerIsAi) {
             Player::updateOrCreate(
                 ['uuid' => $killerId],
                 ['player_name' => $killerName ?? 'Unknown', 'last_seen' => $timestamp]
             )->increment('kills');
         }
 
-        if ($victimId && !$victimIsAi) {
+        if ($victimId && ! $victimIsAi) {
             Player::updateOrCreate(
                 ['uuid' => $victimId],
                 ['player_name' => $victimName, 'last_seen' => $timestamp]
@@ -1119,7 +1119,7 @@ class GameEventController extends Controller
     private function parseTimestampValue($ts): Carbon
     {
         if ($ts) {
-            if (is_numeric($ts) && strlen((string)$ts) > 10) {
+            if (is_numeric($ts) && strlen((string) $ts) > 10) {
                 return Carbon::createFromTimestampMs($ts);
             }
             if (is_numeric($ts)) {

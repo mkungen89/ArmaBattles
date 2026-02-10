@@ -9,10 +9,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            if (!Schema::hasColumn('users', 'discord_id')) {
+            if (! Schema::hasColumn('users', 'discord_id')) {
                 $table->string('discord_id')->nullable()->after('player_uuid');
             }
-            if (!Schema::hasColumn('users', 'discord_username')) {
+            if (! Schema::hasColumn('users', 'discord_username')) {
                 $table->string('discord_username')->nullable()->after('discord_id');
             }
         });

@@ -6,7 +6,6 @@ use App\Models\Achievement;
 use App\Models\AchievementShowcase;
 use App\Models\PlayerAchievement;
 use App\Models\PlayerDistance;
-use App\Models\PlayerStat;
 use App\Models\TournamentMatch;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
@@ -15,7 +14,7 @@ class PlayerProfileController extends Controller
 {
     public function show(User $user)
     {
-        if ($user->profile_visibility === 'private' && (!auth()->check() || auth()->id() !== $user->id)) {
+        if ($user->profile_visibility === 'private' && (! auth()->check() || auth()->id() !== $user->id)) {
             abort(403, 'This profile is private.');
         }
 
@@ -33,8 +32,8 @@ class PlayerProfileController extends Controller
             $team->load(['activeMembers', 'captain']);
             $stats['tournaments_played'] = $team->tournaments()->count();
             $stats['matches_played'] = TournamentMatch::where(function ($q) use ($team) {
-                    $q->where('team1_id', $team->id)->orWhere('team2_id', $team->id);
-                })->where('status', 'completed')->count();
+                $q->where('team1_id', $team->id)->orWhere('team2_id', $team->id);
+            })->where('status', 'completed')->count();
             $stats['wins'] = TournamentMatch::where('winner_id', $team->id)->count();
             $stats['losses'] = $stats['matches_played'] - $stats['wins'];
             $stats['win_rate'] = $stats['matches_played'] > 0
@@ -44,8 +43,8 @@ class PlayerProfileController extends Controller
         $recentMatches = collect();
         if ($team) {
             $recentMatches = TournamentMatch::where(function ($q) use ($team) {
-                    $q->where('team1_id', $team->id)->orWhere('team2_id', $team->id);
-                })
+                $q->where('team1_id', $team->id)->orWhere('team2_id', $team->id);
+            })
                 ->where('status', 'completed')
                 ->with(['tournament', 'team1', 'team2', 'winner'])
                 ->orderByDesc('completed_at')
@@ -180,7 +179,7 @@ class PlayerProfileController extends Controller
 
     private function getVehicleStats(?string $uuid): array
     {
-        if (!$uuid) {
+        if (! $uuid) {
             return ['totalWalkingDistance' => 0, 'totalVehicleDistance' => 0, 'totalWalkingTime' => 0, 'totalVehicleTime' => 0, 'topVehicles' => collect(), 'vehicleImages' => collect()];
         }
 
@@ -193,15 +192,15 @@ class PlayerProfileController extends Controller
 
         $vehicleAgg = [];
         foreach ($distances as $row) {
-            if (!is_array($row->vehicles)) {
+            if (! is_array($row->vehicles)) {
                 continue;
             }
             foreach ($row->vehicles as $v) {
                 $name = $v['vehicle'] ?? $v['name'] ?? null;
-                if (!$name) {
+                if (! $name) {
                     continue;
                 }
-                if (!isset($vehicleAgg[$name])) {
+                if (! isset($vehicleAgg[$name])) {
                     $vehicleAgg[$name] = ['name' => $name, 'distance' => 0, 'time' => 0, 'count' => 0];
                 }
                 $vehicleAgg[$name]['distance'] += floatval($v['distance'] ?? 0);

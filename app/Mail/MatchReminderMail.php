@@ -15,6 +15,7 @@ class MatchReminderMail extends Mailable implements ShouldQueue
     use Queueable, SerializesModels;
 
     public TournamentMatch $match;
+
     public string $timeUntil; // "1 hour" or "24 hours"
 
     /**

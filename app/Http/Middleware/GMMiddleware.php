@@ -10,7 +10,7 @@ class GMMiddleware
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if (!auth()->check() || !auth()->user()->isGM()) {
+        if (! auth()->check() || ! auth()->user()->isGM()) {
             abort(403, 'Unauthorized. GM or Admin access required.');
         }
 

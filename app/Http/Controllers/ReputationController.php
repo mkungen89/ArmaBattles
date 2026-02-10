@@ -56,7 +56,7 @@ class ReputationController extends Controller
             ->first();
 
         if ($existingVote) {
-            if (!$existingVote->canBeChanged()) {
+            if (! $existingVote->canBeChanged()) {
                 return back()->with('error', 'You can only vote once per 24 hours per player.');
             }
 
@@ -98,11 +98,11 @@ class ReputationController extends Controller
             ->where('target_id', $user->id)
             ->first();
 
-        if (!$vote) {
+        if (! $vote) {
             return back()->with('error', 'No vote found.');
         }
 
-        if (!$vote->canBeChanged()) {
+        if (! $vote->canBeChanged()) {
             return back()->with('error', 'You can only change your vote within 24 hours.');
         }
 
@@ -143,7 +143,7 @@ class ReputationController extends Controller
 
         // Update category count
         if ($category !== 'general') {
-            $column = $category . '_count';
+            $column = $category.'_count';
             $reputation->increment($column, $multiplier);
         }
     }

@@ -2,9 +2,9 @@
 
 namespace App\Services;
 
+use App\Models\Team;
 use App\Models\Tournament;
 use App\Models\TournamentMatch;
-use App\Models\Team;
 use Illuminate\Support\Collection;
 
 class TournamentBracketService
@@ -63,13 +63,13 @@ class TournamentBracketService
                     ]);
 
                     // Handle byes - advance the team that has an opponent
-                    if ($team1 && !$team2) {
+                    if ($team1 && ! $team2) {
                         $match->update([
                             'winner_id' => $team1->id,
                             'status' => 'completed',
                             'completed_at' => now(),
                         ]);
-                    } elseif (!$team1 && $team2) {
+                    } elseif (! $team1 && $team2) {
                         $match->update([
                             'winner_id' => $team2->id,
                             'status' => 'completed',
@@ -142,13 +142,13 @@ class TournamentBracketService
                         'team2_id' => $team2?->id,
                     ]);
 
-                    if ($team1 && !$team2) {
+                    if ($team1 && ! $team2) {
                         $match->update([
                             'winner_id' => $team1->id,
                             'status' => 'completed',
                             'completed_at' => now(),
                         ]);
-                    } elseif (!$team1 && $team2) {
+                    } elseif (! $team1 && $team2) {
                         $match->update([
                             'winner_id' => $team2->id,
                             'status' => 'completed',
@@ -351,45 +351,45 @@ class TournamentBracketService
 
     public function advanceWinner(TournamentMatch $match): void
     {
-        if (!$match->winner_id || !$match->winner_goes_to) {
+        if (! $match->winner_id || ! $match->winner_goes_to) {
             return;
         }
 
         $nextMatch = TournamentMatch::find($match->winner_goes_to);
 
-        if (!$nextMatch) {
+        if (! $nextMatch) {
             return;
         }
 
         // Place winner in appropriate slot
-        if (!$nextMatch->team1_id) {
+        if (! $nextMatch->team1_id) {
             $nextMatch->update(['team1_id' => $match->winner_id]);
-        } elseif (!$nextMatch->team2_id) {
+        } elseif (! $nextMatch->team2_id) {
             $nextMatch->update(['team2_id' => $match->winner_id]);
         }
     }
 
     public function advanceLoser(TournamentMatch $match): void
     {
-        if (!$match->winner_id || !$match->loser_goes_to) {
+        if (! $match->winner_id || ! $match->loser_goes_to) {
             return;
         }
 
         $loserId = $match->team1_id === $match->winner_id ? $match->team2_id : $match->team1_id;
 
-        if (!$loserId) {
+        if (! $loserId) {
             return;
         }
 
         $nextMatch = TournamentMatch::find($match->loser_goes_to);
 
-        if (!$nextMatch) {
+        if (! $nextMatch) {
             return;
         }
 
-        if (!$nextMatch->team1_id) {
+        if (! $nextMatch->team1_id) {
             $nextMatch->update(['team1_id' => $loserId]);
-        } elseif (!$nextMatch->team2_id) {
+        } elseif (! $nextMatch->team2_id) {
             $nextMatch->update(['team2_id' => $loserId]);
         }
     }
@@ -442,6 +442,7 @@ class TournamentBracketService
     {
         // Circle method for round robin scheduling
         $rounds = $teamCount % 2 === 0 ? $teamCount - 1 : $teamCount;
+
         return (($i + $j) % $rounds) + 1;
     }
 
@@ -529,7 +530,7 @@ class TournamentBracketService
             ->where('bracket', 'grand_final')
             ->first();
 
-        if (!$finalMatch) {
+        if (! $finalMatch) {
             $finalMatch = $tournament->matches()
                 ->where('bracket', 'main')
                 ->orderByDesc('round')
@@ -543,6 +544,7 @@ class TournamentBracketService
                 'winner_team_id' => $finalMatch->winner_id,
                 'ends_at' => now(),
             ]);
+
             return true;
         }
 

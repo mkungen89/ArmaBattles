@@ -145,13 +145,13 @@ class TournamentAdminController extends Controller
             'cancelled' => ['draft'],
         ];
 
-        if (!in_array($validated['status'], $allowedTransitions[$tournament->status] ?? [])) {
+        if (! in_array($validated['status'], $allowedTransitions[$tournament->status] ?? [])) {
             return back()->with('error', 'Invalid status transition.');
         }
 
         $tournament->update($validated);
 
-        return back()->with('success', 'Status updated to ' . $tournament->status_text . '!');
+        return back()->with('success', 'Status updated to '.$tournament->status_text.'!');
     }
 
     public function registrations(Tournament $tournament)
@@ -227,7 +227,7 @@ class TournamentAdminController extends Controller
         }
 
         if ($tournament->approvedTeams()->count() < $tournament->min_teams) {
-            return back()->with('error', 'Not enough platoons registered (minimum ' . $tournament->min_teams . ').');
+            return back()->with('error', 'Not enough platoons registered (minimum '.$tournament->min_teams.').');
         }
 
         $this->bracketService->generateBracket($tournament);
@@ -265,6 +265,7 @@ class TournamentAdminController extends Controller
             if ($match->bracket === 'grand_final') {
                 return 'Grand Final';
             }
+
             return $match->round_label;
         });
 
@@ -291,7 +292,7 @@ class TournamentAdminController extends Controller
         ]);
 
         // Validate winner is one of the teams
-        if ($validated['winner_id'] && !in_array($validated['winner_id'], [$match->team1_id, $match->team2_id])) {
+        if ($validated['winner_id'] && ! in_array($validated['winner_id'], [$match->team1_id, $match->team2_id])) {
             return back()->with('error', 'Winner must be one of the platoons in the match.');
         }
 
@@ -300,12 +301,12 @@ class TournamentAdminController extends Controller
 
         $match->update([
             ...$validated,
-            'completed_at' => $isNowCompleted && !$wasCompleted ? now() : $match->completed_at,
-            'started_at' => $validated['status'] === 'in_progress' && !$match->started_at ? now() : $match->started_at,
+            'completed_at' => $isNowCompleted && ! $wasCompleted ? now() : $match->completed_at,
+            'started_at' => $validated['status'] === 'in_progress' && ! $match->started_at ? now() : $match->started_at,
         ]);
 
         // If match completed with a winner, advance to next match
-        if ($isNowCompleted && !$wasCompleted && $validated['winner_id']) {
+        if ($isNowCompleted && ! $wasCompleted && $validated['winner_id']) {
             $this->bracketService->advanceWinner($match);
 
             // For double elimination, also handle loser

@@ -53,7 +53,7 @@ class VehicleAdminController extends Controller
             'image' => 'nullable|image|mimes:png,jpg,jpeg,gif,webp|max:2048',
         ]);
 
-        $vehicle = new Vehicle();
+        $vehicle = new Vehicle;
         $vehicle->name = $validated['name'];
         $vehicle->display_name = $validated['display_name'] ?? $validated['name'];
         $vehicle->vehicle_type = $validated['vehicle_type'] ?? null;
@@ -77,7 +77,7 @@ class VehicleAdminController extends Controller
     public function update(Request $request, Vehicle $vehicle)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:vehicles,name,' . $vehicle->id,
+            'name' => 'required|string|max:255|unique:vehicles,name,'.$vehicle->id,
             'display_name' => 'nullable|string|max:255',
             'vehicle_type' => 'nullable|string|max:100',
             'image' => 'nullable|image|mimes:png,jpg,jpeg,gif,webp|max:2048',
@@ -154,7 +154,7 @@ class VehicleAdminController extends Controller
         $created = 0;
         foreach ($uniqueNames as $name) {
             $exists = Vehicle::where('name', $name)->exists();
-            if (!$exists) {
+            if (! $exists) {
                 Vehicle::create([
                     'name' => $name,
                     'display_name' => $name,

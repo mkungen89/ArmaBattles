@@ -2,12 +2,13 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
 
 class BattleMetricsService
 {
     protected string $baseUrl = 'https://api.battlemetrics.com';
+
     protected ?string $apiToken;
 
     public function __construct()
@@ -19,6 +20,7 @@ class BattleMetricsService
     {
         return Cache::remember("battlemetrics.server.{$serverId}", site_setting('bm_cache_ttl_live', 60), function () use ($serverId) {
             $response = $this->request("/servers/{$serverId}");
+
             return $response['data'] ?? null;
         });
     }
@@ -27,6 +29,7 @@ class BattleMetricsService
     {
         return Cache::remember("battlemetrics.server.{$serverId}.players", site_setting('bm_cache_ttl_live', 60), function () use ($serverId) {
             $response = $this->request("/servers/{$serverId}?include=player");
+
             return $response['included'] ?? [];
         });
     }
@@ -41,11 +44,12 @@ class BattleMetricsService
                 'stop' => $end,
                 'resolution' => $resolution,
             ]);
+
             return $response['data'] ?? [];
         });
     }
 
-    public function searchPlayers(string $search, string $serverId = null): array
+    public function searchPlayers(string $search, ?string $serverId = null): array
     {
         $params = ['filter[search]' => $search];
 
@@ -54,6 +58,7 @@ class BattleMetricsService
         }
 
         $response = $this->request('/players', $params);
+
         return $response['data'] ?? [];
     }
 
@@ -61,6 +66,7 @@ class BattleMetricsService
     {
         return Cache::remember("battlemetrics.player.{$playerId}", 120, function () use ($playerId) {
             $response = $this->request("/players/{$playerId}");
+
             return $response['data'] ?? null;
         });
     }
@@ -71,6 +77,7 @@ class BattleMetricsService
 
         return Cache::remember($cacheKey, site_setting('bm_cache_ttl_history', 300), function () use ($playerId, $serverId) {
             $response = $this->request("/players/{$playerId}/servers/{$serverId}");
+
             return $response['data'] ?? null;
         });
     }
@@ -93,7 +100,7 @@ class BattleMetricsService
         return $response->json();
     }
 
-    public function clearCache(string $serverId = null): void
+    public function clearCache(?string $serverId = null): void
     {
         if ($serverId) {
             Cache::forget("battlemetrics.server.{$serverId}");
@@ -107,6 +114,7 @@ class BattleMetricsService
             $response = $this->request("/servers/{$serverId}", [
                 'include' => 'serverGroup',
             ]);
+
             return $response['data'] ?? null;
         });
     }
@@ -115,7 +123,7 @@ class BattleMetricsService
     {
         $server = $this->getServer($serverId);
 
-        if (!$server) {
+        if (! $server) {
             return [];
         }
 
@@ -160,12 +168,12 @@ class BattleMetricsService
             $modName = $mod['name'] ?? $mod['modName'] ?? $mod['title'] ?? 'Unknown';
 
             return [
-                'id' => $workshopId ?? md5($modName . $index),
+                'id' => $workshopId ?? md5($modName.$index),
                 'name' => $modName,
                 'version' => $mod['version'] ?? $mod['modVersion'] ?? null,
                 'author' => $mod['author'] ?? $mod['modAuthor'] ?? $mod['creator'] ?? null,
                 'workshop_url' => $workshopId
-                    ? "https://reforger.armaplatform.com/workshop/" . $workshopId
+                    ? 'https://reforger.armaplatform.com/workshop/'.$workshopId
                     : null,
                 'load_order' => $index,
                 'updated_at' => $mod['updatedAt'] ?? $mod['updated_at'] ?? null,
@@ -179,6 +187,7 @@ class BattleMetricsService
     public function getServerRawDetails(string $serverId): array
     {
         $server = $this->getServer($serverId);
+
         return $server['attributes']['details'] ?? [];
     }
 
@@ -189,6 +198,7 @@ class BattleMetricsService
                 'start' => now()->subDays(7)->toIso8601String(),
                 'stop' => now()->toIso8601String(),
             ]);
+
             return $response['data'] ?? [];
         });
     }
@@ -211,7 +221,7 @@ class BattleMetricsService
             $timestamp = $point['attributes']['timestamp'] ?? $point['timestamp'] ?? null;
 
             if ($players > 0 || ($currentSession && $players === 0)) {
-                if (!$currentSession) {
+                if (! $currentSession) {
                     $currentSession = [
                         'session_number' => $sessionNumber,
                         'started_at' => $timestamp,
@@ -264,7 +274,7 @@ class BattleMetricsService
 
         $values = collect($history)->map(function ($point) {
             return $point['attributes']['value'] ?? $point['value'] ?? 0;
-        })->filter(fn($v) => $v !== null)->values()->toArray();
+        })->filter(fn ($v) => $v !== null)->values()->toArray();
 
         if (empty($values)) {
             return [

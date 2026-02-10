@@ -13,6 +13,7 @@ use Illuminate\Console\Command;
 class CheckAchievements extends Command
 {
     protected $signature = 'achievements:check';
+
     protected $description = 'Check all players against achievement thresholds and award any newly earned achievements';
 
     public function handle(): int
@@ -25,6 +26,7 @@ class CheckAchievements extends Command
 
         if ($achievements->isEmpty()) {
             $this->info('No achievements with stat thresholds found.');
+
             return 0;
         }
 

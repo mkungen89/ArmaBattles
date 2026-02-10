@@ -38,11 +38,11 @@ class Glicko2Service
     /**
      * Calculate new rating for a player after a rating period.
      *
-     * @param float $rating Current Glicko-1 rating
-     * @param float $rd Current rating deviation
-     * @param float $volatility Current volatility (sigma)
-     * @param array $opponents Array of ['rating' => float, 'rd' => float]
-     * @param array $outcomes Array of floats: 1.0 = win, 0.0 = loss, 0.5 = draw
+     * @param  float  $rating  Current Glicko-1 rating
+     * @param  float  $rd  Current rating deviation
+     * @param  float  $volatility  Current volatility (sigma)
+     * @param  array  $opponents  Array of ['rating' => float, 'rd' => float]
+     * @param  array  $outcomes  Array of floats: 1.0 = win, 0.0 = loss, 0.5 = draw
      * @return array ['rating' => float, 'rd' => float, 'volatility' => float]
      */
     public function calculateNewRating(float $rating, float $rd, float $volatility, array $opponents, array $outcomes): array
@@ -178,6 +178,7 @@ class Glicko2Service
             $d2 = $delta * $delta;
             $num1 = $ex * ($d2 - $phi2 - $v - $ex);
             $den1 = 2 * pow($phi2 + $v + $ex, 2);
+
             return ($num1 / $den1) - (($x - $a) / $tau2);
         };
 

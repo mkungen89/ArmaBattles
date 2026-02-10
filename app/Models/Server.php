@@ -132,7 +132,10 @@ class Server extends Model
      */
     public function getPlayerPercentageAttribute(): int
     {
-        if ($this->max_players === 0) return 0;
+        if ($this->max_players === 0) {
+            return 0;
+        }
+
         return (int) round(($this->players / $this->max_players) * 100);
     }
 
@@ -149,7 +152,7 @@ class Server extends Model
      */
     public function getStatisticsForRange(string $range = '24h'): array
     {
-        $hours = match($range) {
+        $hours = match ($range) {
             '6h' => 6,
             '72h' => 72,
             default => 24,
@@ -182,7 +185,7 @@ class Server extends Model
             : $playerCounts[floor($count / 2)];
 
         return [
-            'data' => $stats->map(fn($s) => [
+            'data' => $stats->map(fn ($s) => [
                 'timestamp' => $s->recorded_at->toIso8601String(),
                 'players' => $s->players,
                 'max_players' => $s->max_players,
@@ -200,7 +203,7 @@ class Server extends Model
      */
     public function getRestartsCount(string $range = '24h'): int
     {
-        $hours = match($range) {
+        $hours = match ($range) {
             '6h' => 6,
             '72h' => 72,
             default => 24,
@@ -216,13 +219,16 @@ class Server extends Model
      */
     public function getCountryFlagAttribute(): string
     {
-        if (!$this->country_code) return '';
+        if (! $this->country_code) {
+            return '';
+        }
 
         $code = strtoupper($this->country_code);
         $flag = '';
         for ($i = 0; $i < strlen($code); $i++) {
             $flag .= mb_chr(ord($code[$i]) - ord('A') + 0x1F1E6);
         }
+
         return $flag;
     }
 
@@ -276,7 +282,7 @@ class Server extends Model
      */
     public static function resolveScenarioName(?string $raw): ?string
     {
-        if (!$raw) {
+        if (! $raw) {
             return null;
         }
 
@@ -286,7 +292,7 @@ class Server extends Model
         }
 
         // If it doesn't start with #AR-, it's already a readable name
-        if (!str_starts_with($raw, '#AR-')) {
+        if (! str_starts_with($raw, '#AR-')) {
             return $raw;
         }
 
@@ -331,11 +337,19 @@ class Server extends Model
         $rawPlatforms = $reforger['supportedGameClientTypes'] ?? $details['platforms'] ?? [];
         $platforms = [];
         foreach ($rawPlatforms as $platform) {
-            if (str_contains($platform, 'PC')) $platforms[] = 'pc';
-            if (str_contains($platform, 'XBL') || str_contains($platform, 'XBOX')) $platforms[] = 'xbox';
-            if (str_contains($platform, 'PSN') || str_contains($platform, 'PLAYSTATION')) $platforms[] = 'playstation';
+            if (str_contains($platform, 'PC')) {
+                $platforms[] = 'pc';
+            }
+            if (str_contains($platform, 'XBL') || str_contains($platform, 'XBOX')) {
+                $platforms[] = 'xbox';
+            }
+            if (str_contains($platform, 'PSN') || str_contains($platform, 'PLAYSTATION')) {
+                $platforms[] = 'playstation';
+            }
         }
-        if (empty($platforms)) $platforms = ['pc'];
+        if (empty($platforms)) {
+            $platforms = ['pc'];
+        }
 
         $server = self::updateOrCreate(
             ['battlemetrics_id' => $data['id']],

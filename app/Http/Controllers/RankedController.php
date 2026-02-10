@@ -30,7 +30,7 @@ class RankedController extends Controller
     {
         $playerRating = $user->playerRating;
 
-        if (!$playerRating || !$playerRating->opted_in_at) {
+        if (! $playerRating || ! $playerRating->opted_in_at) {
             abort(404, 'This player is not in competitive mode.');
         }
 
@@ -54,7 +54,7 @@ class RankedController extends Controller
     {
         $playerRating = $user->playerRating;
 
-        if (!$playerRating || !$playerRating->opted_in_at) {
+        if (! $playerRating || ! $playerRating->opted_in_at) {
             return response()->json(['labels' => [], 'data' => []]);
         }
 
@@ -84,7 +84,7 @@ class RankedController extends Controller
     {
         $user = Auth::user();
 
-        if (!$user->hasLinkedArmaId()) {
+        if (! $user->hasLinkedArmaId()) {
             return back()->with('error', 'You must link your Arma Reforger ID before enabling competitive mode.');
         }
 
@@ -100,7 +100,7 @@ class RankedController extends Controller
             ]
         );
 
-        if (!$rating->opted_in_at) {
+        if (! $rating->opted_in_at) {
             $rating->update(['opted_in_at' => now(), 'player_uuid' => $user->player_uuid]);
         }
 

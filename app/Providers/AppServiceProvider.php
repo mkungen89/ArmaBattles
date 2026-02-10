@@ -48,7 +48,7 @@ class AppServiceProvider extends ServiceProvider
                 $client,
                 $config['bucket'],
                 '',
-                new \App\Support\NoAclVisibilityConverter()
+                new \App\Support\NoAclVisibilityConverter
             );
 
             $filesystem = new \League\Flysystem\Filesystem($adapter, $config);

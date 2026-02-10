@@ -19,6 +19,7 @@ class SocialiteServiceProvider extends ServiceProvider
 
         $socialite->extend('steam', function () use ($socialite) {
             $config = config('services.steam');
+
             return $socialite->buildProvider(Provider::class, $config);
         });
     }

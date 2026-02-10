@@ -60,7 +60,7 @@ class DiscordPresenceController extends Controller
         $user = Auth::user();
         $presence = $user->discordPresence;
 
-        if (!$presence || !$presence->enabled) {
+        if (! $presence || ! $presence->enabled) {
             return response()->json([
                 'enabled' => false,
                 'message' => 'Discord Rich Presence is not enabled',
@@ -92,7 +92,7 @@ class DiscordPresenceController extends Controller
 
         switch ($request->activity) {
             case 'playing':
-                if (!$request->server_id) {
+                if (! $request->server_id) {
                     return response()->json(['error' => 'Server ID required for playing activity'], 422);
                 }
                 $server = \App\Models\Server::findOrFail($request->server_id);
@@ -100,7 +100,7 @@ class DiscordPresenceController extends Controller
                 break;
 
             case 'watching_tournament':
-                if (!$request->tournament_id) {
+                if (! $request->tournament_id) {
                     return response()->json(['error' => 'Tournament ID required for watching activity'], 422);
                 }
                 $tournament = \App\Models\Tournament::findOrFail($request->tournament_id);

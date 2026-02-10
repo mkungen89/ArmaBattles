@@ -11,9 +11,9 @@ class PlayerHistoryService
         $builder = DB::table('connections')
             ->select([
                 'player_uuid',
-                DB::raw("MAX(player_name) as player_name"),
-                DB::raw("MAX(occurred_at) as last_seen"),
-                DB::raw("COUNT(*) as connection_count"),
+                DB::raw('MAX(player_name) as player_name'),
+                DB::raw('MAX(occurred_at) as last_seen'),
+                DB::raw('COUNT(*) as connection_count'),
             ])
             ->whereNotNull('player_uuid')
             ->where('player_uuid', '!=', '');
@@ -23,7 +23,7 @@ class PlayerHistoryService
         if ($driver === 'pgsql') {
             $builder->addSelect(DB::raw("string_agg(DISTINCT player_name, ', ') as alt_names"));
         } else {
-            $builder->addSelect(DB::raw("GROUP_CONCAT(DISTINCT player_name) as alt_names"));
+            $builder->addSelect(DB::raw('GROUP_CONCAT(DISTINCT player_name) as alt_names'));
         }
 
         if ($serverId) {
@@ -32,7 +32,7 @@ class PlayerHistoryService
 
         $builder->where(function ($q) use ($query) {
             $q->where('player_name', 'ILIKE', "%{$query}%")
-              ->orWhere('player_uuid', 'ILIKE', "%{$query}%");
+                ->orWhere('player_uuid', 'ILIKE', "%{$query}%");
         });
 
         return $builder

@@ -91,7 +91,7 @@ class AchievementController extends Controller
             'pinned_achievements.*' => 'exists:achievements,id',
         ]);
 
-        if (!auth()->user()->player_uuid) {
+        if (! auth()->user()->player_uuid) {
             return back()->with('error', 'You need a player UUID to manage your showcase.');
         }
 
@@ -103,7 +103,7 @@ class AchievementController extends Controller
             ->toArray();
 
         foreach ($validated['pinned_achievements'] as $achievementId) {
-            if (!in_array($achievementId, $earnedIds)) {
+            if (! in_array($achievementId, $earnedIds)) {
                 return back()->with('error', 'You can only pin achievements you have earned.');
             }
         }
@@ -123,7 +123,7 @@ class AchievementController extends Controller
     {
         $showcase = AchievementShowcase::where('player_uuid', $playerUuid)->first();
 
-        if (!$showcase) {
+        if (! $showcase) {
             return response()->json(['pinned_achievements' => []]);
         }
 

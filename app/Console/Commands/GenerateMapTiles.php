@@ -25,13 +25,14 @@ class GenerateMapTiles extends Command
         $tileSize = (int) $this->option('tile-size');
         $quality = (int) $this->option('quality');
 
-        if (!file_exists($input)) {
+        if (! file_exists($input)) {
             $this->error("Input file not found: {$input}");
+
             return self::FAILURE;
         }
 
         $scriptPath = storage_path('app/generate_tiles.py');
-        if (!is_dir(dirname($scriptPath))) {
+        if (! is_dir(dirname($scriptPath))) {
             mkdir(dirname($scriptPath), 0755, true);
         }
 
@@ -54,8 +55,9 @@ class GenerateMapTiles extends Command
             $pipes
         );
 
-        if (!is_resource($process)) {
+        if (! is_resource($process)) {
             $this->error('Failed to start Python process. Ensure python3 and Pillow are installed.');
+
             return self::FAILURE;
         }
 
@@ -64,7 +66,7 @@ class GenerateMapTiles extends Command
             if (str_starts_with($line, 'ERROR:')) {
                 $this->error(substr($line, 7));
             } elseif (str_starts_with($line, 'PROGRESS:')) {
-                $this->output->write("\r" . substr($line, 10));
+                $this->output->write("\r".substr($line, 10));
             } else {
                 $this->info($line);
             }
@@ -84,10 +86,12 @@ class GenerateMapTiles extends Command
             if ($stderr) {
                 $this->line($stderr);
             }
+
             return self::FAILURE;
         }
 
         $this->info('Tile generation complete.');
+
         return self::SUCCESS;
     }
 

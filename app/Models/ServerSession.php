@@ -56,6 +56,7 @@ class ServerSession extends Model
     public function getDurationAttribute(): string
     {
         $end = $this->ended_at ?? now();
+
         return $this->started_at->diffForHumans($end, ['parts' => 2, 'short' => true]);
     }
 
@@ -64,14 +65,22 @@ class ServerSession extends Model
      */
     public function getUptimeAttribute(): string
     {
-        if (!$this->started_at) return 'Unknown';
+        if (! $this->started_at) {
+            return 'Unknown';
+        }
 
         $diff = $this->started_at->diff(now());
 
         $parts = [];
-        if ($diff->d > 0) $parts[] = $diff->d . 'd';
-        if ($diff->h > 0) $parts[] = $diff->h . 'h';
-        if ($diff->i > 0) $parts[] = $diff->i . 'm';
+        if ($diff->d > 0) {
+            $parts[] = $diff->d.'d';
+        }
+        if ($diff->h > 0) {
+            $parts[] = $diff->h.'h';
+        }
+        if ($diff->i > 0) {
+            $parts[] = $diff->i.'m';
+        }
 
         return implode(' ', $parts) ?: '< 1m';
     }

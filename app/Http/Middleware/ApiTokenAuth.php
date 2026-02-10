@@ -12,7 +12,7 @@ class ApiTokenAuth
         $token = $request->bearerToken();
         $validToken = config('services.armabattles.api_token');
 
-        if (!$token || $token !== $validToken) {
+        if (! $token || $token !== $validToken) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 

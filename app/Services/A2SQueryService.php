@@ -9,11 +9,15 @@ class A2SQueryService
 {
     // A2S Query constants
     private const A2S_INFO = "\xFF\xFF\xFF\xFFTSource Engine Query\x00";
+
     private const A2S_PLAYER = "\xFF\xFF\xFF\xFF\x55";
+
     private const A2S_RULES = "\xFF\xFF\xFF\xFF\x56";
+
     private const A2S_CHALLENGE = "\xFF\xFF\xFF\xFF\x41";
 
     private int $timeout;
+
     private int $maxRetries;
 
     public function __construct()
@@ -28,7 +32,7 @@ class A2SQueryService
     public function queryServerInfo(string $ip, int $port): ?array
     {
         $socket = $this->createSocket($ip, $port);
-        if (!$socket) {
+        if (! $socket) {
             return null;
         }
 
@@ -37,13 +41,14 @@ class A2SQueryService
             fwrite($socket, self::A2S_INFO);
 
             $response = $this->readResponse($socket);
-            if (!$response) {
+            if (! $response) {
                 return null;
             }
 
             return $this->parseServerInfo($response);
         } catch (Exception $e) {
-            Log::error("A2S Query Error: " . $e->getMessage());
+            Log::error('A2S Query Error: '.$e->getMessage());
+
             return null;
         } finally {
             fclose($socket);
@@ -56,33 +61,34 @@ class A2SQueryService
     public function queryPlayers(string $ip, int $port): ?array
     {
         $socket = $this->createSocket($ip, $port);
-        if (!$socket) {
+        if (! $socket) {
             return null;
         }
 
         try {
             // First, get challenge number
-            fwrite($socket, self::A2S_PLAYER . "\xFF\xFF\xFF\xFF");
+            fwrite($socket, self::A2S_PLAYER."\xFF\xFF\xFF\xFF");
             $response = $this->readResponse($socket);
 
-            if (!$response || strlen($response) < 9) {
+            if (! $response || strlen($response) < 9) {
                 return null;
             }
 
             // Check if we got a challenge response
             if (ord($response[4]) === 0x41) {
                 $challenge = substr($response, 5, 4);
-                fwrite($socket, self::A2S_PLAYER . $challenge);
+                fwrite($socket, self::A2S_PLAYER.$challenge);
                 $response = $this->readResponse($socket);
             }
 
-            if (!$response) {
+            if (! $response) {
                 return null;
             }
 
             return $this->parsePlayers($response);
         } catch (Exception $e) {
-            Log::error("A2S Player Query Error: " . $e->getMessage());
+            Log::error('A2S Player Query Error: '.$e->getMessage());
+
             return null;
         } finally {
             fclose($socket);
@@ -95,33 +101,34 @@ class A2SQueryService
     public function queryRules(string $ip, int $port): ?array
     {
         $socket = $this->createSocket($ip, $port);
-        if (!$socket) {
+        if (! $socket) {
             return null;
         }
 
         try {
             // First, get challenge number
-            fwrite($socket, self::A2S_RULES . "\xFF\xFF\xFF\xFF");
+            fwrite($socket, self::A2S_RULES."\xFF\xFF\xFF\xFF");
             $response = $this->readResponse($socket);
 
-            if (!$response || strlen($response) < 9) {
+            if (! $response || strlen($response) < 9) {
                 return null;
             }
 
             // Check if we got a challenge response
             if (ord($response[4]) === 0x41) {
                 $challenge = substr($response, 5, 4);
-                fwrite($socket, self::A2S_RULES . $challenge);
+                fwrite($socket, self::A2S_RULES.$challenge);
                 $response = $this->readResponse($socket);
             }
 
-            if (!$response) {
+            if (! $response) {
                 return null;
             }
 
             return $this->parseRules($response);
         } catch (Exception $e) {
-            Log::error("A2S Rules Query Error: " . $e->getMessage());
+            Log::error('A2S Rules Query Error: '.$e->getMessage());
+
             return null;
         } finally {
             fclose($socket);
@@ -134,13 +141,14 @@ class A2SQueryService
     public function ping(string $ip, int $port): bool
     {
         $socket = $this->createSocket($ip, $port);
-        if (!$socket) {
+        if (! $socket) {
             return false;
         }
 
         try {
             fwrite($socket, self::A2S_INFO);
             $response = $this->readResponse($socket);
+
             return $response !== null && strlen($response) > 0;
         } catch (Exception $e) {
             return false;
@@ -171,12 +179,14 @@ class A2SQueryService
     {
         $socket = @fsockopen("udp://{$ip}", $port, $errno, $errstr, $this->timeout);
 
-        if (!$socket) {
+        if (! $socket) {
             Log::warning("Failed to create socket to {$ip}:{$port} - {$errstr}");
+
             return null;
         }
 
         stream_set_timeout($socket, $this->timeout);
+
         return $socket;
     }
 
@@ -431,6 +441,7 @@ class A2SQueryService
             $offset++;
         }
         $offset++; // Skip null terminator
+
         return $string;
     }
 }

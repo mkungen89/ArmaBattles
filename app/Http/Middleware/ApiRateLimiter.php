@@ -33,7 +33,7 @@ class ApiRateLimiter
         // Get the authenticated user's token
         $token = $request->user()?->currentAccessToken();
 
-        if (!$token) {
+        if (! $token) {
             // No token, no rate limit (will be blocked by auth:sanctum anyway)
             return $next($request);
         }
@@ -92,7 +92,7 @@ class ApiRateLimiter
     protected function resolveRequestSignature(Request $request, $token): string
     {
         // Use token ID as the key for rate limiting
-        return 'api_rate_limit:' . $token->id;
+        return 'api_rate_limit:'.$token->id;
     }
 
     /**

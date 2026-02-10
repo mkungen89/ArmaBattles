@@ -16,6 +16,7 @@ class AchievementUnlockedMail extends Mailable implements ShouldQueue
     use Queueable, SerializesModels;
 
     public Achievement $achievement;
+
     public User $user;
 
     /**
@@ -57,7 +58,7 @@ class AchievementUnlockedMail extends Mailable implements ShouldQueue
                 'rarityPercentage' => $rarityPercentage,
                 'isRare' => $rarityPercentage < 5, // Rare if <5% have it
                 'profileUrl' => route('profile'),
-                'achievementsUrl' => route('profile') . '#achievements',
+                'achievementsUrl' => route('profile').'#achievements',
             ],
         );
     }

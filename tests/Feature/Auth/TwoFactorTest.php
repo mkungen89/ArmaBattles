@@ -16,7 +16,7 @@ class TwoFactorTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->google2fa = new Google2FA();
+        $this->google2fa = new Google2FA;
     }
 
     public function test_enable_stores_secret(): void

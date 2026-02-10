@@ -49,7 +49,7 @@ class NewsAdminController extends Controller
             'is_pinned' => 'boolean',
         ]);
 
-        $article = new NewsArticle();
+        $article = new NewsArticle;
         $article->title = $validated['title'];
         $article->content = $validated['content'];
         $article->excerpt = $validated['excerpt'] ?? null;
@@ -98,7 +98,7 @@ class NewsAdminController extends Controller
         $article->status = $validated['status'];
         $article->is_pinned = $request->boolean('is_pinned');
 
-        if ($validated['status'] === 'published' && !$article->published_at) {
+        if ($validated['status'] === 'published' && ! $article->published_at) {
             $article->published_at = now();
         }
 
@@ -118,7 +118,7 @@ class NewsAdminController extends Controller
 
     public function togglePin(NewsArticle $article)
     {
-        $article->update(['is_pinned' => !$article->is_pinned]);
+        $article->update(['is_pinned' => ! $article->is_pinned]);
 
         $this->logAction('news.pin-toggled', 'NewsArticle', $article->id, ['is_pinned' => $article->is_pinned]);
 
@@ -154,7 +154,7 @@ class NewsAdminController extends Controller
 
     private function authorizeArticle(NewsArticle $article): void
     {
-        if (!auth()->user()->isAdmin() && $article->author_id !== auth()->id()) {
+        if (! auth()->user()->isAdmin() && $article->author_id !== auth()->id()) {
             abort(403, 'You can only manage your own articles.');
         }
     }

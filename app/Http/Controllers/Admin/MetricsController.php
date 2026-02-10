@@ -132,12 +132,12 @@ class MetricsController extends Controller
             ->where('event_type', 'api_request')
             ->where('created_at', '>=', $since)
             ->whereNotNull('response_time_ms')
-            ->selectRaw("
+            ->selectRaw('
                 event_name,
                 count(*) as requests,
                 round(avg(response_time_ms)::numeric, 0) as avg_ms,
                 percentile_cont(0.95) WITHIN GROUP (ORDER BY response_time_ms) as p95_ms
-            ")
+            ')
             ->groupBy('event_name')
             ->orderByDesc('requests')
             ->limit(15)
@@ -195,6 +195,7 @@ class MetricsController extends Controller
         // Cache hit rate over time
         $cacheHitRate = $data->map(function ($row) {
             $total = $row->cache_hits + $row->cache_misses;
+
             return $total > 0 ? round(($row->cache_hits / $total) * 100, 1) : null;
         })->toArray();
 

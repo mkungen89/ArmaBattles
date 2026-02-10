@@ -116,7 +116,7 @@ class DeprecationTest extends TestCase
             'timestamp' => '2026-02-08T10:00:00.000Z',
         ];
 
-        return match($endpoint) {
+        return match ($endpoint) {
             '/api/player-stats' => $basePayload + [
                 'player_uuid' => 'uuid-1',
                 'player_name' => 'Player1',

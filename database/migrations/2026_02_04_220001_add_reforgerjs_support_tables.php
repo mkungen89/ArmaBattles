@@ -150,7 +150,7 @@ return new class extends Migration
                 'ai_type',
                 'killer_role',
                 'killer_platform',
-                'damage_type'
+                'damage_type',
             ]);
         });
 

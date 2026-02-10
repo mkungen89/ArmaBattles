@@ -3,8 +3,8 @@
 namespace Tests\Feature\Commands;
 
 use App\Models\AdminAuditLog;
-use App\Models\TeamInvitation;
 use App\Models\Team;
+use App\Models\TeamInvitation;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;

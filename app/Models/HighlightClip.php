@@ -47,7 +47,7 @@ class HighlightClip extends Model
      */
     public function getPlatformColorAttribute(): string
     {
-        return match($this->platform) {
+        return match ($this->platform) {
             'twitch' => 'text-purple-400',
             'youtube' => 'text-red-400',
             'tiktok' => 'text-pink-400',
@@ -61,7 +61,7 @@ class HighlightClip extends Model
      */
     public function getPlatformNameAttribute(): string
     {
-        return match($this->platform) {
+        return match ($this->platform) {
             'twitch' => 'Twitch',
             'youtube' => 'YouTube',
             'tiktok' => 'TikTok',
@@ -85,7 +85,7 @@ class HighlightClip extends Model
             // Extract clip slug from Twitch URL
             $clipSlug = $this->extractTwitchClipSlug();
             if ($clipSlug) {
-                return "https://clips.twitch.tv/embed?clip={$clipSlug}&parent=" . parse_url(config('app.url'), PHP_URL_HOST);
+                return "https://clips.twitch.tv/embed?clip={$clipSlug}&parent=".parse_url(config('app.url'), PHP_URL_HOST);
             }
         }
 

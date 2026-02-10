@@ -1,8 +1,8 @@
 <?php
 
-use App\Http\Controllers\Api\StatsController;
 use App\Http\Controllers\Api\AnticheatController;
 use App\Http\Controllers\Api\GameEventController;
+use App\Http\Controllers\Api\StatsController;
 use Illuminate\Support\Facades\Route;
 
 // DEPRECATED: Legacy Stats API (use /api/v1/ instead)

@@ -40,7 +40,7 @@ class NewsArticle extends Model
                 $original = $slug;
                 $count = 1;
                 while (static::where('slug', $slug)->exists()) {
-                    $slug = $original . '-' . $count++;
+                    $slug = $original.'-'.$count++;
                 }
                 $article->slug = $slug;
             }
@@ -94,7 +94,7 @@ class NewsArticle extends Model
 
     public function getFeaturedImageUrlAttribute(): ?string
     {
-        if (!$this->featured_image) {
+        if (! $this->featured_image) {
             return null;
         }
 
@@ -109,6 +109,7 @@ class NewsArticle extends Model
     public function getReadingTimeAttribute(): int
     {
         $wordCount = str_word_count(strip_tags($this->content ?? ''));
+
         return max(1, (int) ceil($wordCount / 200));
     }
 
@@ -128,9 +129,10 @@ class NewsArticle extends Model
 
     public function isHoorahedBy(?User $user): bool
     {
-        if (!$user) {
+        if (! $user) {
             return false;
         }
+
         return $this->hoorahs()->where('user_id', $user->id)->exists();
     }
 }

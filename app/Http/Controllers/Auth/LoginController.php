@@ -20,7 +20,7 @@ class LoginController extends Controller
             'password' => 'required|string',
         ]);
 
-        if (!Auth::attempt($request->only('email', 'password'), remember: true)) {
+        if (! Auth::attempt($request->only('email', 'password'), remember: true)) {
             return back()->withErrors([
                 'email' => 'These credentials do not match our records.',
             ])->onlyInput('email');
@@ -50,6 +50,6 @@ class LoginController extends Controller
 
         $user->update(['last_login_at' => now()]);
 
-        return redirect()->intended(route('profile'))->with('success', 'Welcome back, ' . $user->name . '!');
+        return redirect()->intended(route('profile'))->with('success', 'Welcome back, '.$user->name.'!');
     }
 }

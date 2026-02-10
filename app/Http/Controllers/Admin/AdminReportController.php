@@ -22,8 +22,8 @@ class AdminReportController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('target_name', 'ilike', "%{$search}%")
-                  ->orWhere('reporter_name', 'ilike', "%{$search}%")
-                  ->orWhere('reason', 'ilike', "%{$search}%");
+                    ->orWhere('reporter_name', 'ilike', "%{$search}%")
+                    ->orWhere('reason', 'ilike', "%{$search}%");
             });
         }
 

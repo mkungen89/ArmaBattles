@@ -14,9 +14,9 @@ class TrackLastSeen
         $user = $request->user();
 
         if ($user) {
-            $cacheKey = 'last_seen:' . $user->id;
+            $cacheKey = 'last_seen:'.$user->id;
 
-            if (!Cache::has($cacheKey)) {
+            if (! Cache::has($cacheKey)) {
                 $user->update(['last_seen_at' => now()]);
                 Cache::put($cacheKey, true, 300); // 5 minutes
             }

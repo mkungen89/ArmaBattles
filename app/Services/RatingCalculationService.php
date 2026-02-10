@@ -21,11 +21,17 @@ class RatingCalculationService
     // Team kill        = LOSS vs own rating, RD 150 (significant penalty)
     // Friendly fire    = LOSS vs own rating, RD 250 (moderate penalty, less than TK)
     private const PHANTOM_RD = 150;
+
     private const PHANTOM_RD_FRIENDLY_FIRE = 250;
+
     private const PHANTOM_RATING_VEHICLE_DESTROY = 1600;
+
     private const PHANTOM_RATING_BASE_CAPTURE = 1500;
+
     private const PHANTOM_RATING_HEAL = 1300;
+
     private const PHANTOM_RATING_SUPPLY = 1300;
+
     private const PHANTOM_RATING_BUILDING = 1200;
 
     public function __construct(
@@ -83,7 +89,7 @@ class RatingCalculationService
      */
     public function queueRatedKill(int $killId, array $killData): void
     {
-        $eventType = !empty($killData['is_team_kill']) ? 'team_kill' : 'kill';
+        $eventType = ! empty($killData['is_team_kill']) ? 'team_kill' : 'kill';
 
         DB::table('rated_kills_queue')->insert([
             'kill_id' => $killId,
@@ -145,7 +151,7 @@ class RatingCalculationService
             ->where('processed', false)
             ->min('killed_at');
 
-        if (!$periodStart) {
+        if (! $periodStart) {
             return ['processed' => 0, 'players_updated' => 0];
         }
 
@@ -300,7 +306,7 @@ class RatingCalculationService
 
         foreach ($playerEncounters as $playerUuid => $encounters) {
             $playerRating = $ratings->get($playerUuid);
-            if (!$playerRating || empty($encounters['opponents'])) {
+            if (! $playerRating || empty($encounters['opponents'])) {
                 continue;
             }
 
@@ -387,7 +393,7 @@ class RatingCalculationService
         $inactivePlayers = PlayerRating::competitive()
             ->where(function ($q) use ($cutoff) {
                 $q->where('last_rated_at', '<', $cutoff)
-                  ->orWhereNull('last_rated_at');
+                    ->orWhereNull('last_rated_at');
             })
             ->where('rating_deviation', '<', 350)
             ->get();

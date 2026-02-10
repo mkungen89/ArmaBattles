@@ -31,7 +31,7 @@ class ApiDeprecationWarning
         $currentPath = $request->path(); // e.g. 'api/player-stats'
         $newPath = preg_replace('#^api/#', 'api/v1/', $currentPath);
         $response->headers->add([
-            'Link' => '<' . url($newPath) . '>; rel="alternate"; type="application/json"',
+            'Link' => '<'.url($newPath).'>; rel="alternate"; type="application/json"',
         ]);
 
         return $response;

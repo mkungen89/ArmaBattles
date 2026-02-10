@@ -16,14 +16,14 @@ class DiscordPresenceService
      */
     public function updatePlayingPresence(User $user, Server $server, array $details = []): void
     {
-        if (!$user->hasDiscordPresenceEnabled()) {
+        if (! $user->hasDiscordPresenceEnabled()) {
             return;
         }
 
         $activityDetails = [
             'server_name' => $server->name,
             'server_id' => $server->id,
-            'player_count' => $server->current_players . '/' . $server->max_players,
+            'player_count' => $server->current_players.'/'.$server->max_players,
             'map' => $server->map ?? 'Unknown',
             ...$details,
         ];
@@ -43,7 +43,7 @@ class DiscordPresenceService
      */
     public function updateWatchingPresence(User $user, Tournament $tournament, array $details = []): void
     {
-        if (!$user->hasDiscordPresenceEnabled()) {
+        if (! $user->hasDiscordPresenceEnabled()) {
             return;
         }
 
@@ -70,7 +70,7 @@ class DiscordPresenceService
      */
     public function updateBrowsingPresence(User $user, array $details = []): void
     {
-        if (!$user->hasDiscordPresenceEnabled()) {
+        if (! $user->hasDiscordPresenceEnabled()) {
             return;
         }
 
@@ -111,7 +111,7 @@ class DiscordPresenceService
     /**
      * Enable Discord presence for a user
      */
-    public function enablePresence(User $user, string $discordUserId = null): void
+    public function enablePresence(User $user, ?string $discordUserId = null): void
     {
         $this->updateOrCreatePresence($user, [
             'enabled' => true,
@@ -137,7 +137,7 @@ class DiscordPresenceService
      */
     public function getDiscordPayload(DiscordRichPresence $presence): array
     {
-        if (!$presence->enabled || !$presence->current_activity) {
+        if (! $presence->enabled || ! $presence->current_activity) {
             return [];
         }
 

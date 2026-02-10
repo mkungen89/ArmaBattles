@@ -16,7 +16,7 @@ class B2FilesystemAdapter extends FilesystemAdapter
     public function url($path): string
     {
         if ($this->baseUrl) {
-            return $this->baseUrl . '/' . ltrim($path, '/');
+            return $this->baseUrl.'/'.ltrim($path, '/');
         }
 
         return parent::url($path);

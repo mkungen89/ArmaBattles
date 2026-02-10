@@ -10,6 +10,7 @@ use Illuminate\Console\Command;
 class SyncModsFromWorkshop extends Command
 {
     protected $signature = 'mods:sync {--server= : BattleMetrics server ID to sync mods for}';
+
     protected $description = 'Sync mod information from Reforger Workshop';
 
     public function __construct(
@@ -25,20 +26,22 @@ class SyncModsFromWorkshop extends Command
         if ($serverId) {
             $server = Server::where('battlemetrics_id', $serverId)->first();
 
-            if (!$server) {
+            if (! $server) {
                 $this->error("Server not found: {$serverId}");
+
                 return 1;
             }
 
             $this->info("Syncing mods for server: {$server->name}");
             $mods = $server->mods;
         } else {
-            $this->info("Syncing all mods from database...");
+            $this->info('Syncing all mods from database...');
             $mods = Mod::all();
         }
 
         if ($mods->isEmpty()) {
-            $this->warn("No mods found to sync");
+            $this->warn('No mods found to sync');
+
             return 0;
         }
 
@@ -49,8 +52,9 @@ class SyncModsFromWorkshop extends Command
         $failed = 0;
 
         foreach ($mods as $mod) {
-            if (!$mod->workshop_id) {
+            if (! $mod->workshop_id) {
                 $bar->advance();
+
                 continue;
             }
 
@@ -72,7 +76,7 @@ class SyncModsFromWorkshop extends Command
         $bar->finish();
         $this->newLine(2);
 
-        $this->info("Sync complete!");
+        $this->info('Sync complete!');
         $this->info("  Synced: {$synced}");
         $this->info("  Failed: {$failed}");
 

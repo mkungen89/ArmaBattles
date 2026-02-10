@@ -48,6 +48,7 @@ class Achievement extends Model
         }
 
         $playersWithAchievement = $this->players()->count();
+
         return round(($playersWithAchievement / $totalPlayers) * 100, 2);
     }
 
@@ -73,8 +74,9 @@ class Achievement extends Model
     public function getBadgeUrlAttribute(): ?string
     {
         if ($this->badge_path) {
-            return asset('storage/' . $this->badge_path);
+            return asset('storage/'.$this->badge_path);
         }
+
         return null;
     }
 

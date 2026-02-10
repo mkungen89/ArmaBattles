@@ -55,7 +55,7 @@ class WeaponAdminController extends Controller
             'image' => 'nullable|image|mimes:png,jpg,jpeg,gif,webp|max:2048',
         ]);
 
-        $weapon = new Weapon();
+        $weapon = new Weapon;
         $weapon->name = $validated['name'];
         $weapon->display_name = $validated['display_name'] ?? $validated['name'];
         $weapon->weapon_type = $validated['weapon_type'] ?? null;
@@ -80,7 +80,7 @@ class WeaponAdminController extends Controller
     public function update(Request $request, Weapon $weapon)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:weapons,name,' . $weapon->id,
+            'name' => 'required|string|max:255|unique:weapons,name,'.$weapon->id,
             'display_name' => 'nullable|string|max:255',
             'weapon_type' => 'nullable|string|max:100',
             'category' => 'nullable|string|max:100',
@@ -147,7 +147,7 @@ class WeaponAdminController extends Controller
         $created = 0;
         foreach ($weaponNames as $name) {
             $exists = Weapon::where('name', $name)->exists();
-            if (!$exists) {
+            if (! $exists) {
                 Weapon::create([
                     'name' => $name,
                     'display_name' => $name,

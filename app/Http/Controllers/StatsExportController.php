@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -18,11 +17,11 @@ class StatsExportController extends Controller
             ->where('player_uuid', $uuid)
             ->first();
 
-        if (!$stats) {
+        if (! $stats) {
             abort(404, 'Player not found');
         }
 
-        $fileName = "player_stats_{$uuid}_" . now()->format('Y-m-d') . '.csv';
+        $fileName = "player_stats_{$uuid}_".now()->format('Y-m-d').'.csv';
 
         return $this->generateCsv($fileName, function () use ($stats) {
             $handle = fopen('php://output', 'w');
@@ -37,7 +36,7 @@ class StatsExportController extends Controller
             fputcsv($handle, ['Deaths', $stats->deaths]);
             fputcsv($handle, ['K/D Ratio', $stats->deaths > 0 ? round($stats->kills / $stats->deaths, 2) : $stats->kills]);
             fputcsv($handle, ['Headshots', $stats->headshots]);
-            fputcsv($handle, ['Headshot %', $stats->kills > 0 ? round(($stats->headshots / $stats->kills) * 100, 1) . '%' : '0%']);
+            fputcsv($handle, ['Headshot %', $stats->kills > 0 ? round(($stats->headshots / $stats->kills) * 100, 1).'%' : '0%']);
             fputcsv($handle, ['Team Kills', $stats->team_kills]);
             fputcsv($handle, ['Roadkills', $stats->total_roadkills]);
 
@@ -100,9 +99,9 @@ class StatsExportController extends Controller
 
         $players = $query->limit($limit)->get();
 
-        $fileName = "leaderboard_{$type}_" . now()->format('Y-m-d') . '.csv';
+        $fileName = "leaderboard_{$type}_".now()->format('Y-m-d').'.csv';
 
-        return $this->generateCsv($fileName, function () use ($players, $type) {
+        return $this->generateCsv($fileName, function () use ($players) {
             $handle = fopen('php://output', 'w');
 
             // Header
@@ -173,7 +172,7 @@ class StatsExportController extends Controller
             ];
         });
 
-        $fileName = "leaderboard_{$type}_" . now()->format('Y-m-d') . '.json';
+        $fileName = "leaderboard_{$type}_".now()->format('Y-m-d').'.json';
 
         return response()->json([
             'type' => $type,
@@ -211,9 +210,9 @@ class StatsExportController extends Controller
             ->get();
 
         $player = DB::table('player_stats')->where('player_uuid', $uuid)->first();
-        $fileName = "match_history_{$uuid}_" . now()->format('Y-m-d') . '.csv';
+        $fileName = "match_history_{$uuid}_".now()->format('Y-m-d').'.csv';
 
-        return $this->generateCsv($fileName, function () use ($kills, $deaths, $player) {
+        return $this->generateCsv($fileName, function () use ($kills, $deaths) {
             $handle = fopen('php://output', 'w');
 
             // Header

@@ -42,7 +42,7 @@ class TournamentController extends Controller
 
     public function show(Tournament $tournament)
     {
-        if ($tournament->status === 'draft' && (!auth()->check() || !auth()->user()->isAdmin())) {
+        if ($tournament->status === 'draft' && (! auth()->check() || ! auth()->user()->isAdmin())) {
             abort(404);
         }
 
@@ -76,7 +76,7 @@ class TournamentController extends Controller
 
     public function bracket(Tournament $tournament)
     {
-        if ($tournament->status === 'draft' && (!auth()->check() || !auth()->user()->isAdmin())) {
+        if ($tournament->status === 'draft' && (! auth()->check() || ! auth()->user()->isAdmin())) {
             abort(404);
         }
 
@@ -99,12 +99,12 @@ class TournamentController extends Controller
                 $brackets['grand_final'] = $match;
             } elseif ($match->bracket === 'losers') {
                 $round = abs($match->round);
-                if (!isset($brackets['losers'][$round])) {
+                if (! isset($brackets['losers'][$round])) {
                     $brackets['losers'][$round] = [];
                 }
                 $brackets['losers'][$round][] = $match;
             } else {
-                if (!isset($brackets['main'][$match->round])) {
+                if (! isset($brackets['main'][$match->round])) {
                     $brackets['main'][$match->round] = [];
                 }
                 $brackets['main'][$match->round][] = $match;
@@ -133,7 +133,7 @@ class TournamentController extends Controller
 
     public function standings(Tournament $tournament)
     {
-        if (!in_array($tournament->format, ['round_robin', 'swiss'])) {
+        if (! in_array($tournament->format, ['round_robin', 'swiss'])) {
             return redirect()->route('tournaments.bracket', $tournament);
         }
 

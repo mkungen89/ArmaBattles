@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Log;
 class TrackServerStatus extends Command
 {
     protected $signature = 'server:track {--server-id= : BattleMetrics server ID to track}';
+
     protected $description = 'Track server status and save statistics';
 
     public function __construct(
@@ -27,8 +28,9 @@ class TrackServerStatus extends Command
     {
         $serverId = $this->option('server-id') ?? config('services.battlemetrics.server_id');
 
-        if (!$serverId) {
+        if (! $serverId) {
             $this->error('No server ID provided');
+
             return 1;
         }
 
@@ -37,8 +39,9 @@ class TrackServerStatus extends Command
         // Get server from BattleMetrics first
         $bmData = $this->battleMetrics->getServer($serverId);
 
-        if (!$bmData) {
+        if (! $bmData) {
             $this->error('Could not fetch server data from BattleMetrics');
+
             return 1;
         }
 
@@ -54,10 +57,12 @@ class TrackServerStatus extends Command
         $a2sData = $this->a2sQuery->queryServerInfo($server->ip, $queryPort);
 
         // If that fails, try common A2S ports
-        if (!$a2sData) {
+        if (! $a2sData) {
             $alternativePorts = [17777, $server->port + 1, $server->port, 27015, 27016];
             foreach ($alternativePorts as $port) {
-                if ($port === $queryPort) continue;
+                if ($port === $queryPort) {
+                    continue;
+                }
                 $a2sData = $this->a2sQuery->queryServerInfo($server->ip, $port);
                 if ($a2sData) {
                     $this->info("A2S found on port {$port}");
@@ -71,13 +76,13 @@ class TrackServerStatus extends Command
         $maxPlayers = $server->max_players;
 
         if ($a2sData) {
-            $this->info("A2S Query successful!");
+            $this->info('A2S Query successful!');
             $isOnline = true;
             $playerCount = $a2sData['players'] ?? 0;
             $maxPlayers = $a2sData['max_players'] ?? $server->max_players;
             $this->info("Players (A2S): {$playerCount}/{$maxPlayers}");
         } else {
-            $this->warn("A2S Query failed, using BattleMetrics data");
+            $this->warn('A2S Query failed, using BattleMetrics data');
             $isOnline = ($bmData['attributes']['status'] ?? 'offline') === 'online';
             $playerCount = $bmData['attributes']['players'] ?? 0;
             $maxPlayers = $bmData['attributes']['maxPlayers'] ?? 128;
@@ -90,11 +95,11 @@ class TrackServerStatus extends Command
         $newStatus = $isOnline ? 'online' : 'offline';
 
         // Detect status change (restart/crash)
-        if ($wasOnline && !$isOnline) {
-            $this->warn("Server went OFFLINE - ending current session");
+        if ($wasOnline && ! $isOnline) {
+            $this->warn('Server went OFFLINE - ending current session');
             $this->endCurrentSession($server);
-        } elseif (!$wasOnline && $isOnline) {
-            $this->info("Server came ONLINE - starting new session");
+        } elseif (! $wasOnline && $isOnline) {
+            $this->info('Server came ONLINE - starting new session');
             $this->startNewSession($server);
         }
 
@@ -123,7 +128,7 @@ class TrackServerStatus extends Command
         }
 
         $this->info("Status: {$newStatus}");
-        $this->info("Tracking complete!");
+        $this->info('Tracking complete!');
 
         return 0;
     }
@@ -203,7 +208,7 @@ class TrackServerStatus extends Command
     {
         $currentSession = $server->sessions()->where('is_current', true)->first();
 
-        if (!$currentSession) {
+        if (! $currentSession) {
             // No current session, start one
             $this->startNewSession($server);
             $currentSession = $server->sessions()->where('is_current', true)->first();

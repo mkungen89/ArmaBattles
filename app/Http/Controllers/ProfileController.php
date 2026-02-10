@@ -6,7 +6,6 @@ use App\Models\Achievement;
 use App\Models\AchievementShowcase;
 use App\Models\PlayerAchievement;
 use App\Models\PlayerDistance;
-use App\Models\PlayerStat;
 use App\Models\TournamentMatch;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -37,8 +36,8 @@ class ProfileController extends Controller
 
             // Count matches
             $stats['matches_played'] = TournamentMatch::where(function ($q) use ($team) {
-                    $q->where('team1_id', $team->id)->orWhere('team2_id', $team->id);
-                })
+                $q->where('team1_id', $team->id)->orWhere('team2_id', $team->id);
+            })
                 ->where('status', 'completed')
                 ->count();
 
@@ -53,8 +52,8 @@ class ProfileController extends Controller
         $recentMatches = collect();
         if ($team) {
             $recentMatches = TournamentMatch::where(function ($q) use ($team) {
-                    $q->where('team1_id', $team->id)->orWhere('team2_id', $team->id);
-                })
+                $q->where('team1_id', $team->id)->orWhere('team2_id', $team->id);
+            })
                 ->where('status', 'completed')
                 ->with(['tournament', 'team1', 'team2', 'winner'])
                 ->orderByDesc('completed_at')
@@ -194,7 +193,7 @@ class ProfileController extends Controller
      */
     private function getVehicleStats(?string $uuid): array
     {
-        if (!$uuid) {
+        if (! $uuid) {
             return ['totalWalkingDistance' => 0, 'totalVehicleDistance' => 0, 'totalWalkingTime' => 0, 'totalVehicleTime' => 0, 'topVehicles' => collect(), 'vehicleImages' => collect()];
         }
 
@@ -208,15 +207,15 @@ class ProfileController extends Controller
         // Aggregate per-vehicle data from the JSON column
         $vehicleAgg = [];
         foreach ($distances as $row) {
-            if (!is_array($row->vehicles)) {
+            if (! is_array($row->vehicles)) {
                 continue;
             }
             foreach ($row->vehicles as $v) {
                 $name = $v['vehicle'] ?? $v['name'] ?? null;
-                if (!$name) {
+                if (! $name) {
                     continue;
                 }
-                if (!isset($vehicleAgg[$name])) {
+                if (! isset($vehicleAgg[$name])) {
                     $vehicleAgg[$name] = ['name' => $name, 'distance' => 0, 'time' => 0, 'count' => 0];
                 }
                 $vehicleAgg[$name]['distance'] += floatval($v['distance'] ?? 0);
@@ -258,7 +257,7 @@ class ProfileController extends Controller
                 'required',
                 'string',
                 'regex:/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i',
-                'unique:users,player_uuid,' . Auth::id(),
+                'unique:users,player_uuid,'.Auth::id(),
             ],
         ], [
             'player_uuid.required' => 'Please enter your Arma Reforger ID.',
@@ -356,7 +355,7 @@ class ProfileController extends Controller
 
         $user = Auth::user();
         $user->update([
-            'social_links' => !empty($socialLinks) ? $socialLinks : null,
+            'social_links' => ! empty($socialLinks) ? $socialLinks : null,
         ]);
 
         return back()->with('success', 'Social media links updated successfully!');

@@ -16,7 +16,7 @@ class AchievementProgressService
     {
         $playerStat = PlayerStat::where('player_uuid', $playerUuid)->first();
 
-        if (!$playerStat) {
+        if (! $playerStat) {
             return;
         }
 

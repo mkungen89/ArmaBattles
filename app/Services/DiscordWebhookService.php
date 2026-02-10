@@ -19,19 +19,21 @@ class DiscordWebhookService
             if ($content) {
                 $payload['content'] = $content;
             }
-            if (!empty($embeds)) {
+            if (! empty($embeds)) {
                 $payload['embeds'] = $embeds;
             }
 
             $response = Http::timeout(5)->post($url, $payload);
+
             return $response->successful();
         } catch (\Exception $e) {
-            Log::warning('Discord webhook failed: ' . $e->getMessage());
+            Log::warning('Discord webhook failed: '.$e->getMessage());
+
             return false;
         }
     }
 
-    public function sendEmbed(string $title, string $description, int $color = 0x22c55e, array $fields = []): bool
+    public function sendEmbed(string $title, string $description, int $color = 0x22C55E, array $fields = []): bool
     {
         $embed = [
             'title' => $title,
@@ -40,7 +42,7 @@ class DiscordWebhookService
             'timestamp' => now()->toIso8601String(),
         ];
 
-        if (!empty($fields)) {
+        if (! empty($fields)) {
             $embed['fields'] = $fields;
         }
 

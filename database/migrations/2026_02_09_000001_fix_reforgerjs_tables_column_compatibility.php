@@ -22,7 +22,7 @@ return new class extends Migration
 
         // Only run ALTER TABLE on PostgreSQL (production).
         // SQLite tests get the fixed schema from updated original migrations.
-        if (!$isPgsql) {
+        if (! $isPgsql) {
             return;
         }
 
@@ -30,7 +30,7 @@ return new class extends Migration
 
         foreach ($tables as $table) {
             if (Schema::hasTable($table)) {
-                if (!Schema::hasColumn($table, 'occurred_at')) {
+                if (! Schema::hasColumn($table, 'occurred_at')) {
                     Schema::table($table, function (Blueprint $blueprint) {
                         $blueprint->timestamp('occurred_at')->nullable();
                     });
@@ -44,24 +44,24 @@ return new class extends Migration
 
         // Make weapons nullable in player_shooting
         if (Schema::hasTable('player_shooting') && Schema::hasColumn('player_shooting', 'weapons')) {
-            DB::statement("ALTER TABLE player_shooting ALTER COLUMN weapons DROP NOT NULL");
+            DB::statement('ALTER TABLE player_shooting ALTER COLUMN weapons DROP NOT NULL');
         }
 
         // Make heal_type nullable in player_healing_rjs
         if (Schema::hasTable('player_healing_rjs') && Schema::hasColumn('player_healing_rjs', 'heal_type')) {
-            DB::statement("ALTER TABLE player_healing_rjs ALTER COLUMN heal_type DROP NOT NULL");
+            DB::statement('ALTER TABLE player_healing_rjs ALTER COLUMN heal_type DROP NOT NULL');
         }
 
         // Add missing columns to supply_deliveries
         if (Schema::hasTable('supply_deliveries')) {
             Schema::table('supply_deliveries', function (Blueprint $table) {
-                if (!Schema::hasColumn('supply_deliveries', 'supply_type')) {
+                if (! Schema::hasColumn('supply_deliveries', 'supply_type')) {
                     $table->string('supply_type')->nullable();
                 }
-                if (!Schema::hasColumn('supply_deliveries', 'amount')) {
+                if (! Schema::hasColumn('supply_deliveries', 'amount')) {
                     $table->integer('amount')->nullable();
                 }
-                if (!Schema::hasColumn('supply_deliveries', 'delivered_at')) {
+                if (! Schema::hasColumn('supply_deliveries', 'delivered_at')) {
                     $table->timestamp('delivered_at')->nullable();
                 }
             });

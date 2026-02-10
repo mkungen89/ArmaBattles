@@ -16,6 +16,7 @@ class TournamentRegistrationMail extends Mailable implements ShouldQueue
     use Queueable, SerializesModels;
 
     public TournamentRegistration $registration;
+
     public Tournament $tournament;
 
     /**

@@ -56,7 +56,7 @@ class PlayerKillController extends Controller
         ]);
 
         // Update player stats
-        if (!empty($validated['killer_uuid'])) {
+        if (! empty($validated['killer_uuid'])) {
             $player = Player::updateOrCreate(
                 ['uuid' => $validated['killer_uuid']],
                 [
@@ -68,7 +68,7 @@ class PlayerKillController extends Controller
         }
 
         // Update victim stats if player
-        if ($validated['victim_type'] === 'PLAYER' && !empty($validated['victim_uuid'])) {
+        if ($validated['victim_type'] === 'PLAYER' && ! empty($validated['victim_uuid'])) {
             $victim = Player::updateOrCreate(
                 ['uuid' => $validated['victim_uuid']],
                 [
@@ -89,7 +89,7 @@ class PlayerKillController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Kill recorded',
-            'kill_id' => $kill->id
+            'kill_id' => $kill->id,
         ]);
     }
 }

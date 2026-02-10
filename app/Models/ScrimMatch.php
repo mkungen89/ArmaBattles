@@ -126,7 +126,7 @@ class ScrimMatch extends Model
      */
     public function getStatusColorAttribute(): string
     {
-        return match($this->status) {
+        return match ($this->status) {
             'pending' => 'text-yellow-400',
             'scheduled' => 'text-blue-400',
             'in_progress' => 'text-green-400',
@@ -141,7 +141,7 @@ class ScrimMatch extends Model
      */
     public function getStatusLabelAttribute(): string
     {
-        return match($this->status) {
+        return match ($this->status) {
             'pending' => 'Pending',
             'scheduled' => 'Scheduled',
             'in_progress' => 'In Progress',

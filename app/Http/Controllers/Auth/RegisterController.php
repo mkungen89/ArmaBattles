@@ -11,7 +11,7 @@ class RegisterController extends Controller
 {
     public function showForm()
     {
-        if (!site_setting('allow_registration', true)) {
+        if (! site_setting('allow_registration', true)) {
             return redirect()->route('home')->with('error', 'Registration is currently disabled.');
         }
 
@@ -20,7 +20,7 @@ class RegisterController extends Controller
 
     public function register(Request $request)
     {
-        if (!site_setting('allow_registration', true)) {
+        if (! site_setting('allow_registration', true)) {
             return redirect()->route('home')->with('error', 'Registration is currently disabled.');
         }
 
@@ -40,6 +40,6 @@ class RegisterController extends Controller
 
         Auth::login($user, true);
 
-        return redirect()->route('profile')->with('success', 'Welcome, ' . $user->name . '! Your account has been created.');
+        return redirect()->route('profile')->with('success', 'Welcome, '.$user->name.'! Your account has been created.');
     }
 }

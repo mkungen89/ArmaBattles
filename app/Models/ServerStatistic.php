@@ -46,7 +46,10 @@ class ServerStatistic extends Model
      */
     public function getUtilizationAttribute(): float
     {
-        if ($this->max_players === 0) return 0;
+        if ($this->max_players === 0) {
+            return 0;
+        }
+
         return round(($this->players / $this->max_players) * 100, 1);
     }
 }

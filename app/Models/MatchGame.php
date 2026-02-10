@@ -37,6 +37,6 @@ class MatchGame extends Model
 
     public function getScoreDisplayAttribute(): string
     {
-        return ($this->team1_score ?? 0) . ' - ' . ($this->team2_score ?? 0);
+        return ($this->team1_score ?? 0).' - '.($this->team2_score ?? 0);
     }
 }

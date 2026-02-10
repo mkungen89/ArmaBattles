@@ -82,6 +82,7 @@ class ActivityFeedController extends Controller
             $event->actor_profile_url = $userMap[$event->actor_uuid] ?? null;
             $event->target_profile_url = $userMap[$event->target_uuid] ?? null;
             unset($event->actor_uuid, $event->target_uuid);
+
             return $event;
         });
 

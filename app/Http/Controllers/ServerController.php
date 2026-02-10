@@ -30,13 +30,13 @@ class ServerController extends Controller
     {
         $serverId = config('services.battlemetrics.server_id');
 
-        if (!$serverId) {
+        if (! $serverId) {
             return response()->json(['error' => 'Server ID not configured'], 500);
         }
 
         $server = $this->battleMetrics->getServer($serverId);
 
-        if (!$server) {
+        if (! $server) {
             return response()->json(['error' => 'Could not fetch server data'], 500);
         }
 
@@ -47,11 +47,19 @@ class ServerController extends Controller
         $rawPlatforms = $reforger['supportedGameClientTypes'] ?? $details['platforms'] ?? [];
         $platforms = [];
         foreach ($rawPlatforms as $platform) {
-            if (str_contains($platform, 'PC')) $platforms[] = 'pc';
-            if (str_contains($platform, 'XBL') || str_contains($platform, 'XBOX')) $platforms[] = 'xbox';
-            if (str_contains($platform, 'PSN') || str_contains($platform, 'PLAYSTATION')) $platforms[] = 'playstation';
+            if (str_contains($platform, 'PC')) {
+                $platforms[] = 'pc';
+            }
+            if (str_contains($platform, 'XBL') || str_contains($platform, 'XBOX')) {
+                $platforms[] = 'xbox';
+            }
+            if (str_contains($platform, 'PSN') || str_contains($platform, 'PLAYSTATION')) {
+                $platforms[] = 'playstation';
+            }
         }
-        if (empty($platforms)) $platforms = ['pc'];
+        if (empty($platforms)) {
+            $platforms = ['pc'];
+        }
 
         return response()->json([
             'name' => $server['attributes']['name'] ?? 'Unknown',
@@ -70,7 +78,7 @@ class ServerController extends Controller
     {
         $serverId = config('services.battlemetrics.server_id');
 
-        if (!$serverId) {
+        if (! $serverId) {
             return response()->json(['error' => 'Server ID not configured'], 500);
         }
 
@@ -83,7 +91,7 @@ class ServerController extends Controller
     {
         $serverId = config('services.battlemetrics.server_id');
 
-        if (!$serverId) {
+        if (! $serverId) {
             return response()->json(['error' => 'Server ID not configured'], 500);
         }
 

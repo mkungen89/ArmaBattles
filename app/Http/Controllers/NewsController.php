@@ -28,7 +28,7 @@ class NewsController extends Controller
     {
         // Drafts only visible to GMs/admins
         if ($article->status !== 'published') {
-            if (!auth()->check() || !auth()->user()->isGM()) {
+            if (! auth()->check() || ! auth()->user()->isGM()) {
                 abort(404);
             }
         }
@@ -60,7 +60,7 @@ class NewsController extends Controller
 
     public function destroyComment(NewsComment $comment)
     {
-        if ($comment->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
+        if ($comment->user_id !== auth()->id() && ! auth()->user()->isAdmin()) {
             abort(403);
         }
 

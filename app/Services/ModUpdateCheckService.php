@@ -21,7 +21,7 @@ class ModUpdateCheckService
         $installedMods = $mgr->getMods();
         $modList = $installedMods['mods'] ?? $installedMods['data'] ?? $installedMods;
 
-        if (!is_array($modList)) {
+        if (! is_array($modList)) {
             return [];
         }
 
@@ -32,7 +32,7 @@ class ModUpdateCheckService
             $modName = $mod['name'] ?? 'Unknown';
             $installedVersion = $mod['version'] ?? $mod['currentVersion'] ?? null;
 
-            if (!$modId) {
+            if (! $modId) {
                 continue;
             }
 

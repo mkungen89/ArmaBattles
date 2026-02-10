@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
-use App\Models\Server;
 use App\Models\Mod;
+use App\Models\Server;
 use App\Models\ServerSession;
 use App\Models\ServerStatistic;
 use App\Models\SiteSetting;
+use App\Models\User;
 use App\Services\BattleMetricsService;
 use App\Services\ReforgerWorkshopService;
 use Illuminate\Http\Request;
@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Log;
 class AdminController extends Controller
 {
     use \App\Traits\LogsAdminActions;
+
     public function dashboard()
     {
         $stats = [
@@ -43,7 +44,7 @@ class AdminController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('steam_id', 'like', "%{$search}%");
+                    ->orWhere('steam_id', 'like', "%{$search}%");
             });
         }
 
@@ -142,7 +143,7 @@ class AdminController extends Controller
         // Fetch server data from BattleMetrics
         $bmServer = $battleMetrics->getServerWithDetails($serverId);
 
-        if (!$bmServer) {
+        if (! $bmServer) {
             return back()->with('error', 'Could not find server on BattleMetrics. Please check the ID.');
         }
 
@@ -156,7 +157,7 @@ class AdminController extends Controller
             foreach ($mods as $modData) {
                 $mod = Mod::syncFromBattleMetrics($modData);
 
-                if (!$server->mods()->where('mod_id', $mod->id)->exists()) {
+                if (! $server->mods()->where('mod_id', $mod->id)->exists()) {
                     $server->mods()->attach($mod->id, [
                         'load_order' => $modData['load_order'] ?? 0,
                         'is_required' => true,
@@ -232,7 +233,7 @@ class AdminController extends Controller
 
         SiteSetting::clearCache();
 
-        if (!empty($changed)) {
+        if (! empty($changed)) {
             $this->logAction('settings.update', null, null, ['changed' => array_keys($changed)]);
         }
 
@@ -260,7 +261,7 @@ class AdminController extends Controller
         }
 
         if ($request->filled('search')) {
-            $query->where('action', 'like', '%' . $request->search . '%');
+            $query->where('action', 'like', '%'.$request->search.'%');
         }
 
         $logs = $query->paginate(50);
@@ -299,7 +300,7 @@ class AdminController extends Controller
 
         return response()->stream($callback, 200, [
             'Content-Type' => 'text/csv',
-            'Content-Disposition' => 'attachment; filename="audit-log-' . now()->format('Y-m-d') . '.csv"',
+            'Content-Disposition' => 'attachment; filename="audit-log-'.now()->format('Y-m-d').'.csv"',
         ]);
     }
 }

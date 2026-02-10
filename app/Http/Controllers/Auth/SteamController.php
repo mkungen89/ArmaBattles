@@ -12,7 +12,7 @@ class SteamController extends Controller
 {
     public function redirect()
     {
-        if (!site_setting('allow_steam_login', true)) {
+        if (! site_setting('allow_steam_login', true)) {
             return redirect()->route('home')->with('error', 'Steam login is currently disabled.');
         }
 
@@ -50,18 +50,18 @@ class SteamController extends Controller
         $user->update(['last_login_at' => now()]);
 
         // Nudge users who haven't linked their Arma ID yet (max once per 7 days)
-        if (!$user->player_uuid) {
+        if (! $user->player_uuid) {
             $recentNotification = $user->notifications()
                 ->where('type', LinkArmaIdNotification::class)
                 ->where('created_at', '>=', now()->subDays(7))
                 ->exists();
 
-            if (!$recentNotification) {
-                $user->notify(new LinkArmaIdNotification());
+            if (! $recentNotification) {
+                $user->notify(new LinkArmaIdNotification);
             }
         }
 
-        return redirect()->route('profile')->with('success', 'Welcome, ' . $user->name . '!');
+        return redirect()->route('profile')->with('success', 'Welcome, '.$user->name.'!');
     }
 
     public function logout()

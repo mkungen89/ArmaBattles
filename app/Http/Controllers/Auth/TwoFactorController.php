@@ -20,7 +20,7 @@ class TwoFactorController extends Controller
 
     public function __construct()
     {
-        $this->google2fa = new Google2FA();
+        $this->google2fa = new Google2FA;
     }
 
     /**
@@ -67,7 +67,7 @@ class TwoFactorController extends Controller
 
         $renderer = new ImageRenderer(
             new RendererStyle(200),
-            new SvgImageBackEnd()
+            new SvgImageBackEnd
         );
         $writer = new Writer($renderer);
         $qrCodeSvg = $writer->writeString($qrCodeUrl);
@@ -250,7 +250,7 @@ class TwoFactorController extends Controller
 
         $user->update(['last_login_at' => now()]);
 
-        return redirect()->intended(route('profile'))->with('success', 'Welcome back, ' . $user->name . '!');
+        return redirect()->intended(route('profile'))->with('success', 'Welcome back, '.$user->name.'!');
     }
 
     /**

@@ -112,7 +112,7 @@ class ContentCreatorController extends Controller
     {
         $user = Auth::user();
 
-        if ($contentCreator->user_id !== $user->id && !$user->isAdmin()) {
+        if ($contentCreator->user_id !== $user->id && ! $user->isAdmin()) {
             abort(403, 'You cannot edit this content creator profile.');
         }
 
@@ -126,7 +126,7 @@ class ContentCreatorController extends Controller
     {
         $user = Auth::user();
 
-        if ($contentCreator->user_id !== $user->id && !$user->isAdmin()) {
+        if ($contentCreator->user_id !== $user->id && ! $user->isAdmin()) {
             abort(403, 'You cannot edit this content creator profile.');
         }
 
@@ -148,7 +148,7 @@ class ContentCreatorController extends Controller
     {
         $user = Auth::user();
 
-        if ($contentCreator->user_id !== $user->id && !$user->isAdmin()) {
+        if ($contentCreator->user_id !== $user->id && ! $user->isAdmin()) {
             abort(403, 'You cannot delete this content creator profile.');
         }
 
@@ -163,7 +163,7 @@ class ContentCreatorController extends Controller
      */
     public function verify(ContentCreator $contentCreator)
     {
-        if (!Auth::user()->isAdmin()) {
+        if (! Auth::user()->isAdmin()) {
             abort(403);
         }
 
@@ -180,7 +180,7 @@ class ContentCreatorController extends Controller
      */
     public function unverify(ContentCreator $contentCreator)
     {
-        if (!Auth::user()->isAdmin()) {
+        if (! Auth::user()->isAdmin()) {
             abort(403);
         }
 

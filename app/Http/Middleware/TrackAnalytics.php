@@ -19,12 +19,12 @@ class TrackAnalytics
     public function terminate(Request $request, Response $response): void
     {
         $start = $request->attributes->get('_analytics_start');
-        if (!$start) {
+        if (! $start) {
             return;
         }
 
         $responseTimeMs = (int) round((microtime(true) - $start) * 1000);
-        $path = '/' . ltrim($request->path(), '/');
+        $path = '/'.ltrim($request->path(), '/');
 
         // Determine if this is an API request
         $isApi = str_starts_with($path, '/api/');
@@ -39,7 +39,7 @@ class TrackAnalytics
     private function trackPageView(Request $request, string $path): void
     {
         // Only track GET requests for page views
-        if (!$request->isMethod('GET')) {
+        if (! $request->isMethod('GET')) {
             return;
         }
 

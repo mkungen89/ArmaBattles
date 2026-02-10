@@ -4,11 +4,11 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\DB;
 
 class MigrateImagesToS3 extends Command
 {
     protected $signature = 'images:migrate-to-s3 {--dry-run : Show what would be migrated without actually doing it}';
+
     protected $description = 'Migrate all local images to S3/B2 bucket';
 
     public function handle()
@@ -19,7 +19,7 @@ class MigrateImagesToS3 extends Command
             $this->info('🔍 DRY RUN MODE - No files will be moved');
         } else {
             $this->warn('⚠️  This will move all images from local storage to S3/B2');
-            if (!$this->confirm('Do you want to continue?')) {
+            if (! $this->confirm('Do you want to continue?')) {
                 return 0;
             }
         }
@@ -35,6 +35,7 @@ class MigrateImagesToS3 extends Command
 
             if (empty($files)) {
                 $this->warn("  No files found in {$dir}");
+
                 continue;
             }
 
@@ -42,8 +43,9 @@ class MigrateImagesToS3 extends Command
                 $this->line("  → {$file}");
 
                 if ($dryRun) {
-                    $this->line("    [DRY RUN] Would upload to S3");
+                    $this->line('    [DRY RUN] Would upload to S3');
                     $totalMigrated++;
+
                     continue;
                 }
 
@@ -57,19 +59,19 @@ class MigrateImagesToS3 extends Command
                     if ($uploaded) {
                         // Verify file exists on S3
                         if (Storage::disk('s3')->exists($file)) {
-                            $this->info("    ✓ Uploaded to S3");
+                            $this->info('    ✓ Uploaded to S3');
 
                             // Delete from local storage
                             Storage::disk('public')->delete($file);
-                            $this->info("    ✓ Deleted from local storage");
+                            $this->info('    ✓ Deleted from local storage');
 
                             $totalMigrated++;
                         } else {
-                            $this->error("    ✗ Failed to verify on S3");
+                            $this->error('    ✗ Failed to verify on S3');
                             $totalFailed++;
                         }
                     } else {
-                        $this->error("    ✗ Upload failed");
+                        $this->error('    ✗ Upload failed');
                         $totalFailed++;
                     }
                 } catch (\Exception $e) {
@@ -80,7 +82,7 @@ class MigrateImagesToS3 extends Command
         }
 
         // Update database references if needed
-        if (!$dryRun && $totalMigrated > 0) {
+        if (! $dryRun && $totalMigrated > 0) {
             $this->info("\n📊 Updating database references...");
             $this->updateDatabaseReferences();
         }
@@ -94,7 +96,7 @@ class MigrateImagesToS3 extends Command
         }
         $this->info('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 
-        if (!$dryRun) {
+        if (! $dryRun) {
             $this->info("\n🎉 Migration complete! All images are now on S3/B2");
             $this->warn("\n⚠️  Make sure bucket is set to Public in Backblaze dashboard");
         }
@@ -108,6 +110,6 @@ class MigrateImagesToS3 extends Command
         // Storage::url() will automatically use the correct disk
         // So no database updates needed if we're using Storage facade correctly
 
-        $this->info("  ℹ No database updates needed - using Storage::url()");
+        $this->info('  ℹ No database updates needed - using Storage::url()');
     }
 }

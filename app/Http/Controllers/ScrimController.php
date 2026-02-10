@@ -27,7 +27,7 @@ class ScrimController extends Controller
             $upcomingScrims = ScrimMatch::with(['team1', 'team2', 'server'])
                 ->where(function ($q) use ($userTeam) {
                     $q->where('team1_id', $userTeam->id)
-                      ->orWhere('team2_id', $userTeam->id);
+                        ->orWhere('team2_id', $userTeam->id);
                 })
                 ->whereIn('status', ['pending', 'scheduled', 'in_progress'])
                 ->orderBy('scheduled_at')
@@ -36,7 +36,7 @@ class ScrimController extends Controller
             $completedScrims = ScrimMatch::with(['team1', 'team2', 'winner'])
                 ->where(function ($q) use ($userTeam) {
                     $q->where('team1_id', $userTeam->id)
-                      ->orWhere('team2_id', $userTeam->id);
+                        ->orWhere('team2_id', $userTeam->id);
                 })
                 ->whereIn('status', ['completed', 'cancelled'])
                 ->orderByDesc('completed_at')
@@ -62,11 +62,11 @@ class ScrimController extends Controller
         $user = auth()->user();
         $userTeam = $user->activeTeam;
 
-        if (!$userTeam) {
+        if (! $userTeam) {
             return redirect()->route('scrims.index')->with('error', 'You must be in a team to create scrims.');
         }
 
-        if (!$userTeam->isUserCaptainOrOfficer($user)) {
+        if (! $userTeam->isUserCaptainOrOfficer($user)) {
             return redirect()->route('scrims.index')->with('error', 'Only team captains and officers can create scrims.');
         }
 
@@ -87,11 +87,11 @@ class ScrimController extends Controller
         $user = auth()->user();
         $userTeam = $user->activeTeam;
 
-        if (!$userTeam) {
+        if (! $userTeam) {
             return back()->with('error', 'You must be in a team to create scrims.');
         }
 
-        if (!$userTeam->isUserCaptainOrOfficer($user)) {
+        if (! $userTeam->isUserCaptainOrOfficer($user)) {
             return back()->with('error', 'Only team captains and officers can create scrims.');
         }
 
@@ -163,15 +163,15 @@ class ScrimController extends Controller
         $user = auth()->user();
         $userTeam = $user->activeTeam;
 
-        if (!$userTeam || $invitation->invited_team_id !== $userTeam->id) {
+        if (! $userTeam || $invitation->invited_team_id !== $userTeam->id) {
             return back()->with('error', 'You cannot accept this invitation.');
         }
 
-        if (!$userTeam->isUserCaptainOrOfficer($user)) {
+        if (! $userTeam->isUserCaptainOrOfficer($user)) {
             return back()->with('error', 'Only team captains and officers can accept scrim invitations.');
         }
 
-        if (!$invitation->canRespond()) {
+        if (! $invitation->canRespond()) {
             return back()->with('error', 'This invitation has expired or already been responded to.');
         }
 
@@ -198,15 +198,15 @@ class ScrimController extends Controller
         $user = auth()->user();
         $userTeam = $user->activeTeam;
 
-        if (!$userTeam || $invitation->invited_team_id !== $userTeam->id) {
+        if (! $userTeam || $invitation->invited_team_id !== $userTeam->id) {
             return back()->with('error', 'You cannot decline this invitation.');
         }
 
-        if (!$userTeam->isUserCaptainOrOfficer($user)) {
+        if (! $userTeam->isUserCaptainOrOfficer($user)) {
             return back()->with('error', 'Only team captains and officers can decline scrim invitations.');
         }
 
-        if (!$invitation->canRespond()) {
+        if (! $invitation->canRespond()) {
             return back()->with('error', 'This invitation has expired or already been responded to.');
         }
 
@@ -232,7 +232,7 @@ class ScrimController extends Controller
         $user = auth()->user();
         $userTeam = $user->activeTeam;
 
-        if (!$userTeam) {
+        if (! $userTeam) {
             return back()->with('error', 'You must be in a team to cancel scrims.');
         }
 
@@ -240,7 +240,7 @@ class ScrimController extends Controller
         $canCancel = ($scrim->team1_id === $userTeam->id || $scrim->team2_id === $userTeam->id)
                      && $userTeam->isUserCaptainOrOfficer($user);
 
-        if (!$canCancel) {
+        if (! $canCancel) {
             return back()->with('error', 'You cannot cancel this scrim.');
         }
 
@@ -261,18 +261,18 @@ class ScrimController extends Controller
         $user = auth()->user();
         $userTeam = $user->activeTeam;
 
-        if (!$userTeam) {
+        if (! $userTeam) {
             return back()->with('error', 'You must be in a team to report results.');
         }
 
         $canReport = ($scrim->team1_id === $userTeam->id || $scrim->team2_id === $userTeam->id)
                      && $userTeam->isUserCaptainOrOfficer($user);
 
-        if (!$canReport) {
+        if (! $canReport) {
             return back()->with('error', 'You cannot report results for this scrim.');
         }
 
-        if (!$scrim->isScheduled() && !$scrim->isInProgress()) {
+        if (! $scrim->isScheduled() && ! $scrim->isInProgress()) {
             return back()->with('error', 'Can only report results for scheduled or in-progress scrims.');
         }
 

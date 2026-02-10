@@ -15,11 +15,11 @@ class LeaderboardController extends Controller
         $period = $request->get('period', 'all');
         $validSorts = site_setting('leaderboard_categories', ['kills', 'deaths', 'headshots', 'playtime_seconds', 'total_distance', 'bases_captured', 'heals_given', 'supplies_delivered', 'xp_total']);
 
-        if (!in_array($sort, $validSorts)) {
+        if (! in_array($sort, $validSorts)) {
             $sort = 'kills';
         }
 
-        if (!in_array($period, ['all', 'monthly', 'weekly'])) {
+        if (! in_array($period, ['all', 'monthly', 'weekly'])) {
             $period = 'all';
         }
 
@@ -173,6 +173,7 @@ class LeaderboardController extends Controller
             $item->heals_given = $item->heals_given ?? 0;
             $item->supplies_delivered = $item->supplies_delivered ?? 0;
             $item->xp_total = $item->xp_total ?? 0;
+
             return $item;
         });
 

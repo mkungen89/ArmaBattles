@@ -1,7 +1,7 @@
 <?php
 
-use App\Http\Controllers\Api\StatsController;
 use App\Http\Controllers\Api\AnticheatController;
+use App\Http\Controllers\Api\StatsController;
 use Illuminate\Support\Facades\Route;
 
 /*

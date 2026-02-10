@@ -129,7 +129,7 @@ class HighlightClipController extends Controller
             ->where('clip_id', $clip->id)
             ->first();
 
-        if (!$vote) {
+        if (! $vote) {
             return back()->with('error', 'You have not voted for this clip.');
         }
 
@@ -146,7 +146,7 @@ class HighlightClipController extends Controller
      */
     public function feature(HighlightClip $clip)
     {
-        if (!Auth::user()->isAdmin()) {
+        if (! Auth::user()->isAdmin()) {
             abort(403);
         }
 
@@ -163,7 +163,7 @@ class HighlightClipController extends Controller
      */
     public function unfeature(HighlightClip $clip)
     {
-        if (!Auth::user()->isAdmin()) {
+        if (! Auth::user()->isAdmin()) {
             abort(403);
         }
 
@@ -182,7 +182,7 @@ class HighlightClipController extends Controller
     {
         $user = Auth::user();
 
-        if ($clip->user_id !== $user->id && !$user->isAdmin()) {
+        if ($clip->user_id !== $user->id && ! $user->isAdmin()) {
             abort(403, 'You cannot delete this clip.');
         }
 

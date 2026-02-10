@@ -97,7 +97,7 @@ class TournamentMatch extends Model
         }
 
         if ($this->bracket === 'losers') {
-            return "Losers Round " . abs($this->round);
+            return 'Losers Round '.abs($this->round);
         }
 
         $totalRounds = $this->tournament->matches()
@@ -154,12 +154,12 @@ class TournamentMatch extends Model
             return 'vs';
         }
 
-        return ($this->team1_score ?? 0) . ' - ' . ($this->team2_score ?? 0);
+        return ($this->team1_score ?? 0).' - '.($this->team2_score ?? 0);
     }
 
     public function isByeMatch(): bool
     {
-        return ($this->team1_id && !$this->team2_id) || (!$this->team1_id && $this->team2_id);
+        return ($this->team1_id && ! $this->team2_id) || (! $this->team1_id && $this->team2_id);
     }
 
     public function isReady(): bool
@@ -169,11 +169,12 @@ class TournamentMatch extends Model
 
     public function canCheckIn(): bool
     {
-        if (!$this->check_in_opens_at || !$this->check_in_closes_at) {
+        if (! $this->check_in_opens_at || ! $this->check_in_closes_at) {
             return false;
         }
 
         $now = now();
+
         return $now->gte($this->check_in_opens_at) && $now->lte($this->check_in_closes_at);
     }
 
@@ -190,12 +191,13 @@ class TournamentMatch extends Model
         if ($team->id === $this->team2_id) {
             return $this->team2_checked_in;
         }
+
         return false;
     }
 
     public function checkInTeam(Team $team, User $user): bool
     {
-        if (!$this->canCheckIn()) {
+        if (! $this->canCheckIn()) {
             return false;
         }
 

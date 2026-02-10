@@ -55,7 +55,7 @@ class ScheduledRestart extends Model
 
     protected function calculateNextDaily(): ?Carbon
     {
-        if (!$this->restart_time) {
+        if (! $this->restart_time) {
             return null;
         }
 
@@ -69,7 +69,7 @@ class ScheduledRestart extends Model
 
     protected function calculateNextWeekly(): ?Carbon
     {
-        if (!$this->restart_time || empty($this->days_of_week)) {
+        if (! $this->restart_time || empty($this->days_of_week)) {
             return null;
         }
 
@@ -92,17 +92,19 @@ class ScheduledRestart extends Model
 
         // Wrap to first day next week
         $firstDay = $days->first();
+
         return Carbon::today()->next((int) $firstDay)->setTimeFromTimeString($this->restart_time);
     }
 
     protected function calculateNextFromCron(): ?Carbon
     {
-        if (!$this->cron_expression) {
+        if (! $this->cron_expression) {
             return null;
         }
 
         try {
             $cron = new \Cron\CronExpression($this->cron_expression);
+
             return Carbon::instance($cron->getNextRunDate());
         } catch (\Exception) {
             return null;

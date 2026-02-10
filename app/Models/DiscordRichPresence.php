@@ -64,7 +64,7 @@ class DiscordRichPresence extends Model
 
     public function getActivityStatus(): string
     {
-        return match($this->current_activity) {
+        return match ($this->current_activity) {
             'playing' => $this->activity_details['server_name'] ?? 'Playing Arma Reforger',
             'watching_tournament' => $this->activity_details['tournament_name'] ?? 'Watching Tournament',
             'browsing' => 'Browsing Community',
@@ -74,7 +74,7 @@ class DiscordRichPresence extends Model
 
     public function getActivityState(): ?string
     {
-        return match($this->current_activity) {
+        return match ($this->current_activity) {
             'playing' => $this->activity_details['player_count'] ?? null,
             'watching_tournament' => $this->activity_details['match_status'] ?? null,
             default => null,
@@ -83,7 +83,7 @@ class DiscordRichPresence extends Model
 
     public function getActivityLargeImage(): string
     {
-        return match($this->current_activity) {
+        return match ($this->current_activity) {
             'playing' => 'arma_reforger_logo',
             'watching_tournament' => 'tournament_icon',
             default => 'community_logo',
@@ -92,7 +92,7 @@ class DiscordRichPresence extends Model
 
     public function getActivitySmallImage(): ?string
     {
-        return match($this->current_activity) {
+        return match ($this->current_activity) {
             'playing' => 'playing_icon',
             'watching_tournament' => 'watching_icon',
             default => null,
@@ -101,7 +101,7 @@ class DiscordRichPresence extends Model
 
     public function needsUpdate(): bool
     {
-        if (!$this->last_updated_at) {
+        if (! $this->last_updated_at) {
             return true;
         }
 
@@ -111,7 +111,7 @@ class DiscordRichPresence extends Model
 
     public function getElapsedTime(): int
     {
-        if (!$this->started_at) {
+        if (! $this->started_at) {
             return 0;
         }
 

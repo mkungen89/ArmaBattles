@@ -37,7 +37,7 @@ class ApiUserSeeder extends Seeder
         $this->command->info('=================================================');
         $this->command->info('');
         $this->command->info('Use this token in your requests:');
-        $this->command->info('Authorization: Bearer ' . $token->plainTextToken);
+        $this->command->info('Authorization: Bearer '.$token->plainTextToken);
         $this->command->info('');
     }
 }

@@ -3,8 +3,8 @@
 namespace Tests\Feature\Teams;
 
 use App\Models\Team;
-use App\Models\TeamInvitation;
 use App\Models\TeamApplication;
+use App\Models\TeamInvitation;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -14,8 +14,11 @@ class TeamManagementTest extends TestCase
     use RefreshDatabase;
 
     protected User $captain;
+
     protected User $member;
+
     protected User $applicant;
+
     protected Team $team;
 
     protected function setUp(): void

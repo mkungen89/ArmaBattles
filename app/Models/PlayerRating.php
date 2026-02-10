@@ -48,13 +48,13 @@ class PlayerRating extends Model
 
     // Tier thresholds
     public const TIERS = [
-        'elite'    => ['min' => 2200, 'label' => 'Elite',    'color' => 'text-red-400',    'bg' => 'bg-red-500/20 border-red-500/30',    'icon' => '/images/tiers/elite.png'],
-        'master'   => ['min' => 2000, 'label' => 'Master',   'color' => 'text-amber-400',  'bg' => 'bg-amber-500/20 border-amber-500/30', 'icon' => '/images/tiers/master.png'],
-        'diamond'  => ['min' => 1800, 'label' => 'Diamond',  'color' => 'text-cyan-400',   'bg' => 'bg-cyan-500/20 border-cyan-500/30',   'icon' => '/images/tiers/diamond.png'],
+        'elite' => ['min' => 2200, 'label' => 'Elite',    'color' => 'text-red-400',    'bg' => 'bg-red-500/20 border-red-500/30',    'icon' => '/images/tiers/elite.png'],
+        'master' => ['min' => 2000, 'label' => 'Master',   'color' => 'text-amber-400',  'bg' => 'bg-amber-500/20 border-amber-500/30', 'icon' => '/images/tiers/master.png'],
+        'diamond' => ['min' => 1800, 'label' => 'Diamond',  'color' => 'text-cyan-400',   'bg' => 'bg-cyan-500/20 border-cyan-500/30',   'icon' => '/images/tiers/diamond.png'],
         'platinum' => ['min' => 1600, 'label' => 'Platinum', 'color' => 'text-blue-300',   'bg' => 'bg-blue-500/20 border-blue-500/30',   'icon' => '/images/tiers/platinum.png'],
-        'gold'     => ['min' => 1400, 'label' => 'Gold',     'color' => 'text-yellow-400', 'bg' => 'bg-yellow-500/20 border-yellow-500/30','icon' => '/images/tiers/gold.png'],
-        'silver'   => ['min' => 1200, 'label' => 'Silver',   'color' => 'text-gray-300',   'bg' => 'bg-gray-500/20 border-gray-500/30',   'icon' => '/images/tiers/silver.png'],
-        'bronze'   => ['min' => 0,    'label' => 'Bronze',   'color' => 'text-orange-400', 'bg' => 'bg-orange-500/20 border-orange-500/30','icon' => '/images/tiers/bronze.png'],
+        'gold' => ['min' => 1400, 'label' => 'Gold',     'color' => 'text-yellow-400', 'bg' => 'bg-yellow-500/20 border-yellow-500/30', 'icon' => '/images/tiers/gold.png'],
+        'silver' => ['min' => 1200, 'label' => 'Silver',   'color' => 'text-gray-300',   'bg' => 'bg-gray-500/20 border-gray-500/30',   'icon' => '/images/tiers/silver.png'],
+        'bronze' => ['min' => 0,    'label' => 'Bronze',   'color' => 'text-orange-400', 'bg' => 'bg-orange-500/20 border-orange-500/30', 'icon' => '/images/tiers/bronze.png'],
         'unranked' => ['min' => -1,   'label' => 'Unranked', 'color' => 'text-gray-500',   'bg' => 'bg-gray-700/20 border-gray-600/30',   'icon' => null],
     ];
 
@@ -70,7 +70,7 @@ class PlayerRating extends Model
 
     public static function calculateTier(float $rating, bool $isPlaced): string
     {
-        if (!$isPlaced) {
+        if (! $isPlaced) {
             return 'unranked';
         }
 

@@ -42,7 +42,7 @@ class PlayerComparisonController extends Controller
         $p1 = $request->get('p1');
         $p2 = $request->get('p2');
 
-        if (!$p1 || !$p2) {
+        if (! $p1 || ! $p2) {
             return response()->json(['error' => 'Two player UUIDs required'], 400);
         }
 
@@ -111,7 +111,7 @@ class PlayerComparisonController extends Controller
             ->limit(10)
             ->get(['player_uuid', 'player_name', 'kills', 'deaths']);
 
-        return response()->json($results->map(fn($p) => [
+        return response()->json($results->map(fn ($p) => [
             'uuid' => $p->player_uuid,
             'name' => $p->player_name,
             'kills' => $p->kills,

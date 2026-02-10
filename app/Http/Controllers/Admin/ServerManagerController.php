@@ -43,7 +43,7 @@ class ServerManagerController extends Controller
     public function logs(string $type = 'arma')
     {
         $validTypes = ['arma', 'arma-stdout', 'stats', 'stats-service'];
-        if (!in_array($type, $validTypes)) {
+        if (! in_array($type, $validTypes)) {
             $type = 'arma';
         }
 
@@ -250,6 +250,7 @@ class ServerManagerController extends Controller
         try {
             $result = $this->manager->broadcast($request->message);
             $this->logAction('server.broadcast', null, null, ['message' => $request->message, 'source' => 'quick-message']);
+
             return back()->with('success', 'Message broadcast sent.');
         } catch (ConnectionException) {
             return back()->with('error', 'Could not connect to game server.');
@@ -306,6 +307,7 @@ class ServerManagerController extends Controller
                 'minutes' => $request->minutes,
                 'reason' => $request->reason,
             ]);
+
             return back()->with('success', 'Player banned by GUID.');
         } catch (ConnectionException) {
             return back()->with('error', 'Could not connect to game server.');
@@ -320,11 +322,12 @@ class ServerManagerController extends Controller
     {
         try {
             $config = json_decode($request->input('config_json'), true);
-            if (!$config) {
+            if (! $config) {
                 return back()->with('error', 'Invalid JSON configuration.');
             }
             $result = $this->manager->updateArmaConfig($config);
             $this->logAction('server.config.arma.update', null, null);
+
             return back()->with('success', $result['message'] ?? 'Arma config updated.');
         } catch (ConnectionException) {
             return back()->with('error', 'Could not connect to game server.');
@@ -337,11 +340,12 @@ class ServerManagerController extends Controller
     {
         try {
             $config = json_decode($request->input('config_json'), true);
-            if (!$config) {
+            if (! $config) {
                 return back()->with('error', 'Invalid JSON configuration.');
             }
             $result = $this->manager->updateStatsConfig($config);
             $this->logAction('server.config.stats.update', null, null);
+
             return back()->with('success', $result['message'] ?? 'Stats config updated.');
         } catch (ConnectionException) {
             return back()->with('error', 'Could not connect to game server.');
@@ -363,6 +367,7 @@ class ServerManagerController extends Controller
         try {
             $result = $this->manager->addMod($request->mod_id, $request->name, $request->version);
             $this->logAction('server.mod.add', null, null, ['modId' => $request->mod_id, 'name' => $request->name]);
+
             return back()->with('success', $result['message'] ?? 'Mod added.');
         } catch (ConnectionException) {
             return back()->with('error', 'Could not connect to game server.');
@@ -376,6 +381,7 @@ class ServerManagerController extends Controller
         try {
             $result = $this->manager->removeMod($modId);
             $this->logAction('server.mod.remove', null, null, ['modId' => $modId]);
+
             return back()->with('success', $result['message'] ?? 'Mod removed.');
         } catch (ConnectionException) {
             return back()->with('error', 'Could not connect to game server.');
@@ -393,7 +399,7 @@ class ServerManagerController extends Controller
             'stats' => ['restart'],
         ];
 
-        if (!isset($validActions[$service]) || !in_array($action, $validActions[$service])) {
+        if (! isset($validActions[$service]) || ! in_array($action, $validActions[$service])) {
             return back()->with('error', 'Invalid service action.');
         }
 
@@ -405,7 +411,8 @@ class ServerManagerController extends Controller
                 'stats.restart' => $this->manager->restartStats(),
             };
             $this->logAction("server.service.{$service}.{$action}", null, null);
-            return back()->with('success', $result['message'] ?? ucfirst($action) . " {$service} executed.");
+
+            return back()->with('success', $result['message'] ?? ucfirst($action)." {$service} executed.");
         } catch (ConnectionException) {
             return back()->with('error', 'Could not connect to game server.');
         } catch (RequestException $e) {
@@ -420,6 +427,7 @@ class ServerManagerController extends Controller
         try {
             $result = $this->manager->startUpdate();
             $this->logAction('server.update.start', null, null);
+
             return back()->with('success', $result['message'] ?? 'Server update started.');
         } catch (ConnectionException) {
             return back()->with('error', 'Could not connect to game server.');
@@ -437,6 +445,7 @@ class ServerManagerController extends Controller
         try {
             $result = $this->manager->kickPlayer($request->player_id, $request->input('reason', 'Kicked by admin'));
             $this->logAction('server.player.kick', null, null, ['playerId' => $request->player_id, 'reason' => $request->reason]);
+
             return back()->with('success', 'Player kicked.');
         } catch (ConnectionException) {
             return back()->with('error', 'Could not connect to game server.');
@@ -460,6 +469,7 @@ class ServerManagerController extends Controller
                 'minutes' => $request->minutes,
                 'reason' => $request->reason,
             ]);
+
             return back()->with('success', 'Player banned.');
         } catch (ConnectionException) {
             return back()->with('error', 'Could not connect to game server.');
@@ -475,6 +485,7 @@ class ServerManagerController extends Controller
         try {
             $result = $this->manager->unbanPlayer($request->ban_index);
             $this->logAction('server.player.unban', null, null, ['banIndex' => $request->ban_index]);
+
             return back()->with('success', 'Player unbanned.');
         } catch (ConnectionException) {
             return back()->with('error', 'Could not connect to game server.');
@@ -490,6 +501,7 @@ class ServerManagerController extends Controller
         try {
             $result = $this->manager->broadcast($request->message);
             $this->logAction('server.broadcast', null, null, ['message' => $request->message]);
+
             return back()->with('success', 'Message broadcast sent.');
         } catch (ConnectionException) {
             return back()->with('error', 'Could not connect to game server.');
@@ -569,13 +581,14 @@ class ServerManagerController extends Controller
     public function apiLogs(string $type)
     {
         $validTypes = ['arma', 'arma-stdout', 'stats', 'stats-service'];
-        if (!in_array($type, $validTypes)) {
+        if (! in_array($type, $validTypes)) {
             return response()->json(['error' => 'Invalid log type'], 400);
         }
 
         try {
             $lines = request()->integer('lines', 100);
             $lines = min(max($lines, 50), 500);
+
             return response()->json($this->manager->logs($type, $lines));
         } catch (ConnectionException) {
             return response()->json(['error' => 'Could not connect to game server'], 503);

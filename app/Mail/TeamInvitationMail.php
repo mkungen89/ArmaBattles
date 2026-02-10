@@ -16,6 +16,7 @@ class TeamInvitationMail extends Mailable implements ShouldQueue
     use Queueable, SerializesModels;
 
     public TeamInvitation $invitation;
+
     public Team $team;
 
     /**

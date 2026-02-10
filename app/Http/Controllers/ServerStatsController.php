@@ -28,7 +28,7 @@ class ServerStatsController extends Controller
         };
 
         $server = Server::where('battlemetrics_id', $serverId)->first();
-        if (!$server) {
+        if (! $server) {
             return response()->json(['error' => 'Server not found'], 404);
         }
 
@@ -38,7 +38,7 @@ class ServerStatsController extends Controller
             ->orderBy('recorded_at')
             ->get(['players_online', 'max_players', 'fps', 'memory_mb', 'uptime_seconds', 'recorded_at']);
 
-        $labels = $data->pluck('recorded_at')->map(fn($t) => \Carbon\Carbon::parse($t)->format('H:i'));
+        $labels = $data->pluck('recorded_at')->map(fn ($t) => \Carbon\Carbon::parse($t)->format('H:i'));
         $players = $data->pluck('players_online');
         $fps = $data->pluck('fps');
 

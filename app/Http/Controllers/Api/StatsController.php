@@ -116,9 +116,9 @@ class StatsController extends Controller
             $validated['victim_name'] ?? null,
             $validated['weapon_name'] ?? null,
             (float) ($validated['kill_distance'] ?? 0),
-            !empty($validated['is_headshot']),
-            !empty($validated['is_team_kill']),
-            !empty($validated['is_roadkill']),
+            ! empty($validated['is_headshot']),
+            ! empty($validated['is_team_kill']),
+            ! empty($validated['is_roadkill']),
             $validated['victim_type'] ?? 'PLAYER',
             $id,
         );
@@ -128,7 +128,7 @@ class StatsController extends Controller
             'killer_name' => $validated['killer_name'] ?? 'Unknown',
             'victim_name' => $validated['victim_name'] ?? null,
             'weapon_name' => $validated['weapon_name'] ?? null,
-            'is_headshot' => !empty($validated['is_headshot']),
+            'is_headshot' => ! empty($validated['is_headshot']),
         ]);
 
         // Discord notable kill notification
@@ -138,9 +138,9 @@ class StatsController extends Controller
             && site_setting('discord_notify_notable_kills')
             && site_setting('discord_webhook_url')
         ) {
-            $isHeadshot = !empty($validated['is_headshot']);
+            $isHeadshot = ! empty($validated['is_headshot']);
             SendDiscordNotification::dispatch(
-                ($isHeadshot ? 'Headshot! ' : '') . 'Notable Kill',
+                ($isHeadshot ? 'Headshot! ' : '').'Notable Kill',
                 sprintf(
                     '**%s** killed **%s** from **%dm** with %s',
                     $validated['killer_name'] ?? 'Unknown',
@@ -148,7 +148,7 @@ class StatsController extends Controller
                     round($killDistance),
                     $validated['weapon_name'] ?? 'Unknown'
                 ),
-                $isHeadshot ? 0xf59e0b : 0xef4444,
+                $isHeadshot ? 0xF59E0B : 0xEF4444,
             );
         }
 
@@ -300,7 +300,7 @@ class StatsController extends Controller
         }
 
         // Update bases_captured counter
-        if (!empty($validated['player_uuid']) && in_array(strtoupper($validated['event_type']), $captureTypes)) {
+        if (! empty($validated['player_uuid']) && in_array(strtoupper($validated['event_type']), $captureTypes)) {
             $serverId = $validated['server_id'] ?? 1;
             $this->getOrCreatePlayerStat($validated['player_uuid'], $validated['player_name'] ?? 'Unknown', $serverId);
             DB::table('player_stats')->where('player_uuid', $validated['player_uuid'])->increment('bases_captured');
@@ -496,7 +496,7 @@ class StatsController extends Controller
             $this->updateHitZoneStats($event);
 
             // Friendly fire damage = rating penalty (less severe than team kill)
-            if (!empty($event['is_friendly_fire']) && !empty($event['killer_uuid'])) {
+            if (! empty($event['is_friendly_fire']) && ! empty($event['killer_uuid'])) {
                 $this->queueRatedObjectiveIfEligible('friendly_fire', $event['killer_uuid'], [
                     'server_id' => $event['server_id'],
                     'timestamp' => $event['timestamp'] ?? now(),
@@ -801,21 +801,24 @@ class StatsController extends Controller
     public function getServers(): JsonResponse
     {
         $servers = DB::table('servers')->get();
+
         return response()->json($servers);
     }
 
     public function getServer($id): JsonResponse
     {
         $server = DB::table('servers')->where('id', $id)->first();
-        if (!$server) {
+        if (! $server) {
             return response()->json(['error' => 'Server not found'], 404);
         }
+
         return response()->json($server);
     }
 
     public function getServerStatus($id): JsonResponse
     {
         $status = DB::table('server_status')->where('server_id', $id)->first();
+
         return response()->json($status);
     }
 
@@ -858,21 +861,24 @@ class StatsController extends Controller
         }
 
         $players = $query->paginate($request->input('per_page', 25));
+
         return response()->json($players);
     }
 
     public function getPlayer($id): JsonResponse
     {
         $player = DB::table('player_stats')->where('player_uuid', $id)->first();
-        if (!$player) {
+        if (! $player) {
             return response()->json(['error' => 'Player not found'], 404);
         }
+
         return response()->json($player);
     }
 
     public function getPlayerStats($id): JsonResponse
     {
         $stats = DB::table('player_stats')->where('player_uuid', $id)->first();
+
         return response()->json($stats);
     }
 
@@ -882,6 +888,7 @@ class StatsController extends Controller
             ->where('killer_uuid', $id)
             ->orderByDesc('occurred_at')
             ->paginate($request->input('per_page', 25));
+
         return response()->json($kills);
     }
 
@@ -891,6 +898,7 @@ class StatsController extends Controller
             ->where('victim_uuid', $id)
             ->orderByDesc('occurred_at')
             ->paginate($request->input('per_page', 25));
+
         return response()->json($deaths);
     }
 
@@ -900,6 +908,7 @@ class StatsController extends Controller
             ->where('player_uuid', $id)
             ->orderByDesc('occurred_at')
             ->paginate($request->input('per_page', 25));
+
         return response()->json($connections);
     }
 
@@ -909,6 +918,7 @@ class StatsController extends Controller
             ->where('player_uuid', $id)
             ->orderByDesc('occurred_at')
             ->paginate($request->input('per_page', 25));
+
         return response()->json($xp);
     }
 
@@ -918,6 +928,7 @@ class StatsController extends Controller
             ->where('player_uuid', $id)
             ->orderByDesc('occurred_at')
             ->first();
+
         return response()->json($distance);
     }
 
@@ -927,6 +938,7 @@ class StatsController extends Controller
             ->where('player_uuid', $id)
             ->orderByDesc('occurred_at')
             ->paginate($request->input('per_page', 25));
+
         return response()->json($shooting);
     }
 
@@ -1056,6 +1068,7 @@ class StatsController extends Controller
 
         $kills = $query->orderByDesc('occurred_at')
             ->paginate($request->input('per_page', 50));
+
         return response()->json($kills);
     }
 
@@ -1072,6 +1085,7 @@ class StatsController extends Controller
 
         $connections = $query->orderByDesc('occurred_at')
             ->paginate($request->input('per_page', 50));
+
         return response()->json($connections);
     }
 
@@ -1085,6 +1099,7 @@ class StatsController extends Controller
 
         $events = $query->orderByDesc('occurred_at')
             ->paginate($request->input('per_page', 50));
+
         return response()->json($events);
     }
 
@@ -1101,6 +1116,7 @@ class StatsController extends Controller
 
         $messages = $query->orderByDesc('occurred_at')
             ->paginate($request->input('per_page', 50));
+
         return response()->json($messages);
     }
 
@@ -1114,6 +1130,7 @@ class StatsController extends Controller
 
         $sessions = $query->orderByDesc('occurred_at')
             ->paginate($request->input('per_page', 50));
+
         return response()->json($sessions);
     }
 
@@ -1260,7 +1277,7 @@ class StatsController extends Controller
     {
         $stat = DB::table('player_stats')->where('player_uuid', $uuid)->first();
 
-        if (!$stat) {
+        if (! $stat) {
             DB::table('player_stats')->insert([
                 'player_uuid' => $uuid,
                 'player_name' => $playerName,
@@ -1294,14 +1311,14 @@ class StatsController extends Controller
         try {
             $killerUuid = $data['killer_uuid'] ?? null;
             $victimUuid = $data['victim_uuid'] ?? null;
-            $isTeamKill = !empty($data['is_team_kill']);
+            $isTeamKill = ! empty($data['is_team_kill']);
 
-            if (!$killerUuid) {
+            if (! $killerUuid) {
                 return;
             }
 
             // Regular kills require victim UUID; team kills only need the killer
-            if (!$isTeamKill && !$victimUuid) {
+            if (! $isTeamKill && ! $victimUuid) {
                 return;
             }
 
@@ -1313,7 +1330,7 @@ class StatsController extends Controller
                 $ratingService->queueRatedKill($killId, [
                     'killer_uuid' => $killerUuid,
                     'victim_uuid' => $victimUuid,
-                    'is_headshot' => !empty($data['is_headshot']),
+                    'is_headshot' => ! empty($data['is_headshot']),
                     'is_team_kill' => $isTeamKill,
                     'kill_distance' => $data['kill_distance'] ?? 0,
                     'weapon_name' => $data['weapon_name'] ?? null,
@@ -1333,7 +1350,7 @@ class StatsController extends Controller
     private function queueRatedObjectiveIfEligible(string $eventType, ?string $playerUuid, array $data = []): void
     {
         try {
-            if (!$playerUuid) {
+            if (! $playerUuid) {
                 return;
             }
 
@@ -1356,7 +1373,7 @@ class StatsController extends Controller
         $serverId = $data['server_id'] ?? 1;
 
         // Update killer stats
-        if (!empty($data['killer_uuid'])) {
+        if (! empty($data['killer_uuid'])) {
             $this->getOrCreatePlayerStat($data['killer_uuid'], $data['killer_name'] ?? 'Unknown', $serverId);
             DB::table('player_stats')->where('player_uuid', $data['killer_uuid'])->increment('kills');
 
@@ -1364,13 +1381,13 @@ class StatsController extends Controller
                 DB::table('player_stats')->where('player_uuid', $data['killer_uuid'])->increment('player_kills_count');
             }
 
-            if (!empty($data['is_team_kill'])) {
+            if (! empty($data['is_team_kill'])) {
                 DB::table('player_stats')->where('player_uuid', $data['killer_uuid'])->increment('team_kills');
             }
-            if (!empty($data['is_headshot'])) {
+            if (! empty($data['is_headshot'])) {
                 DB::table('player_stats')->where('player_uuid', $data['killer_uuid'])->increment('headshots');
             }
-            if (!empty($data['is_roadkill'])) {
+            if (! empty($data['is_roadkill'])) {
                 DB::table('player_stats')->where('player_uuid', $data['killer_uuid'])->increment('total_roadkills');
             }
 
@@ -1378,7 +1395,7 @@ class StatsController extends Controller
         }
 
         // Update victim stats (deaths)
-        if (!empty($data['victim_uuid']) && ($data['victim_type'] ?? '') !== 'AI') {
+        if (! empty($data['victim_uuid']) && ($data['victim_type'] ?? '') !== 'AI') {
             $this->getOrCreatePlayerStat($data['victim_uuid'], $data['victim_name'] ?? 'Unknown', $serverId);
             DB::table('player_stats')->where('player_uuid', $data['victim_uuid'])->increment('deaths');
             DB::table('player_stats')->where('player_uuid', $data['victim_uuid'])->update(['last_seen_at' => now()]);
@@ -1390,7 +1407,7 @@ class StatsController extends Controller
 
     private function updatePlayerOnlineStatus(array $data): void
     {
-        if (!empty($data['player_uuid'])) {
+        if (! empty($data['player_uuid'])) {
             $serverId = $data['server_id'] ?? 1;
             $this->getOrCreatePlayerStat($data['player_uuid'], $data['player_name'], $serverId);
             DB::table('player_stats')->where('player_uuid', $data['player_uuid'])->update(['last_seen_at' => now()]);
@@ -1399,7 +1416,7 @@ class StatsController extends Controller
 
     private function updatePlayerXp(array $data): void
     {
-        if (!empty($data['player_uuid'])) {
+        if (! empty($data['player_uuid'])) {
             $serverId = $data['server_id'] ?? 1;
             $this->getOrCreatePlayerStat($data['player_uuid'], $data['player_name'], $serverId);
             DB::table('player_stats')->where('player_uuid', $data['player_uuid'])->increment('xp_total', $data['xp_amount']);
@@ -1411,7 +1428,7 @@ class StatsController extends Controller
 
     private function updatePlayerDistanceTotals(array $data): void
     {
-        if (!empty($data['player_uuid'])) {
+        if (! empty($data['player_uuid'])) {
             $serverId = $data['server_id'] ?? 1;
             $walkingDistance = $data['walking_distance'] ?? 0;
             $vehicleDistance = $data['total_vehicle_distance'] ?? 0;
@@ -1429,7 +1446,7 @@ class StatsController extends Controller
 
     private function updatePlayerShotCount(array $data): void
     {
-        if (!empty($data['player_uuid'])) {
+        if (! empty($data['player_uuid'])) {
             $serverId = $data['server_id'] ?? 1;
             $this->getOrCreatePlayerStat($data['player_uuid'], $data['player_name'] ?? 'Unknown', $serverId);
             DB::table('player_stats')->where('player_uuid', $data['player_uuid'])->increment('shots_fired', $data['total_rounds'] ?? 0);
@@ -1438,7 +1455,7 @@ class StatsController extends Controller
 
     private function updatePlayerGrenadeStats(array $data): void
     {
-        if (!empty($data['player_uuid'])) {
+        if (! empty($data['player_uuid'])) {
             $serverId = $data['server_id'] ?? 1;
             $this->getOrCreatePlayerStat($data['player_uuid'], $data['player_name'] ?? 'Unknown', $serverId);
             DB::table('player_stats')->where('player_uuid', $data['player_uuid'])->increment('grenades_thrown');
@@ -1449,12 +1466,12 @@ class StatsController extends Controller
     {
         $serverId = $data['server_id'] ?? 1;
 
-        if (!empty($data['healer_uuid'])) {
+        if (! empty($data['healer_uuid'])) {
             $this->getOrCreatePlayerStat($data['healer_uuid'], $data['healer_name'] ?? 'Unknown', $serverId);
             DB::table('player_stats')->where('player_uuid', $data['healer_uuid'])->increment('heals_given');
         }
 
-        if (!empty($data['patient_uuid']) && empty($data['is_self']) && empty($data['patient_is_ai'])) {
+        if (! empty($data['patient_uuid']) && empty($data['is_self']) && empty($data['patient_is_ai'])) {
             $this->getOrCreatePlayerStat($data['patient_uuid'], $data['patient_name'] ?? 'Unknown', $serverId);
             DB::table('player_stats')->where('player_uuid', $data['patient_uuid'])->increment('heals_received');
         }
@@ -1462,7 +1479,7 @@ class StatsController extends Controller
 
     private function updatePlayerSupplyStats(array $data): void
     {
-        if (!empty($data['player_uuid'])) {
+        if (! empty($data['player_uuid'])) {
             $serverId = $data['server_id'] ?? 1;
             $amount = $data['estimated_amount'] ?? 1;
             $this->getOrCreatePlayerStat($data['player_uuid'], $data['player_name'] ?? 'Unknown', $serverId);
@@ -1485,7 +1502,7 @@ class StatsController extends Controller
         $updates = ['total_hits' => DB::raw('total_hits + 1')];
 
         if ($damageAmount > 0) {
-            $updates['total_damage_dealt'] = DB::raw('total_damage_dealt + ' . number_format((float) $damageAmount, 2, '.', ''));
+            $updates['total_damage_dealt'] = DB::raw('total_damage_dealt + '.number_format((float) $damageAmount, 2, '.', ''));
         }
 
         if ($hitZone) {

@@ -9,7 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         // Kills table
-        if (!Schema::hasTable('kills')) {
+        if (! Schema::hasTable('kills')) {
             Schema::create('kills', function (Blueprint $table) {
                 $table->id();
                 $table->unsignedBigInteger('server_id');
@@ -47,7 +47,7 @@ return new class extends Migration
         }
 
         // Damage Events (batch hit zone data)
-        if (!Schema::hasTable('damage_events')) {
+        if (! Schema::hasTable('damage_events')) {
             Schema::create('damage_events', function (Blueprint $table) {
                 $table->id();
                 $table->unsignedBigInteger('server_id');
@@ -73,7 +73,7 @@ return new class extends Migration
         }
 
         // Connections (player connect/disconnect)
-        if (!Schema::hasTable('connections')) {
+        if (! Schema::hasTable('connections')) {
             Schema::create('connections', function (Blueprint $table) {
                 $table->id();
                 $table->unsignedBigInteger('server_id');
@@ -92,7 +92,7 @@ return new class extends Migration
         }
 
         // Base Events (capture/seized)
-        if (!Schema::hasTable('base_events')) {
+        if (! Schema::hasTable('base_events')) {
             Schema::create('base_events', function (Blueprint $table) {
                 $table->id();
                 $table->unsignedBigInteger('server_id');
@@ -119,7 +119,7 @@ return new class extends Migration
         }
 
         // Building Events
-        if (!Schema::hasTable('building_events')) {
+        if (! Schema::hasTable('building_events')) {
             Schema::create('building_events', function (Blueprint $table) {
                 $table->id();
                 $table->unsignedBigInteger('server_id');
@@ -142,7 +142,7 @@ return new class extends Migration
         }
 
         // Consciousness Events (knocked/unconscious)
-        if (!Schema::hasTable('consciousness_events')) {
+        if (! Schema::hasTable('consciousness_events')) {
             Schema::create('consciousness_events', function (Blueprint $table) {
                 $table->id();
                 $table->unsignedBigInteger('server_id');
@@ -168,7 +168,7 @@ return new class extends Migration
         }
 
         // Group Events (squad join/leave)
-        if (!Schema::hasTable('group_events')) {
+        if (! Schema::hasTable('group_events')) {
             Schema::create('group_events', function (Blueprint $table) {
                 $table->id();
                 $table->unsignedBigInteger('server_id');
@@ -186,7 +186,7 @@ return new class extends Migration
         }
 
         // XP Events
-        if (!Schema::hasTable('xp_events')) {
+        if (! Schema::hasTable('xp_events')) {
             Schema::create('xp_events', function (Blueprint $table) {
                 $table->id();
                 $table->unsignedBigInteger('server_id');
@@ -206,7 +206,7 @@ return new class extends Migration
         }
 
         // Chat Events
-        if (!Schema::hasTable('chat_events')) {
+        if (! Schema::hasTable('chat_events')) {
             Schema::create('chat_events', function (Blueprint $table) {
                 $table->id();
                 $table->unsignedBigInteger('server_id');
@@ -223,7 +223,7 @@ return new class extends Migration
         }
 
         // Editor Actions (GM actions)
-        if (!Schema::hasTable('editor_actions')) {
+        if (! Schema::hasTable('editor_actions')) {
             Schema::create('editor_actions', function (Blueprint $table) {
                 $table->id();
                 $table->unsignedBigInteger('server_id');
@@ -243,7 +243,7 @@ return new class extends Migration
         }
 
         // GM Sessions (enter/exit)
-        if (!Schema::hasTable('gm_sessions')) {
+        if (! Schema::hasTable('gm_sessions')) {
             Schema::create('gm_sessions', function (Blueprint $table) {
                 $table->id();
                 $table->unsignedBigInteger('server_id');
@@ -260,7 +260,7 @@ return new class extends Migration
         }
 
         // Players table for stats tracking
-        if (!Schema::hasTable('players')) {
+        if (! Schema::hasTable('players')) {
             Schema::create('players', function (Blueprint $table) {
                 $table->id();
                 $table->string('uuid')->unique();

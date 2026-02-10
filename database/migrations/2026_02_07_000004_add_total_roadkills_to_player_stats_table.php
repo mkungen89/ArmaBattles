@@ -9,7 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('player_stats', function (Blueprint $table) {
-            if (!Schema::hasColumn('player_stats', 'total_roadkills')) {
+            if (! Schema::hasColumn('player_stats', 'total_roadkills')) {
                 $table->unsignedInteger('total_roadkills')->default(0)->after('team_kills');
             }
         });

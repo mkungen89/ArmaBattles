@@ -25,7 +25,7 @@ class ApplicationResultNotification extends Notification
     {
         $message = $this->result === 'accepted'
             ? "Your application to {$this->team->name} has been accepted! Welcome to the platoon."
-            : "Your application to {$this->team->name} has been declined." . ($this->reason ? " Reason: {$this->reason}" : '');
+            : "Your application to {$this->team->name} has been declined.".($this->reason ? " Reason: {$this->reason}" : '');
 
         return [
             'type' => 'application_result',

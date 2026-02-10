@@ -10,7 +10,7 @@ class MaintenanceModeMiddleware
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if (!site_setting('maintenance_mode', false)) {
+        if (! site_setting('maintenance_mode', false)) {
             return $next($request);
         }
 

@@ -198,7 +198,7 @@ return new class extends Migration
         if (Schema::hasTable('users')) {
             Schema::table('users', function (Blueprint $table) {
                 // Index for player UUID lookups (links to game stats)
-                if (!Schema::hasColumn('users', 'player_uuid')) {
+                if (! Schema::hasColumn('users', 'player_uuid')) {
                     // Column doesn't exist, skip
                 } else {
                     $table->index('player_uuid', 'idx_users_player_uuid');

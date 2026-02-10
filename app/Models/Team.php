@@ -165,23 +165,25 @@ class Team extends Model
 
     public function getStatusBadgeAttribute(): string
     {
-        if (!$this->is_active) {
+        if (! $this->is_active) {
             return 'bg-red-500/20 text-red-400';
         }
         if ($this->is_verified) {
             return 'bg-green-500/20 text-green-400';
         }
+
         return 'bg-gray-500/20 text-gray-400';
     }
 
     public function getStatusTextAttribute(): string
     {
-        if (!$this->is_active) {
+        if (! $this->is_active) {
             return 'Disbanded';
         }
         if ($this->is_verified) {
             return 'Verified';
         }
+
         return 'Active';
     }
 
@@ -292,10 +294,10 @@ class Team extends Model
         $recentMatches = TournamentMatch::where(function ($q) {
             $q->where('team1_id', $this->id)->orWhere('team2_id', $this->id);
         })
-        ->where('status', 'completed')
-        ->orderByDesc('completed_at')
-        ->limit(10)
-        ->get();
+            ->where('status', 'completed')
+            ->orderByDesc('completed_at')
+            ->limit(10)
+            ->get();
 
         if ($recentMatches->isEmpty()) {
             return ['type' => 'none', 'count' => 0];
@@ -306,7 +308,7 @@ class Team extends Model
 
         foreach ($recentMatches as $match) {
             $won = $match->winner_id === $this->id;
-            if (($type === 'win' && $won) || ($type === 'loss' && !$won)) {
+            if (($type === 'win' && $won) || ($type === 'loss' && ! $won)) {
                 $count++;
             } else {
                 break;
@@ -321,10 +323,10 @@ class Team extends Model
         $recentMatches = TournamentMatch::where(function ($q) {
             $q->where('team1_id', $this->id)->orWhere('team2_id', $this->id);
         })
-        ->where('status', 'completed')
-        ->orderByDesc('completed_at')
-        ->limit($limit)
-        ->get();
+            ->where('status', 'completed')
+            ->orderByDesc('completed_at')
+            ->limit($limit)
+            ->get();
 
         return $recentMatches->map(function ($match) {
             return $match->winner_id === $this->id ? 'W' : 'L';

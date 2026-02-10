@@ -87,7 +87,7 @@ class AchievementAdminController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'slug' => 'nullable|string|max:255|unique:achievements,slug,' . $achievement->id,
+            'slug' => 'nullable|string|max:255|unique:achievements,slug,'.$achievement->id,
             'description' => 'required|string|max:1000',
             'icon' => 'nullable|string|max:100',
             'color' => 'nullable|string|max:50',

@@ -57,7 +57,9 @@ class Mod extends Model
      */
     public function getFormattedFileSizeAttribute(): string
     {
-        if (!$this->file_size) return 'Unknown';
+        if (! $this->file_size) {
+            return 'Unknown';
+        }
 
         $units = ['B', 'KB', 'MB', 'GB'];
         $size = $this->file_size;
@@ -68,7 +70,7 @@ class Mod extends Model
             $unitIndex++;
         }
 
-        return round($size, 2) . ' ' . $units[$unitIndex];
+        return round($size, 2).' '.$units[$unitIndex];
     }
 
     /**
@@ -76,7 +78,9 @@ class Mod extends Model
      */
     public function getTimeSinceUpdateAttribute(): string
     {
-        if (!$this->workshop_updated_at) return 'Unknown';
+        if (! $this->workshop_updated_at) {
+            return 'Unknown';
+        }
 
         return $this->workshop_updated_at->diffForHumans();
     }

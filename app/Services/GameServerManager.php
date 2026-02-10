@@ -3,12 +3,13 @@
 namespace App\Services;
 
 use App\Models\Server;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Client\PendingRequest;
+use Illuminate\Support\Facades\Http;
 
 class GameServerManager
 {
     protected string $baseUrl;
+
     protected string $apiKey;
 
     public function __construct(?Server $server = null)
@@ -24,9 +25,10 @@ class GameServerManager
 
     public function forServer(Server $server): static
     {
-        $instance = new static();
+        $instance = new static;
         $instance->baseUrl = $server->getManagerUrl() ?? config('services.gameserver.url') ?? '';
         $instance->apiKey = $server->getManagerKey() ?? config('services.gameserver.key') ?? '';
+
         return $instance;
     }
 
@@ -76,7 +78,10 @@ class GameServerManager
     public function addMod(string $modId, string $name, ?string $version = null): array
     {
         $data = ['modId' => $modId, 'name' => $name];
-        if ($version) $data['version'] = $version;
+        if ($version) {
+            $data['version'] = $version;
+        }
+
         return $this->client()->post('/manage/mods', $data)->json();
     }
 

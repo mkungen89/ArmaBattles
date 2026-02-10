@@ -130,7 +130,7 @@ class User extends Authenticatable
         return in_array($this->role, ['admin', 'moderator', 'referee']);
     }
 
-    public function ban(string $reason = null): void
+    public function ban(?string $reason = null): void
     {
         $this->update([
             'is_banned' => true,
@@ -232,6 +232,7 @@ class User extends Authenticatable
 
         if ($existing) {
             $existing->delete();
+
             return false;
         }
 
@@ -248,7 +249,7 @@ class User extends Authenticatable
      */
     public function gameStats(): ?\App\Models\PlayerStat
     {
-        if (!$this->player_uuid) {
+        if (! $this->player_uuid) {
             return null;
         }
 
@@ -260,7 +261,7 @@ class User extends Authenticatable
      */
     public function hasLinkedArmaId(): bool
     {
-        return !empty($this->player_uuid);
+        return ! empty($this->player_uuid);
     }
 
     /**
@@ -285,11 +286,11 @@ class User extends Authenticatable
     public function getRatingDisplay(): ?string
     {
         $rating = $this->playerRating;
-        if (!$rating || !$rating->opted_in_at) {
+        if (! $rating || ! $rating->opted_in_at) {
             return null;
         }
 
-        if (!$rating->is_placed) {
+        if (! $rating->is_placed) {
             return "Placement {$rating->placement_games}/10";
         }
 
@@ -365,7 +366,7 @@ class User extends Authenticatable
      */
     public function hasLinkedDiscord(): bool
     {
-        return !empty($this->discord_username);
+        return ! empty($this->discord_username);
     }
 
     /**

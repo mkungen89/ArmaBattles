@@ -126,7 +126,7 @@ class Tournament extends Model
 
     public function canTeamRegister(Team $team): bool
     {
-        if (!$this->isRegistrationOpen()) {
+        if (! $this->isRegistrationOpen()) {
             return false;
         }
 

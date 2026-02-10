@@ -9,7 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('player_kills', function (Blueprint $table) {
-            if (!Schema::hasColumn('player_kills', 'is_roadkill')) {
+            if (! Schema::hasColumn('player_kills', 'is_roadkill')) {
                 $table->boolean('is_roadkill')->default(false)->after('is_team_kill');
             }
         });

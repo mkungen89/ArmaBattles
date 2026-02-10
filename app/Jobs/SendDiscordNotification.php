@@ -14,12 +14,13 @@ class SendDiscordNotification implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public int $tries = 2;
+
     public int $timeout = 15;
 
     public function __construct(
         protected string $title,
         protected string $description,
-        protected int $color = 0x22c55e,
+        protected int $color = 0x22C55E,
         protected array $fields = [],
     ) {}
 

@@ -82,6 +82,6 @@ class ScrimInvitation extends Model
      */
     public function canRespond(): bool
     {
-        return $this->isPending() && !$this->isExpired();
+        return $this->isPending() && ! $this->isExpired();
     }
 }

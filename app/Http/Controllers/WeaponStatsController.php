@@ -26,6 +26,7 @@ class WeaponStatsController extends Controller
                 $w->headshot_pct = $w->total_kills > 0
                     ? round(($w->headshots / $w->total_kills) * 100, 1)
                     : 0;
+
                 return $w;
             });
 

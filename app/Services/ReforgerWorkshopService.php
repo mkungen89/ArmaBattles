@@ -2,10 +2,9 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
 
 class ReforgerWorkshopService
 {
@@ -22,6 +21,7 @@ class ReforgerWorkshopService
         $slug = preg_replace('/\s+/', '-', trim($slug));
         // Remove consecutive hyphens
         $slug = preg_replace('/-+/', '-', $slug);
+
         return $slug;
     }
 
@@ -32,8 +32,10 @@ class ReforgerWorkshopService
     {
         if ($modName) {
             $slug = $this->generateSlug($modName);
+
             return "{$this->baseUrl}/workshop/{$modId}-{$slug}";
         }
+
         return "{$this->baseUrl}/workshop/{$modId}";
     }
 
@@ -73,6 +75,7 @@ class ReforgerWorkshopService
                         'status' => $response->status(),
                         'url' => $url,
                     ]);
+
                     return null;
                 }
 
@@ -100,9 +103,10 @@ class ReforgerWorkshopService
                     $data['description'] = html_entity_decode($m[1]);
                 }
 
-                return !empty($data) ? $data : null;
+                return ! empty($data) ? $data : null;
             } catch (\Exception $e) {
-                Log::error("Error fetching mod from Reforger Workshop: " . $e->getMessage());
+                Log::error('Error fetching mod from Reforger Workshop: '.$e->getMessage());
+
                 return null;
             }
         });
@@ -128,13 +132,14 @@ class ReforgerWorkshopService
             $html = $response->body();
 
             // Look for href containing our mod ID
-            if (preg_match('/href="(\/workshop\/' . preg_quote($modId, '/') . '[^"]*)"/', $html, $matches)) {
-                return $this->baseUrl . $matches[1];
+            if (preg_match('/href="(\/workshop\/'.preg_quote($modId, '/').'[^"]*)"/', $html, $matches)) {
+                return $this->baseUrl.$matches[1];
             }
 
             return null;
         } catch (\Exception $e) {
-            Log::error("Error finding mod URL: " . $e->getMessage());
+            Log::error('Error finding mod URL: '.$e->getMessage());
+
             return null;
         }
     }
@@ -145,9 +150,9 @@ class ReforgerWorkshopService
     protected function normalizeAssetData(array $asset): array
     {
         $thumbnailUrl = null;
-        if (!empty($asset['previews'][0]['thumbnails']['image/jpeg'][0]['url'])) {
+        if (! empty($asset['previews'][0]['thumbnails']['image/jpeg'][0]['url'])) {
             $thumbnailUrl = $asset['previews'][0]['thumbnails']['image/jpeg'][0]['url'];
-        } elseif (!empty($asset['previews'][0]['url'])) {
+        } elseif (! empty($asset['previews'][0]['url'])) {
             $thumbnailUrl = $asset['previews'][0]['url'];
         }
 
@@ -178,7 +183,8 @@ class ReforgerWorkshopService
 
     /**
      * Get multiple mods at once
-     * @param array $mods Array of ['id' => modId, 'name' => modName]
+     *
+     * @param  array  $mods  Array of ['id' => modId, 'name' => modName]
      */
     public function getMods(array $mods): array
     {
@@ -206,14 +212,15 @@ class ReforgerWorkshopService
     {
         // First get existing mod to use its name if we don't have one
         $existingMod = \App\Models\Mod::where('workshop_id', $modId)->first();
-        if (!$modName && $existingMod) {
+        if (! $modName && $existingMod) {
             $modName = $existingMod->name;
         }
 
         $workshopData = $this->getMod($modId, $modName);
 
-        if (!$workshopData) {
+        if (! $workshopData) {
             Log::info("Could not fetch workshop data for mod {$modId}");
+
             return $existingMod; // Return existing mod if we couldn't fetch new data
         }
 
@@ -274,7 +281,8 @@ class ReforgerWorkshopService
 
             return $response->json()['data'] ?? $response->json() ?? [];
         } catch (\Exception $e) {
-            Log::error("Error searching Reforger Workshop: " . $e->getMessage());
+            Log::error('Error searching Reforger Workshop: '.$e->getMessage());
+
             return [];
         }
     }
