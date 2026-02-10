@@ -157,7 +157,7 @@
                     <p class="text-gray-500">Check back later for new achievements!</p>
                 </div>
             @endif
-    </div>
+
     {{-- Showcase Management Modal (if logged in with player_uuid) --}}
     @auth
         @if(auth()->user()->player_uuid)
@@ -236,6 +236,7 @@
             </script>
         @endif
     @endauth
+    </div>
     @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
