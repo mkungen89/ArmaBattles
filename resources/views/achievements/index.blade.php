@@ -163,11 +163,13 @@
         @if(auth()->user()->player_uuid)
             <div x-show="showcaseOpen"
                  x-cloak
+                 x-transition
                  @click.self="showcaseOpen = false"
                  @keydown.escape.window="showcaseOpen = false"
-                 class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50"
-                 style="display: none;">
+                 class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
                 <div x-data="{ pinnedIds: @js(optional(\App\Models\AchievementShowcase::where('player_uuid', auth()->user()->player_uuid)->first())->pinned_achievements ?? []) }"
+                     x-transition.scale.origin.center
+                     @click.stop
                      class="bg-gray-900 border border-white/5 rounded-2xl p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto">
                     <div class="flex items-center justify-between mb-4">
                         <h2 class="text-2xl font-bold text-white">Achievement Showcase</h2>
