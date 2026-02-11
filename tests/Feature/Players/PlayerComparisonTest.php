@@ -95,7 +95,7 @@ class PlayerComparisonTest extends TestCase
             'deaths' => 40,
         ]);
 
-        $response = $this->get("/players/compare?p1={$player1->id}&p2={$player2->id}");
+        $response = $this->get("/players/compare?p1={$player1->player_uuid}&p2={$player2->player_uuid}");
 
         $response->assertOk();
         $response->assertSee('Player1');
@@ -110,8 +110,19 @@ class PlayerComparisonTest extends TestCase
             'player_uuid' => fn() => 'uuid-'.fake()->uuid(),
         ]);
 
+        // Create player stats for each player
+        foreach ($players as $player) {
+            \DB::table('player_stats')->insert([
+                'player_uuid' => $player->player_uuid,
+                'player_name' => $player->name,
+                'server_id' => 1,
+                'kills' => fake()->numberBetween(10, 100),
+                'deaths' => fake()->numberBetween(5, 50),
+            ]);
+        }
+
         $response = $this->get(
-            "/players/compare?p1={$players[0]->id}&p2={$players[1]->id}&p3={$players[2]->id}&p4={$players[3]->id}"
+            "/players/compare?p1={$players[0]->player_uuid}&p2={$players[1]->player_uuid}&p3={$players[2]->player_uuid}&p4={$players[3]->player_uuid}"
         );
 
         $response->assertOk();
@@ -151,18 +162,20 @@ class PlayerComparisonTest extends TestCase
             'killer_name' => $player1->name,
             'victim_uuid' => 'uuid-2',
             'victim_name' => $player2->name,
+            'victim_type' => 'PLAYER',
             'weapon_name' => 'M4A1',
-            'distance' => 100,
+            'kill_distance' => 100,
             'killed_at' => now(),
             'created_at' => now(),
+            'updated_at' => now(),
         ]);
 
-        $response = $this->get("/players/compare/head-to-head?p1={$player1->id}&p2={$player2->id}");
+        $response = $this->get("/players/compare/head-to-head?p1={$player1->player_uuid}&p2={$player2->player_uuid}");
 
         $response->assertOk();
         $response->assertJson([
-            'player1_kills' => 1,
-            'player2_kills' => 0,
+            'p1_killed_p2' => 1,
+            'p2_killed_p1' => 0,
         ]);
     }
 

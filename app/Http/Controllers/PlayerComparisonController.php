@@ -34,6 +34,11 @@ class PlayerComparisonController extends Controller
             }
         }
 
+        // Require at least 2 players for comparison (but allow empty page if no params provided)
+        if (count($uuids) > 0 && count($players) < 2) {
+            return redirect()->route('players.search')->with('error', 'Please select at least 2 players to compare.');
+        }
+
         return view('players.compare', compact('players', 'weapons', 'uuids'));
     }
 
@@ -78,7 +83,7 @@ class PlayerComparisonController extends Controller
 
         // Last 10 encounters between them
         $recentEncounters = DB::table('player_kills')
-            ->select('killer_uuid', 'killer_name', 'victim_uuid', 'victim_name', 'weapon_name', 'distance', 'is_headshot', 'created_at')
+            ->select('killer_uuid', 'killer_name', 'victim_uuid', 'victim_name', 'weapon_name', 'kill_distance', 'is_headshot', 'created_at')
             ->where(function ($q) use ($p1, $p2) {
                 $q->where(function ($q2) use ($p1, $p2) {
                     $q2->where('killer_uuid', $p1)->where('victim_uuid', $p2);

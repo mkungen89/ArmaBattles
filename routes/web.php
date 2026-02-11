@@ -193,7 +193,6 @@ Route::get('/kill-feed', [KillFeedController::class, 'index'])->name('kill-feed'
 
 // Public API endpoints (no auth)
 Route::get('/api/player-search', [PlayerSearchController::class, 'apiSearch'])->name('api.player-search');
-Route::get('/api/players/search', [PlayerComparisonController::class, 'searchPlayer'])->name('api.players.search');
 Route::get('/api/activity-feed', [ActivityFeedController::class, 'recent'])->name('api.activity-feed');
 Route::get('/api/kill-feed', [KillFeedController::class, 'api'])->name('api.kill-feed');
 

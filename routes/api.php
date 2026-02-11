@@ -3,7 +3,11 @@
 use App\Http\Controllers\Api\AnticheatController;
 use App\Http\Controllers\Api\GameEventController;
 use App\Http\Controllers\Api\StatsController;
+use App\Http\Controllers\PlayerComparisonController;
 use Illuminate\Support\Facades\Route;
+
+// Public API endpoints (no auth required)
+Route::get('/players/search', [PlayerComparisonController::class, 'searchPlayer'])->name('api.players.search');
 
 // DEPRECATED: Legacy Stats API (use /api/v1/ instead)
 // These endpoints will be removed on 2026-06-01
