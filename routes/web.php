@@ -96,6 +96,9 @@ Route::get('/players/{user}', [PlayerProfileController::class, 'show'])->name('p
 // Leaderboard
 Route::get('/leaderboard', [LeaderboardController::class, 'index'])->name('leaderboard');
 
+// Level Leaderboard
+Route::get('/levels', [\App\Http\Controllers\LevelLeaderboardController::class, 'index'])->name('levels.index');
+
 // Achievements
 Route::get('/achievements', [\App\Http\Controllers\AchievementController::class, 'index'])->name('achievements.index');
 Route::post('/achievements/showcase', [\App\Http\Controllers\AchievementController::class, 'updateShowcase'])->middleware('auth')->name('achievements.showcase.update');
