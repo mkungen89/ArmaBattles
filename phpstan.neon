@@ -1,0 +1,16 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    paths:
+        - app/
+
+    # Level 0-9 (9 strictest)
+    level: 5
+
+    ignoreErrors:
+        # Ignore dynamic property access on models
+        - '#Access to an undefined property App\\Models\\[a-zA-Z]+::\$[a-zA-Z]+#'
+
+    excludePaths:
+        - ./*/*/FileToBeExcluded.php
