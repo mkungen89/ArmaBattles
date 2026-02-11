@@ -46,7 +46,7 @@ class TeamController extends Controller
     {
         $team->load([
             'captain',
-            'activeMembers' => fn ($q) => $q->with('user'),  // Fixed: Eager load user data to avoid N+1
+            'activeMembers',  // activeMembers IS users, not a relation to users
             'tournaments' => fn ($q) => $q->where('tournaments.status', '!=', 'draft')->with('winner')->latest('starts_at'),  // Added: winner
         ]);
 
@@ -131,7 +131,7 @@ class TeamController extends Controller
         }
 
         $team->load([
-            'activeMembers' => fn ($q) => $q->with('user'),  // Fixed: Eager load user data
+            'activeMembers',  // activeMembers IS users, not a relation to users
             'pendingInvitations' => fn ($q) => $q->with(['user', 'inviter']),  // Added: inviter
             'pendingApplications' => fn ($q) => $q->with('user'),
             'registrations' => fn ($q) => $q->with('tournament.winner')->latest(),  // Added: tournament winner

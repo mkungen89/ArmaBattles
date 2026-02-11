@@ -27,11 +27,11 @@ class CreatorsTest extends TestCase
         $user = User::factory()->create();
         $creator = ContentCreator::create([
             'user_id' => $user->id,
-            'name' => 'TestStreamer',
+            'platform' => 'twitch',
+            'channel_url' => 'https://twitch.tv/teststreamer',
+            'channel_name' => 'TestStreamer',
             'bio' => 'I stream Reforger',
-            'platform_twitch' => 'teststreamer',
             'is_verified' => true,
-            'is_featured' => false,
         ]);
 
         $response = $this->get("/creators/{$creator->id}");
@@ -46,16 +46,16 @@ class CreatorsTest extends TestCase
         $user = User::factory()->create();
 
         $response = $this->actingAs($user)->post('/creators/register', [
-            'name' => 'NewStreamer',
+            'platform' => 'twitch',
+            'channel_url' => 'https://twitch.tv/newstreamer',
+            'channel_name' => 'NewStreamer',
             'bio' => 'New streamer here',
-            'platform_twitch' => 'newstreamer',
-            'platform_youtube' => 'newstreamer',
         ]);
 
         $response->assertRedirect();
         $this->assertDatabaseHas('content_creators', [
             'user_id' => $user->id,
-            'name' => 'NewStreamer',
+            'channel_name' => 'NewStreamer',
         ]);
     }
 
@@ -64,21 +64,22 @@ class CreatorsTest extends TestCase
         $user = User::factory()->create();
         $creator = ContentCreator::create([
             'user_id' => $user->id,
-            'name' => 'OldName',
+            'platform' => 'twitch',
+            'channel_url' => 'https://twitch.tv/oldname',
+            'channel_name' => 'OldName',
             'bio' => 'Old bio',
-            'platform_twitch' => 'oldname',
         ]);
 
         $response = $this->actingAs($user)->put("/creators/{$creator->id}", [
-            'name' => 'NewName',
+            'channel_name' => 'NewName',
             'bio' => 'New bio',
-            'platform_twitch' => 'newname',
+            'channel_url' => 'https://twitch.tv/newname',
         ]);
 
         $response->assertRedirect();
         $this->assertDatabaseHas('content_creators', [
             'id' => $creator->id,
-            'name' => 'NewName',
+            'channel_name' => 'NewName',
         ]);
     }
 
@@ -88,12 +89,14 @@ class CreatorsTest extends TestCase
         $user2 = User::factory()->create();
         $creator = ContentCreator::create([
             'user_id' => $user1->id,
-            'name' => 'Creator1',
+            'platform' => 'twitch',
+            'channel_url' => 'https://twitch.tv/creator1',
+            'channel_name' => 'Creator1',
             'bio' => 'Bio',
         ]);
 
         $response = $this->actingAs($user2)->put("/creators/{$creator->id}", [
-            'name' => 'Hacked',
+            'channel_name' => 'Hacked',
         ]);
 
         $response->assertStatus(403);
@@ -106,14 +109,16 @@ class CreatorsTest extends TestCase
 
         ContentCreator::create([
             'user_id' => $user1->id,
-            'name' => 'Twitch Creator',
-            'platform_twitch' => 'twitchcreator',
+            'platform' => 'twitch',
+            'channel_url' => 'https://twitch.tv/twitchcreator',
+            'channel_name' => 'Twitch Creator',
         ]);
 
         ContentCreator::create([
             'user_id' => $user2->id,
-            'name' => 'YouTube Creator',
-            'platform_youtube' => 'youtubecreator',
+            'platform' => 'youtube',
+            'channel_url' => 'https://youtube.com/youtubecreator',
+            'channel_name' => 'YouTube Creator',
         ]);
 
         $response = $this->get('/creators?platform=twitch');
@@ -167,6 +172,7 @@ class CreatorsTest extends TestCase
             'user_id' => $submitter->id,
             'title' => 'Great Clip',
             'url' => 'https://youtube.com/watch?v=test',
+            'platform' => 'youtube',
             'status' => 'approved',
         ]);
 
@@ -190,6 +196,7 @@ class CreatorsTest extends TestCase
             'user_id' => $submitter->id,
             'title' => 'Clip',
             'url' => 'https://youtube.com/watch?v=test',
+            'platform' => 'youtube',
             'status' => 'approved',
         ]);
 
@@ -219,6 +226,7 @@ class CreatorsTest extends TestCase
             'user_id' => $submitter->id,
             'title' => 'Pending Clip',
             'url' => 'https://youtube.com/watch?v=test',
+            'platform' => 'youtube',
             'status' => 'pending',
         ]);
 
@@ -237,6 +245,7 @@ class CreatorsTest extends TestCase
             'user_id' => $submitter->id,
             'title' => 'Pending Clip',
             'url' => 'https://youtube.com/watch?v=test',
+            'platform' => 'youtube',
             'status' => 'pending',
         ]);
 
@@ -258,6 +267,7 @@ class CreatorsTest extends TestCase
             'user_id' => $submitter->id,
             'title' => 'Inappropriate Clip',
             'url' => 'https://youtube.com/watch?v=test',
+            'platform' => 'youtube',
             'status' => 'pending',
         ]);
 
@@ -278,6 +288,7 @@ class CreatorsTest extends TestCase
             'user_id' => $user->id,
             'title' => 'Best Clip Ever',
             'url' => 'https://youtube.com/watch?v=test',
+            'platform' => 'youtube',
             'status' => 'approved',
             'is_featured' => true,
         ]);

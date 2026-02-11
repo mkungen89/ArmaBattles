@@ -1,324 +1,472 @@
-# Testing Guide
+# Testing Guide for ArmaBattles
 
-## Overview
+## Automated Testing
 
-The Reforger Community test suite covers API endpoints, rate limiting, deprecation, tournament bracket generation, and team management.
-
-## Running Tests
+### Running Tests
 
 ```bash
 # Run all tests
 php artisan test
 
+# Run specific test suite
+php artisan test --testsuite=Feature
+php artisan test --testsuite=Unit
+
 # Run specific test file
-php artisan test --filter=StatsControllerV1Test
+php artisan test --filter=TeamManagementTest
 
-# Run specific test method
-php artisan test --filter=test_v1_player_kills_creates_record
-
-# Run tests with coverage (requires Xdebug/PCOV)
+# Run with coverage
 php artisan test --coverage
 
-# Run specific test suite
-php artisan test tests/Feature/Api
-php artisan test tests/Feature/Tournaments
-php artisan test tests/Feature/Teams
+# Run in parallel (faster)
+php artisan test --parallel
 ```
 
-## Test Structure
+### Static Analysis (PHPStan/Larastan)
 
-```
-tests/
-├── Feature/
-│   ├── Api/
-│   │   ├── StatsControllerV1Test.php      # API v1 endpoints (18 tests)
-│   │   ├── GameStatsApiTest.php           # Legacy API tests (6 tests)
-│   │   ├── RateLimitingTest.php           # Rate limiting (9 tests)
-│   │   └── DeprecationTest.php            # Deprecation headers (5 tests)
-│   ├── Tournaments/
-│   │   └── BracketGenerationTest.php      # Bracket generation (16 tests)
-│   └── Teams/
-│       └── TeamManagementTest.php         # Team CRUD, invites, applications (24 tests)
-├── Unit/
-│   └── ExampleTest.php
-└── TestCase.php
+```bash
+# Run static analysis
+./vendor/bin/phpstan analyse
+
+# Run with higher strictness (level 0-9)
+./vendor/bin/phpstan analyse --level=6
+
+# Fix autoload issues first
+composer dump-autoload
 ```
 
-## Test Coverage Summary
+**What it catches:**
+- Type mismatches
+- Undefined methods/properties
+- Incorrect return types
+- Unused variables
+- N+1 query problems (sometimes)
 
-**Total Test Methods:** 78
-**Currently Passing:** 25
-**Status:** 32% coverage achieved
+### Writing New Tests
 
-### Test Breakdown by Category
-
-| Category | Tests | Status | Coverage |
-|----------|-------|--------|----------|
-| API v1 Endpoints | 18 | ✅ 11 passing | 61% |
-| Rate Limiting | 9 | ✅ 5 passing | 56% |
-| API Deprecation | 5 | ✅ 4 passing | 80% |
-| Legacy API | 6 | ✅ 5 passing | 83% |
-| Tournament Brackets | 16 | ⚠️ Needs factories | 0% |
-| Team Management | 24 | ⚠️ Needs factories | 0% |
-
-## API Tests (StatsControllerV1Test)
-
-Tests all v1 API write and read endpoints:
-
-**Write Endpoints (11 passing):**
-- ✅ Player kills creation and stats aggregation
-- ✅ Damage events batch processing
-- ✅ Connection events
-- ✅ XP events and stats updates
-- ✅ Base capture events
-- ✅ Player distance tracking
-- ✅ Shooting stats
-- ✅ Grenade usage
-- ✅ Supply deliveries
-- ✅ Roadkill detection
-- ✅ Team kill detection
-
-**Read Endpoints:**
-- ✅ Leaderboards (kills, deaths, K/D, etc.)
-- ✅ Player profile details
-- ✅ Stats overview
-
-**Validation:**
-- ✅ Authentication requirements
-- ✅ Validation error handling (422 responses)
-
-## Rate Limiting Tests (RateLimitingTest)
-
-Tests tiered rate limiting based on token types:
-
-**Passing Tests (5):**
-- ✅ Standard token 60/min limit
-- ✅ High-volume token 180/min limit
-- ✅ Premium token 300/min limit
-- ✅ Rate limit headers present
-- ✅ Rate limit applies per token
-
-**Known Issues:**
-- Some validation edge cases need fixing
-- Token exhaustion test needs optimization
-
-## Deprecation Tests (DeprecationTest)
-
-Tests legacy API deprecation headers:
-
-**Passing Tests (4):**
-- ✅ Deprecation headers on legacy endpoints
-- ✅ V1 endpoints don't have deprecation headers
-- ✅ All legacy write endpoints deprecated
-- ✅ All legacy read endpoints deprecated
-
-**Known Issues:**
-- Link header format needs adjustment
-
-## Tournament Bracket Tests (BracketGenerationTest)
-
-Tests tournament bracket generation for all formats:
-
-**Test Coverage:**
-- Single elimination (4, 8 teams, odd teams)
-- Double elimination (winners/losers bracket)
-- Round robin (4, 6 teams)
-- Swiss system (8 teams, 3 rounds)
-- Edge cases (minimum teams, insufficient teams, approved teams only)
-- Seeding and match creation
-
-**Status:** ⚠️ Requires TournamentFactory and TeamFactory
-
-## Team Management Tests (TeamManagementTest)
-
-Tests team CRUD operations, invitations, and applications:
-
-**Test Coverage:**
-- Team creation and validation
-- Invitation system (send, accept, decline, expiry)
-- Application system (apply, approve, reject)
-- Team membership (add, remove, leave)
-- Captain permissions and restrictions
-- Edge cases (multiple teams, maximum members)
-
-**Status:** ⚠️ Requires TeamFactory and related factories
-
-## Writing New Tests
-
-### Test File Template
-
+**Feature Test Example:**
 ```php
-<?php
-
-namespace Tests\Feature\Api;
-
-use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Laravel\Sanctum\Sanctum;
-use Tests\TestCase;
-
-class NewFeatureTest extends TestCase
+public function test_team_show_page_loads(): void
 {
-    use RefreshDatabase;
+    $team = Team::factory()->create();
 
-    protected User $user;
+    $response = $this->get("/teams/{$team->id}");
 
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->user = User::factory()->create(['role' => 'admin']);
-    }
-
-    public function test_feature_works_as_expected(): void
-    {
-        Sanctum::actingAs($this->user);
-
-        $response = $this->postJson('/api/v1/endpoint', [
-            'data' => 'value',
-        ]);
-
-        $response->assertStatus(200)
-            ->assertJson(['success' => true]);
-
-        $this->assertDatabaseHas('table_name', [
-            'column' => 'value',
-        ]);
-    }
+    $response->assertOk();
+    $response->assertSee($team->name);
 }
 ```
 
-### Best Practices
+**When to Write Tests:**
+- ✅ New controllers/routes
+- ✅ Complex business logic
+- ✅ Bug fixes (regression tests)
+- ✅ Authentication/authorization
+- ✅ API endpoints
 
-1. **Use RefreshDatabase** - Ensures clean database state for each test
-2. **Use Sanctum for API auth** - `Sanctum::actingAs($user)` for authenticated requests
-3. **Test happy path first** - Then edge cases and error conditions
-4. **Assert both response and database** - Verify HTTP response AND data persistence
-5. **Use descriptive test names** - `test_v1_player_kills_creates_record_and_updates_stats`
-6. **Group related tests** - Organize by feature/endpoint
-7. **Use factories** - For creating test data (User, Team, Tournament, etc.)
+## Manual Testing Workflows
 
-### Common Assertions
+### 1. **Teams (Platoons) - Critical Path**
+
+**Create Team:**
+1. Login as new user
+2. Go to `/teams/create`
+3. Fill form (name, tag, description)
+4. Upload avatar (optional)
+5. ✅ Check: Team appears at `/teams`
+6. ✅ Check: You're listed as captain at `/teams/my`
+
+**Invite Member:**
+1. Login as captain
+2. Go to `/teams/my`
+3. Search for player by Steam ID
+4. Send invitation
+5. ✅ Check: Invitation appears in pending list
+6. Logout, login as invited user
+7. ✅ Check: Notification received
+8. Accept invitation
+9. ✅ Check: User added to team roster
+
+**View Team Page:**
+1. Go to `/teams/{id}`
+2. ✅ Check: All members load (no "Call to undefined relationship [user]" error)
+3. ✅ Check: Stats display correctly
+4. ✅ Check: Combat stats aggregate all members
+5. ✅ Check: Recent matches load
+
+**Edge Cases:**
+- Try inviting user already on a team → error
+- Try applying to team you're already on → error
+- Captain leaves team with active members → error
+- Disband team with active tournament → error
+
+### 2. **Tournaments - Critical Path**
+
+**Create Tournament:**
+1. Login as admin
+2. Go to `/admin/tournaments/create`
+3. Set name, dates, format
+4. ✅ Check: Tournament appears at `/tournaments`
+
+**Team Registration:**
+1. Login as team captain
+2. Go to `/teams/my`
+3. Register for tournament
+4. ✅ Check: Registration shows in pending list
+
+**Bracket Generation:**
+1. Admin approves teams
+2. Close registration
+3. Start tournament
+4. ✅ Check: Bracket renders correctly
+5. ✅ Check: All teams appear
+
+**Match Flow:**
+1. Team checks in
+2. Match goes live
+3. ✅ Check: Match chat works (if implemented)
+4. Referee reports score
+5. ✅ Check: Winner advances in bracket
+
+### 3. **Game Stats API - Critical Path**
+
+**Send Event:**
+```bash
+curl -X POST https://armabattles.com/api/v1/player-kills \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "killer_uuid": "test-uuid",
+    "killer_name": "TestPlayer",
+    "victim_uuid": "victim-uuid",
+    "victim_name": "Victim",
+    "weapon": "M4A1",
+    "distance": 150,
+    "is_headshot": true,
+    "server_id": 1
+  }'
+```
+
+✅ Check:
+1. Event stored in `player_kills` table
+2. `player_stats.kills` incremented
+3. `player_stats.headshots` incremented (if headshot)
+4. Kill feed updates via WebSocket
+
+### 4. **WebSocket/Reverb - Real-time Features**
+
+**Kill Feed:**
+1. Open `/kill-feed` in browser
+2. Send kill event via API (see above)
+3. ✅ Check: Kill appears immediately (no refresh needed)
+
+**Notifications:**
+1. Login as User A
+2. In another browser, invite User A to a team
+3. ✅ Check: Notification bell updates in real-time
+4. ✅ Check: Desktop notification appears (if enabled)
+
+**Server Status:**
+1. Open `/servers/{id}`
+2. Game server sends status update
+3. ✅ Check: Player count updates live
+
+### 5. **Admin Panel - Critical Endpoints**
+
+**Server Manager:**
+1. Login as admin
+2. Go to `/admin/server`
+3. ✅ Check: Dashboard loads
+4. ✅ Check: Live metrics polling works
+5. Click "Restart Server"
+6. ✅ Check: Confirmation modal appears
+7. ✅ Check: Restart executes (check logs)
+
+**Game Stats Dashboard:**
+1. Go to `/admin/game-stats`
+2. ✅ Check: Player profiles load
+3. Search for player
+4. ✅ Check: Stats appear
+5. View event tables
+6. ✅ Check: Pagination works
+
+**Metrics:**
+1. Go to `/admin/metrics`
+2. ✅ Check: Charts render
+3. Change time range
+4. ✅ Check: Data updates
+
+### 6. **Ranked System - Competitive Rating**
+
+**Opt-in:**
+1. Login with player_uuid set
+2. Go to `/ranked`
+3. Click "Opt In"
+4. ✅ Check: User now visible on leaderboard
+
+**Placement Games:**
+1. Play 10 competitive-eligible events
+2. ✅ Check: Progress shows "X/10 placement games"
+3. Complete 10 games
+4. ✅ Check: Tier assigned
+5. ✅ Check: Rank visible on profile
+
+**Rating Updates:**
+1. Game server sends kill event
+2. ✅ Check: Kill queued in `rated_kills_queue`
+3. Run `php artisan ratings:calculate`
+4. ✅ Check: Rating updated in `player_ratings`
+5. ✅ Check: History entry created in `rating_history`
+
+## Error Scenarios to Test
+
+### Common Bugs to Catch
+
+**1. N+1 Queries:**
+```bash
+# Enable query log
+php artisan telescope:install
+
+# Visit page
+# Check /telescope/queries
+# Look for 100+ queries on single page load
+```
+
+**Fix:** Add `->with(['relation'])` to eager load.
+
+**2. Undefined Relationship:**
+```
+Call to undefined relationship [user] on model [App\Models\User]
+```
+
+**How to test:**
+- Visit every team/tournament/match page
+- Check console for errors
+- Run feature tests
+
+**3. Memory Leaks:**
+```bash
+# Monitor memory during long-running commands
+php artisan server:track --server-id=1
+
+# Watch for memory increase
+watch -n 1 'ps aux | grep artisan'
+```
+
+**4. WebSocket Disconnects:**
+- Open DevTools → Network → WS tab
+- Watch for disconnects
+- Check Reverb logs: `journalctl -u reverb -f`
+
+**5. Race Conditions:**
+- Two users accept same team invitation simultaneously
+- Two teams register for last tournament slot
+- Match result submitted twice
+
+**Test:** Use browser automation (Dusk) to simulate concurrent requests.
+
+## Performance Testing
+
+### Load Testing with Apache Bench
+
+```bash
+# 100 requests, 10 concurrent
+ab -n 100 -c 10 https://armabattles.com/
+
+# POST API endpoint
+ab -n 100 -c 10 -p payload.json -T application/json \
+   -H "Authorization: Bearer TOKEN" \
+   https://armabattles.com/api/v1/player-kills
+```
+
+### Database Query Performance
+
+```sql
+-- Find slow queries
+SELECT * FROM pg_stat_statements
+ORDER BY mean_exec_time DESC
+LIMIT 10;
+
+-- Check missing indexes
+SELECT schemaname, tablename, attname, n_distinct, correlation
+FROM pg_stats
+WHERE schemaname = 'public'
+  AND n_distinct > 100
+ORDER BY abs(correlation) ASC;
+```
+
+### Cache Hit Rate
+
+```bash
+# Check Redis stats
+redis-cli INFO stats | grep hits
+
+# Check Laravel cache
+php artisan tinker
+>>> Cache::get('leaderboard:kills:all-time');
+```
+
+## Continuous Integration (GitHub Actions)
+
+The `.github/workflows/tests.yml` file runs tests automatically on:
+- Every push to `main` or `develop`
+- Every pull request
+
+**View results:**
+https://github.com/mkungen89/ArmaBattles/actions
+
+## Debugging Tools
+
+### 1. **Laravel Telescope**
+```bash
+composer require laravel/telescope --dev
+php artisan telescope:install
+php artisan migrate
+```
+
+Visit `/telescope` to see:
+- All queries (find N+1 problems)
+- All exceptions
+- All requests/responses
+- Cache hits/misses
+- Jobs/queues
+
+### 2. **Laravel Debugbar**
+```bash
+composer require barryvdh/laravel-debugbar --dev
+```
+
+Shows at bottom of page:
+- Queries with execution time
+- View rendering time
+- Route info
+- Session data
+
+### 3. **Ray** (Paid, but excellent)
+```bash
+composer require spatie/laravel-ray
+```
 
 ```php
-// Response assertions
-$response->assertStatus(200);
-$response->assertJson(['success' => true]);
-$response->assertJsonStructure(['data' => ['id', 'name']]);
-$response->assertHeader('X-RateLimit-Limit', '60');
-
-// Database assertions
-$this->assertDatabaseHas('table', ['column' => 'value']);
-$this->assertDatabaseCount('table', 5);
-$this->assertDatabaseMissing('table', ['column' => 'value']);
-
-// Model assertions
-$this->assertTrue($model->exists);
-$this->assertFalse($model->is_active);
-$this->assertEquals(10, $model->count);
+// In controller
+ray($team->activeMembers);
+ray()->showQueries();
 ```
 
-## Continuous Integration
+Desktop app shows all debugging output.
 
-Tests run automatically on:
-- Git commit (if pre-commit hooks enabled)
-- Pull request creation
-- Merge to main branch
+## Pre-Deployment Checklist
 
-## Test Database
+Before pushing to production:
 
-- **Production:** PostgreSQL
-- **Tests:** SQLite in-memory (`:memory:`)
-- **Isolation:** Each test gets fresh database via `RefreshDatabase`
+- [ ] Run `php artisan test` → all green
+- [ ] Run `./vendor/bin/phpstan analyse` → no errors
+- [ ] Check `/telescope/exceptions` → no recent errors
+- [ ] Test critical paths manually (teams, tournaments, API)
+- [ ] Check database migrations: `php artisan migrate --pretend`
+- [ ] Review `git diff` for debugging code (dd(), ray(), console.log)
+- [ ] Check `.env` for correct values
+- [ ] Verify SSL certificate valid
+- [ ] Test WebSocket connection (open DevTools → WS tab)
+- [ ] Run `npm run build` → no errors
+- [ ] Check disk space: `df -h`
+- [ ] Check memory: `free -m`
+- [ ] Backup database: `bash /root/backup-db.sh`
 
-## Known Issues
+## Post-Deployment Monitoring
 
-### 1. Factory Missing Errors
-
-**Issue:** Tournament and Team tests fail with "Factory not found"
-
-**Solution:**
-```bash
-# Create factories
-php artisan make:factory TournamentFactory
-php artisan make:factory TeamFactory
-php artisan make:factory TeamInvitationFactory
-php artisan make:factory TeamApplicationFactory
-```
-
-### 2. Schema Mismatches
-
-**Issue:** Some tests fail due to SQLite/PostgreSQL schema differences
-
-**Solution:** Use `Schema::hasColumn()` guards in migrations or create test-specific migrations
-
-### 3. Validation Errors
-
-**Issue:** Some endpoints have stricter validation than tests expect
-
-**Solution:** Review controller validation rules and update test payloads
-
-## Future Test Additions
-
-To reach 50%+ coverage, add tests for:
-
-1. **Authentication Flow** (P0)
-   - Steam OAuth login
-   - 2FA challenge flow
-   - Session management
-
-2. **Scheduled Tasks** (P0)
-   - Server tracking cron
-   - Cache warming
-   - Expired invitation cleanup
-
-3. **Stats Aggregation Helpers** (P0)
-   - `updatePlayerKillStats()`
-   - `updatePlayerXp()`
-   - `updatePlayerDistanceTotals()`
-   - All other helper methods
-
-4. **Admin Controllers** (P1)
-   - Server manager actions
-   - API token generation
-   - User management
-
-5. **Integration Tests** (P2)
-   - Full tournament flow (create → register → bracket → matches → winner)
-   - Full team flow (create → invite → accept → tournament → leave)
-   - Full stats flow (game events → aggregation → leaderboards → profiles)
-
-## Debugging Failed Tests
+After deployment:
 
 ```bash
-# Run with verbose output
-php artisan test --filter=TestName --testdox
+# Watch logs
+tail -f storage/logs/laravel.log
 
-# Run single test with full output
-php artisan test --filter=test_specific_method --do-not-cache-result
+# Watch Reverb
+journalctl -u reverb -f
 
-# Check database state during test
-// Add in test:
-dump($this->getConnection()->table('table_name')->get());
+# Watch HTTP errors
+tail -f /var/log/nginx/error.log
 
-# Check response content
-// Add in test:
-dump($response->getContent());
+# Watch queue
+php artisan queue:monitor
+
+# Check for failed jobs
+php artisan queue:failed
 ```
 
-## Performance
+## Rollback Procedure
 
-Current test suite runs in ~4 seconds:
-- API tests: ~0.9s
-- Rate limiting tests: ~0.9s
-- Deprecation tests: ~0.6s
-- Legacy API tests: ~0.6s
+If deployment breaks production:
 
-Target: Keep full suite under 30 seconds as it grows.
+```bash
+# 1. Revert code
+git revert HEAD
+git push
 
-## Contributing
+# 2. Rollback migrations (if any)
+php artisan migrate:rollback
 
-When adding new features:
-1. Write tests FIRST (TDD approach)
-2. Ensure tests pass before committing
-3. Maintain >50% coverage for new code
-4. Update this documentation with new test categories
+# 3. Restore database backup (last resort)
+# See CLAUDE.md Database & Backups section
+
+# 4. Clear caches
+php artisan cache:clear
+php artisan config:clear
+php artisan view:clear
+
+# 5. Restart services
+sudo systemctl restart reverb
+sudo systemctl reload php8.3-fpm
+sudo systemctl reload nginx
+```
+
+## Common Test Failures & Fixes
+
+### "Class 'Database\Factories\TeamFactory' not found"
+```bash
+composer dump-autoload
+```
+
+### "SQLSTATE[HY000]: General error: 1 no such table"
+```bash
+php artisan migrate:fresh --env=testing
+```
+
+### "WebSocket connection failed"
+```bash
+# Check Reverb is running
+sudo systemctl status reverb
+
+# Restart Reverb
+sudo systemctl restart reverb
+
+# Check ports
+ss -tlnp | grep 8085
+```
+
+### "Route [teams.show] not defined"
+```bash
+php artisan route:clear
+php artisan route:cache
+```
+
+## Test Coverage Goals
+
+**Current coverage:** ~40% (estimate based on existing tests)
+
+**Target coverage by area:**
+- Controllers: 80%+ (critical paths covered)
+- Models: 60%+ (relationships, scopes, accessors)
+- Commands: 50%+ (critical commands)
+- Services: 70%+ (business logic)
+- API: 90%+ (all endpoints)
+
+**How to measure:**
+```bash
+php artisan test --coverage --min=70
+```
+
+---
+
+**Last Updated:** 2026-02-11
+**Maintained By:** ArmaBattles Development Team

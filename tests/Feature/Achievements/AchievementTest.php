@@ -25,24 +25,26 @@ class AchievementTest extends TestCase
     {
         Achievement::create([
             'name' => 'First Blood',
+            'slug' => 'first-blood',
             'description' => 'Get your first kill',
             'category' => 'combat',
             'icon' => 'sword',
             'color' => '#ff0000',
             'points' => 10,
-            'condition_type' => 'kills',
-            'condition_value' => 1,
+            'stat_field' => 'kills',
+            'threshold' => 1,
         ]);
 
         Achievement::create([
             'name' => 'Social Butterfly',
+            'slug' => 'social-butterfly',
             'description' => 'Join a team',
             'category' => 'social',
             'icon' => 'users',
             'color' => '#00ff00',
             'points' => 5,
-            'condition_type' => 'team_join',
-            'condition_value' => 1,
+            'stat_field' => 'team_join',
+            'threshold' => 1,
         ]);
 
         $response = $this->get('/achievements?category=combat');
@@ -58,19 +60,21 @@ class AchievementTest extends TestCase
 
         $achievement = Achievement::create([
             'name' => 'Sharpshooter',
+            'slug' => 'sharpshooter',
             'description' => 'Get 100 headshots',
             'category' => 'combat',
             'icon' => 'crosshair',
             'color' => '#ffaa00',
             'points' => 50,
-            'condition_type' => 'headshots',
-            'condition_value' => 100,
+            'stat_field' => 'headshots',
+            'threshold' => 100,
         ]);
 
         AchievementProgress::create([
-            'user_id' => $user->id,
+            'player_uuid' => 'test-uuid',
             'achievement_id' => $achievement->id,
             'current_value' => 45,
+            'target_value' => 100,
         ]);
 
         $response = $this->actingAs($user)->get('/achievements');
@@ -87,39 +91,41 @@ class AchievementTest extends TestCase
 
         $achievement1 = Achievement::create([
             'name' => 'Elite',
+            'slug' => 'elite',
             'description' => 'Reach level 50',
             'category' => 'progression',
             'icon' => 'star',
             'color' => '#gold',
             'points' => 100,
-            'condition_type' => 'level',
-            'condition_value' => 50,
+            'stat_field' => 'level',
+            'threshold' => 50,
         ]);
 
         $achievement2 = Achievement::create([
             'name' => 'Veteran',
+            'slug' => 'veteran',
             'description' => 'Play 100 hours',
             'category' => 'progression',
             'icon' => 'clock',
             'color' => '#silver',
             'points' => 75,
-            'condition_type' => 'playtime',
-            'condition_value' => 360000,
+            'stat_field' => 'playtime',
+            'threshold' => 360000,
         ]);
 
         // User has earned both
         AchievementProgress::create([
-            'user_id' => $user->id,
+            'player_uuid' => 'test-uuid',
             'achievement_id' => $achievement1->id,
             'current_value' => 50,
-            'unlocked_at' => now(),
+            'target_value' => 50,
         ]);
 
         AchievementProgress::create([
-            'user_id' => $user->id,
+            'player_uuid' => 'test-uuid',
             'achievement_id' => $achievement2->id,
             'current_value' => 360000,
-            'unlocked_at' => now(),
+            'target_value' => 360000,
         ]);
 
         $response = $this->actingAs($user)->post('/achievements/showcase', [
@@ -151,13 +157,14 @@ class AchievementTest extends TestCase
 
         $achievement = Achievement::create([
             'name' => 'Not Earned',
+            'slug' => 'not-earned',
             'description' => 'Test',
             'category' => 'combat',
             'icon' => 'x',
             'color' => '#000',
             'points' => 10,
-            'condition_type' => 'kills',
-            'condition_value' => 1000,
+            'stat_field' => 'kills',
+            'threshold' => 1000,
         ]);
 
         // User has NOT earned this achievement
@@ -173,25 +180,26 @@ class AchievementTest extends TestCase
     {
         $achievement = Achievement::create([
             'name' => 'Rare Achievement',
+            'slug' => 'rare-achievement',
             'description' => 'Very rare',
             'category' => 'combat',
             'icon' => 'trophy',
             'color' => '#purple',
             'points' => 200,
-            'condition_type' => 'special',
-            'condition_value' => 1,
+            'stat_field' => 'special',
+            'threshold' => 1,
         ]);
 
         // Create 100 users, only 5 have it
         User::factory()->count(95)->create();
 
         $users = User::factory()->count(5)->create();
-        foreach ($users as $user) {
+        foreach ($users as $i => $user) {
             AchievementProgress::create([
-                'user_id' => $user->id,
+                'player_uuid' => 'player-' . $i,
                 'achievement_id' => $achievement->id,
                 'current_value' => 1,
-                'unlocked_at' => now(),
+                'target_value' => 1,
             ]);
         }
 
