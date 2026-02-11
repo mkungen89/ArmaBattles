@@ -19,9 +19,32 @@ class PlayerComparisonTest extends TestCase
 
     public function test_player_search_returns_results(): void
     {
-        User::factory()->create(['name' => 'TestPlayer123']);
+        $user = User::factory()->create([
+            'name' => 'TestPlayer123',
+            'player_uuid' => 'uuid-123',
+        ]);
 
-        $response = $this->get('/players?search=TestPlayer');
+        // Create server and connection so player appears in search
+        \DB::table('servers')->insert([
+            'battlemetrics_id' => '12345',
+            'name' => 'Test Server',
+            'ip' => '127.0.0.1',
+            'port' => 2001,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        \DB::table('connections')->insert([
+            'server_id' => 1,
+            'player_uuid' => 'uuid-123',
+            'player_name' => 'TestPlayer123',
+            'event_type' => 'CONNECT',
+            'occurred_at' => now(),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $response = $this->get('/players?q=TestPlayer');
 
         $response->assertOk();
         $response->assertSee('TestPlayer123');

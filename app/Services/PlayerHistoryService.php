@@ -31,8 +31,9 @@ class PlayerHistoryService
         }
 
         $builder->where(function ($q) use ($query) {
-            $q->where('player_name', 'ILIKE', "%{$query}%")
-                ->orWhere('player_uuid', 'ILIKE', "%{$query}%");
+            // Use LIKE for SQLite compatibility (case-insensitive by default in SQLite)
+            $q->where('player_name', 'LIKE', "%{$query}%")
+                ->orWhere('player_uuid', 'LIKE', "%{$query}%");
         });
 
         return $builder
