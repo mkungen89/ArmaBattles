@@ -19,6 +19,10 @@
                 <option value="user" {{ request('role') === 'user' ? 'selected' : '' }}>User</option>
                 <option value="moderator" {{ request('role') === 'moderator' ? 'selected' : '' }}>Moderator</option>
                 <option value="admin" {{ request('role') === 'admin' ? 'selected' : '' }}>Admin</option>
+                <option value="gm" {{ request('role') === 'gm' ? 'selected' : '' }}>Game Master</option>
+                <option value="referee" {{ request('role') === 'referee' ? 'selected' : '' }}>Referee</option>
+                <option value="observer" {{ request('role') === 'observer' ? 'selected' : '' }}>Observer</option>
+                <option value="caster" {{ request('role') === 'caster' ? 'selected' : '' }}>Caster</option>
             </select>
             <select name="banned" class="bg-white/5 border-white/10 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
                 <option value="">All Status</option>
@@ -43,6 +47,7 @@
                 <tr>
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">User</th>
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Steam ID</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Player UUID</th>
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Role</th>
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Status</th>
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Joined</th>
@@ -62,8 +67,34 @@
                         <code class="text-sm text-gray-400">{{ $user->steam_id }}</code>
                     </td>
                     <td class="px-4 py-3">
-                        <span class="px-2 py-1 text-xs rounded-full {{ $user->role === 'admin' ? 'bg-green-500/20 text-green-400' : ($user->role === 'moderator' ? 'bg-blue-500/20 text-blue-400' : 'bg-white/5 text-gray-400') }}">
-                            {{ ucfirst($user->role ?? 'user') }}
+                        @if($user->player_uuid)
+                            <code class="text-xs text-gray-500">{{ Str::limit($user->player_uuid, 16) }}</code>
+                        @else
+                            <span class="text-xs text-gray-600">-</span>
+                        @endif
+                    </td>
+                    <td class="px-4 py-3">
+                        @php
+                            $roleColors = [
+                                'admin' => 'bg-red-500/20 text-red-400',
+                                'moderator' => 'bg-yellow-500/20 text-yellow-400',
+                                'gm' => 'bg-purple-500/20 text-purple-400',
+                                'referee' => 'bg-blue-500/20 text-blue-400',
+                                'observer' => 'bg-cyan-500/20 text-cyan-400',
+                                'caster' => 'bg-pink-500/20 text-pink-400',
+                                'user' => 'bg-white/5 text-gray-400',
+                            ];
+                            $roleLabels = [
+                                'gm' => 'Game Master',
+                                'referee' => 'Referee',
+                                'observer' => 'Observer',
+                                'caster' => 'Caster',
+                            ];
+                            $roleColor = $roleColors[$user->role] ?? $roleColors['user'];
+                            $roleLabel = $roleLabels[$user->role] ?? ucfirst($user->role ?? 'user');
+                        @endphp
+                        <span class="px-2 py-1 text-xs rounded-full {{ $roleColor }}">
+                            {{ $roleLabel }}
                         </span>
                     </td>
                     <td class="px-4 py-3">
@@ -88,6 +119,16 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                 </svg>
                             </a>
+                            @if($user->hasTwoFactorEnabled())
+                            <form action="{{ route('admin.users.reset-2fa', $user) }}" method="POST" class="inline" onsubmit="return confirm('Reset 2FA for this user? They will need to set it up again.')">
+                                @csrf
+                                <button type="submit" class="p-2 text-gray-400 hover:text-yellow-400 hover:bg-yellow-500/20 rounded-lg transition" title="Reset 2FA">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                                    </svg>
+                                </button>
+                            </form>
+                            @endif
                             @if(!$user->is_banned && $user->id !== auth()->id())
                             <form action="{{ route('admin.users.ban', $user) }}" method="POST" class="inline" onsubmit="return confirm('Ban this user?')">
                                 @csrf
@@ -112,7 +153,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="6" class="px-4 py-8 text-center text-gray-500">No users found</td>
+                    <td colspan="7" class="px-4 py-8 text-center text-gray-500">No users found</td>
                 </tr>
                 @endforelse
             </tbody>

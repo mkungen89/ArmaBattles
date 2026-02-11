@@ -70,7 +70,13 @@ class AdminController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'role' => 'required|in:user,moderator,admin',
+            'role' => 'required|in:user,moderator,admin,gm,referee,observer,caster',
+            'email' => 'nullable|email|max:255',
+            'player_uuid' => 'nullable|string|max:255',
+            'discord_id' => 'nullable|string|max:255',
+            'discord_username' => 'nullable|string|max:255',
+            'profile_visibility' => 'required|in:public,private',
+            'custom_avatar' => 'nullable|url|max:500',
         ]);
 
         $user->update($validated);
@@ -117,6 +123,60 @@ class AdminController extends Controller
         $this->logAction('2fa.admin-reset', 'User', $user->id);
 
         return back()->with('success', "Two-factor authentication has been reset for {$user->name}.");
+    }
+
+    public function impersonateUser(User $user)
+    {
+        if ($user->id === auth()->id()) {
+            return back()->with('error', 'You cannot impersonate yourself.');
+        }
+
+        // Store the original user ID in session
+        session(['impersonating' => auth()->id()]);
+
+        // Log in as the target user
+        auth()->login($user);
+
+        $this->logAction('user.impersonate', 'User', $user->id);
+
+        return redirect()->route('home')->with('success', "Now impersonating {$user->name}. Click your profile to stop impersonating.");
+    }
+
+    public function stopImpersonating()
+    {
+        if (! session()->has('impersonating')) {
+            return redirect()->route('home');
+        }
+
+        $originalUserId = session('impersonating');
+        session()->forget('impersonating');
+
+        $originalUser = User::find($originalUserId);
+        if ($originalUser) {
+            auth()->login($originalUser);
+        }
+
+        return redirect()->route('admin.users')->with('success', 'Stopped impersonating user.');
+    }
+
+    public function destroyUser(User $user)
+    {
+        if ($user->id === auth()->id()) {
+            return back()->with('error', 'You cannot delete yourself.');
+        }
+
+        $userName = $user->name;
+        $userId = $user->id;
+
+        // Delete related data if needed
+        // Note: This should be handled by foreign key cascades or manual cleanup
+        // Example: $user->teams()->detach();
+
+        $user->delete();
+
+        $this->logAction('user.delete', 'User', $userId, ['name' => $userName]);
+
+        return redirect()->route('admin.users')->with('success', "User {$userName} has been permanently deleted.");
     }
 
     public function servers()

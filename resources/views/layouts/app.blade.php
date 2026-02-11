@@ -721,6 +721,25 @@
             </div>
         @endif
 
+        @if(session('impersonating'))
+            <div class="mb-4 p-4 bg-purple-600/90 rounded-lg border border-purple-400/50 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <svg class="w-5 h-5 text-purple-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+                    </svg>
+                    <span class="text-white font-medium">
+                        You are currently impersonating <strong>{{ auth()->user()->name }}</strong>
+                    </span>
+                </div>
+                <form action="{{ route('stop-impersonating') }}" method="POST">
+                    @csrf
+                    <button type="submit" class="px-4 py-2 bg-white/20 hover:bg-white/30 text-white rounded-lg transition text-sm font-medium">
+                        Stop Impersonating
+                    </button>
+                </form>
+            </div>
+        @endif
+
         @yield('content')
         </div>
     </main>

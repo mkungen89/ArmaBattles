@@ -233,6 +233,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/profile/social-links', [ProfileController::class, 'updateSocialLinks'])->name('profile.update-social-links');
     Route::post('/profile/settings', [ProfileController::class, 'updateSettings'])->name('profile.update-settings');
 
+    // Stop impersonating
+    Route::post('/stop-impersonating', [AdminController::class, 'stopImpersonating'])->name('stop-impersonating');
+
     // Favorites
     Route::get('/favorites', [\App\Http\Controllers\FavoriteController::class, 'index'])->name('favorites.index');
     Route::post('/favorites/toggle', [\App\Http\Controllers\FavoriteController::class, 'toggle'])->name('favorites.toggle');
@@ -373,6 +376,8 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::post('/users/{user}/ban', [AdminController::class, 'banUser'])->name('admin.users.ban');
     Route::post('/users/{user}/unban', [AdminController::class, 'unbanUser'])->name('admin.users.unban');
     Route::post('/users/{user}/reset-2fa', [AdminController::class, 'resetTwoFactor'])->name('admin.users.reset-2fa');
+    Route::post('/users/{user}/impersonate', [AdminController::class, 'impersonateUser'])->name('admin.users.impersonate');
+    Route::delete('/users/{user}', [AdminController::class, 'destroyUser'])->name('admin.users.destroy');
     Route::get('/servers', [AdminController::class, 'servers'])->name('admin.servers');
     Route::post('/servers', [AdminController::class, 'storeServer'])->name('admin.servers.store');
     Route::delete('/servers/{server}', [AdminController::class, 'destroyServer'])->name('admin.servers.destroy');
