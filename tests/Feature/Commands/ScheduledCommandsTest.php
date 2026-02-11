@@ -26,14 +26,74 @@ class ScheduledCommandsTest extends TestCase
 
     public function test_achievements_check_awards_when_threshold_met(): void
     {
-        // Skipped: PlayerStat::achievements() relationship is missing, causing
-        // AchievementProgressService::updateProgress() to fail.
-        $this->markTestSkipped('PlayerStat::achievements() relationship not yet defined');
+        $achievement = \App\Models\Achievement::create([
+            'name' => 'Test Achievement',
+            'slug' => 'test-achievement',
+            'description' => 'Test',
+            'category' => 'combat',
+            'icon' => 'star',
+            'color' => '#gold',
+            'points' => 10,
+            'stat_field' => 'kills',
+            'threshold' => 10,
+        ]);
+
+        // Create player stat that meets threshold
+        DB::table('player_stats')->insert([
+            'player_uuid' => 'test-uuid',
+            'player_name' => 'Test Player',
+            'server_id' => 1,
+            'kills' => 10,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $this->artisan('achievements:check')->assertExitCode(0);
+
+        // Check that achievement was awarded
+        $this->assertDatabaseHas('player_achievements', [
+            'player_uuid' => 'test-uuid',
+            'achievement_id' => $achievement->id,
+        ]);
     }
 
     public function test_achievements_check_does_not_re_award(): void
     {
-        $this->markTestSkipped('PlayerStat::achievements() relationship not yet defined');
+        $achievement = \App\Models\Achievement::create([
+            'name' => 'Test Achievement',
+            'slug' => 'test-achievement',
+            'description' => 'Test',
+            'category' => 'combat',
+            'icon' => 'star',
+            'color' => '#gold',
+            'points' => 10,
+            'stat_field' => 'kills',
+            'threshold' => 10,
+        ]);
+
+        DB::table('player_stats')->insert([
+            'player_uuid' => 'test-uuid',
+            'player_name' => 'Test Player',
+            'server_id' => 1,
+            'kills' => 15,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        // Award it manually first
+        DB::table('player_achievements')->insert([
+            'player_uuid' => 'test-uuid',
+            'achievement_id' => $achievement->id,
+            'earned_at' => now()->subDay(),
+        ]);
+
+        $this->artisan('achievements:check')->assertExitCode(0);
+
+        // Should still only have one entry
+        $this->assertEquals(1, DB::table('player_achievements')
+            ->where('player_uuid', 'test-uuid')
+            ->where('achievement_id', $achievement->id)
+            ->count());
     }
 
     // ========================================

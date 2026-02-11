@@ -86,20 +86,18 @@ class ServerControlTest extends TestCase
 
     public function test_admin_can_create_scheduled_restart(): void
     {
-        $this->markTestSkipped('Scheduled restart creation logic not implemented');
-
         $response = $this->actingAs($this->admin)
             ->post('/admin/server/scheduled-restarts', [
                 'server_id' => $this->server->id,
-                'type' => 'daily',
-                'time' => '03:00',
+                'schedule_type' => 'daily',
+                'restart_time' => '03:00',
                 'warning_minutes' => 15,
             ]);
 
         $response->assertRedirect();
         $this->assertDatabaseHas('scheduled_restarts', [
             'server_id' => $this->server->id,
-            'type' => 'daily',
+            'schedule_type' => 'daily',
         ]);
     }
 
