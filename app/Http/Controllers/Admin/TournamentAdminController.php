@@ -3,15 +3,20 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\MatchReport;
 use App\Models\Server;
 use App\Models\Tournament;
 use App\Models\TournamentMatch;
 use App\Models\TournamentRegistration;
 use App\Services\TournamentBracketService;
+use App\Traits\LogsAdminActions;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class TournamentAdminController extends Controller
 {
+    use LogsAdminActions;
+
     public function __construct(
         protected TournamentBracketService $bracketService
     ) {}
@@ -345,5 +350,61 @@ class TournamentAdminController extends Controller
 
         return redirect()->route('admin.tournaments.index')
             ->with('success', 'Tournament deleted.');
+    }
+
+    /**
+     * Admin override of a match report
+     */
+    public function overrideReport(Request $request, MatchReport $report)
+    {
+        $validated = $request->validate([
+            'winning_team_id' => 'required|exists:teams,id',
+            'team1_score' => 'sometimes|integer|min:0',
+            'team2_score' => 'sometimes|integer|min:0',
+            'override_reason' => 'required|string|max:1000',
+        ]);
+
+        $oldWinner = $report->winning_team_id;
+
+        DB::transaction(function () use ($report, $validated, $oldWinner) {
+            // Update the report
+            $report->update([
+                'winning_team_id' => $validated['winning_team_id'],
+                'team1_score' => $validated['team1_score'] ?? $report->team1_score,
+                'team2_score' => $validated['team2_score'] ?? $report->team2_score,
+                'status' => 'approved', // Admin override auto-approves
+                'incidents' => array_merge($report->incidents ?? [], [[
+                    'type' => 'admin_override',
+                    'description' => $validated['override_reason'],
+                    'overridden_by' => auth()->id(),
+                    'overridden_at' => now()->toISOString(),
+                    'original_winner_id' => $oldWinner,
+                    'new_winner_id' => $validated['winning_team_id'],
+                ]]),
+            ]);
+
+            // Update the match with new winner
+            $report->match->update([
+                'winner_id' => $validated['winning_team_id'],
+                'team1_score' => $validated['team1_score'] ?? $report->team1_score,
+                'team2_score' => $validated['team2_score'] ?? $report->team2_score,
+            ]);
+
+            // Log admin action
+            $this->logAction(
+                'admin.report-overridden',
+                'MatchReport',
+                $report->id,
+                [
+                    'match_id' => $report->match_id,
+                    'original_winner_id' => $oldWinner,
+                    'new_winner_id' => $validated['winning_team_id'],
+                    'reason' => $validated['override_reason'],
+                ]
+            );
+        });
+
+        return redirect()->back()
+            ->with('success', 'Match report has been overridden successfully.');
     }
 }

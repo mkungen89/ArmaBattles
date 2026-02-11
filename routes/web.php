@@ -414,6 +414,9 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/matches/{match}/edit', [TournamentAdminController::class, 'editMatch'])->name('admin.matches.edit');
     Route::put('/matches/{match}', [TournamentAdminController::class, 'updateMatch'])->name('admin.matches.update');
 
+    // Match Report Actions
+    Route::put('/reports/{report}/override', [TournamentAdminController::class, 'overrideReport'])->name('admin.reports.override');
+
     // Team Admin Routes
     Route::prefix('teams')->group(function () {
         Route::get('/', [TeamAdminController::class, 'index'])->name('admin.teams.index');
@@ -576,6 +579,8 @@ Route::prefix('referee')->middleware(['auth', 'referee'])->name('referee.')->gro
     Route::get('/report/{report}', [\App\Http\Controllers\RefereeController::class, 'viewReport'])->name('report.view');
     Route::post('/report/{report}/approve', [\App\Http\Controllers\RefereeController::class, 'approveReport'])->name('report.approve');
     Route::post('/report/{report}/dispute', [\App\Http\Controllers\RefereeController::class, 'disputeReport'])->name('report.dispute');
+    Route::put('/reports/{report}', [\App\Http\Controllers\RefereeController::class, 'updateReport'])->name('reports.update');
+    Route::post('/matches/{match}/forfeit', [\App\Http\Controllers\RefereeController::class, 'forfeitMatch'])->name('matches.forfeit');
 });
 
 // RCON Admin Routes (within admin middleware)

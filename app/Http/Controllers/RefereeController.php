@@ -191,4 +191,101 @@ class RefereeController extends Controller
 
         return back()->with('warning', 'Match report has been disputed. Admin review required.');
     }
+
+    /**
+     * Update a match report (only if not approved/finalized)
+     */
+    public function updateReport(Request $request, MatchReport $report)
+    {
+        // Cannot edit approved reports
+        if ($report->status === 'approved') {
+            abort(403, 'Cannot edit an approved match report');
+        }
+
+        // Only the original referee can edit their report
+        if ($report->referee_id !== auth()->id() && ! auth()->user()->isAdmin()) {
+            abort(403, 'You can only edit your own reports');
+        }
+
+        $validated = $request->validate([
+            'winning_team_id' => 'sometimes|exists:teams,id',
+            'team1_score' => 'sometimes|integer|min:0',
+            'team2_score' => 'sometimes|integer|min:0',
+            'notes' => 'sometimes|nullable|string|max:2000',
+        ]);
+
+        $report->update($validated);
+
+        $this->logAction(
+            'referee.report-updated',
+            'MatchReport',
+            $report->id,
+            [
+                'match_id' => $report->match_id,
+                'changes' => array_keys($validated),
+            ]
+        );
+
+        return back()->with('success', 'Match report updated successfully.');
+    }
+
+    /**
+     * Forfeit a match due to no-show or withdrawal
+     */
+    public function forfeitMatch(Request $request, TournamentMatch $match)
+    {
+        $validated = $request->validate([
+            'forfeiting_team_id' => 'required|exists:teams,id',
+            'reason' => 'required|string|max:500',
+        ]);
+
+        // Determine winner (the team that didn't forfeit)
+        $winningTeamId = $validated['forfeiting_team_id'] == $match->team1_id
+            ? $match->team2_id
+            : $match->team1_id;
+
+        DB::transaction(function () use ($match, $validated, $winningTeamId) {
+            // Create forfeit report
+            $report = MatchReport::create([
+                'match_id' => $match->id,
+                'referee_id' => auth()->id(),
+                'winning_team_id' => $winningTeamId,
+                'team1_score' => 0,
+                'team2_score' => 0,
+                'notes' => "Forfeit: {$validated['reason']}",
+                'incidents' => [[
+                    'type' => 'forfeit',
+                    'forfeiting_team_id' => $validated['forfeiting_team_id'],
+                    'reason' => $validated['reason'],
+                    'timestamp' => now()->toISOString(),
+                ]],
+                'status' => 'approved', // Forfeits are auto-approved
+                'reported_at' => now(),
+            ]);
+
+            // Update match
+            $match->update([
+                'winner_id' => $winningTeamId,
+                'team1_score' => 0,
+                'team2_score' => 0,
+                'status' => 'completed',
+                'completed_at' => now(),
+            ]);
+
+            // Log action
+            $this->logAction(
+                'referee.match-forfeited',
+                'TournamentMatch',
+                $match->id,
+                [
+                    'forfeiting_team_id' => $validated['forfeiting_team_id'],
+                    'winning_team_id' => $winningTeamId,
+                    'reason' => $validated['reason'],
+                ]
+            );
+        });
+
+        return redirect()->route('referee.dashboard')
+            ->with('success', 'Match has been forfeited.');
+    }
 }

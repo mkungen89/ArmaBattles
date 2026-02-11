@@ -145,15 +145,13 @@ class RefereeTest extends TestCase
 
     public function test_referee_cannot_edit_finalized_report(): void
     {
-        $this->markTestSkipped('Report editing route not implemented');
-
         $report = MatchReport::create([
             'match_id' => $this->match->id,
             'referee_id' => $this->referee->id,
             'team1_score' => 10,
             'team2_score' => 5,
-            'winner_id' => $this->match->team1_id,
-            'is_finalized' => true,
+            'winning_team_id' => $this->match->team1_id,
+            'status' => 'approved', // Approved = finalized
             'reported_at' => now(),
         ]);
 
@@ -167,27 +165,26 @@ class RefereeTest extends TestCase
 
     public function test_admin_can_override_referee_report(): void
     {
-        $this->markTestSkipped('Admin report override route not implemented');
-
         $report = MatchReport::create([
             'match_id' => $this->match->id,
             'referee_id' => $this->referee->id,
             'team1_score' => 10,
             'team2_score' => 5,
-            'winner_id' => $this->match->team1_id,
+            'winning_team_id' => $this->match->team1_id,
+            'status' => 'submitted',
             'reported_at' => now(),
         ]);
 
         $response = $this->actingAs($this->admin)
             ->put("/admin/reports/{$report->id}/override", [
-                'winner_id' => $this->match->team2_id,
+                'winning_team_id' => $this->match->team2_id,
                 'override_reason' => 'Video evidence shows team2 won',
             ]);
 
         $response->assertRedirect();
         $this->assertDatabaseHas('match_reports', [
             'id' => $report->id,
-            'winner_id' => $this->match->team2_id,
+            'winning_team_id' => $this->match->team2_id,
         ]);
     }
 
@@ -238,15 +235,13 @@ class RefereeTest extends TestCase
 
     public function test_forfeit_if_team_no_show(): void
     {
-        $this->markTestSkipped('Forfeit route not implemented');
-
         $captain1 = Team::find($this->match->team1_id)->captain;
 
         // Only team 1 checks in, team 2 is no-show
         $this->actingAs($captain1)->post("/matches/{$this->match->id}/check-in");
 
         // Simulate check-in deadline passing (15 minutes)
-        $this->match->update(['scheduled_time' => now()->subMinutes(20)]);
+        $this->match->update(['scheduled_at' => now()->subMinutes(20)]);
 
         $response = $this->actingAs($this->referee)
             ->post("/referee/matches/{$this->match->id}/forfeit", [
