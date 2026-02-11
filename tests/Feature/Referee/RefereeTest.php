@@ -119,19 +119,27 @@ class RefereeTest extends TestCase
 
     public function test_referee_can_report_dispute(): void
     {
-        $this->markTestSkipped('Dispute flow uses separate endpoint - POST /referee/report/{report}/dispute');
+        // First create a match report
+        $report = MatchReport::create([
+            'match_id' => $this->match->id,
+            'referee_id' => $this->referee->id,
+            'winning_team_id' => $this->match->team1_id,
+            'team1_score' => 10,
+            'team2_score' => 10,
+            'status' => 'submitted',
+            'reported_at' => now(),
+        ]);
 
+        // Now dispute it
         $response = $this->actingAs($this->referee)
-            ->post("/referee/match/{$this->match->id}/report", [
-                'team1_score' => 10,
-                'team2_score' => 10,
-                'winning_team_id' => $this->match->team1_id,
-                'notes' => 'Needs admin review',
+            ->post("/referee/report/{$report->id}/dispute", [
+                'dispute_reason' => 'Teams disagree on score',
             ]);
 
         $response->assertRedirect();
         $this->assertDatabaseHas('match_reports', [
-            'match_id' => $this->match->id,
+            'id' => $report->id,
+            'status' => 'disputed',
         ]);
     }
 

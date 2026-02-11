@@ -131,8 +131,6 @@ class MetricsTest extends TestCase
 
     public function test_old_analytics_cleaned_up(): void
     {
-        $this->markTestSkipped('analytics:clean command does not exist - cleanup handled by scheduled task in routes/console.php');
-
         // Create old event (91 days)
         AnalyticsEvent::create([
             'event_type' => 'page_view',
