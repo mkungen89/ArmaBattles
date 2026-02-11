@@ -25,13 +25,13 @@ class DiscordTest extends TestCase
         $user = User::factory()->create();
 
         $response = $this->actingAs($user)->post('/discord/enable', [
-            'activity_type' => 'playing',
+            'current_activity' => 'playing',
         ]);
 
         $response->assertRedirect();
-        $this->assertDatabaseHas('discord_rich_presences', [
+        $this->assertDatabaseHas('discord_rich_presence', [
             'user_id' => $user->id,
-            'is_enabled' => true,
+            'enabled' => true,
         ]);
     }
 
@@ -40,16 +40,16 @@ class DiscordTest extends TestCase
         $user = User::factory()->create();
         DiscordRichPresence::create([
             'user_id' => $user->id,
-            'activity_type' => 'playing',
-            'is_enabled' => true,
+            'current_activity' => 'playing',
+            'enabled' => true,
         ]);
 
         $response = $this->actingAs($user)->post('/discord/disable');
 
         $response->assertRedirect();
-        $this->assertDatabaseHas('discord_rich_presences', [
+        $this->assertDatabaseHas('discord_rich_presence', [
             'user_id' => $user->id,
-            'is_enabled' => false,
+            'enabled' => false,
         ]);
     }
 
@@ -58,19 +58,18 @@ class DiscordTest extends TestCase
         $user = User::factory()->create();
         DiscordRichPresence::create([
             'user_id' => $user->id,
-            'activity_type' => 'browsing',
-            'is_enabled' => true,
+            'current_activity' => 'browsing',
+            'enabled' => true,
         ]);
 
         $response = $this->actingAs($user)->post('/discord/update-activity', [
-            'activity_type' => 'watching_tournament',
-            'details' => 'Championship Finals',
+            'activity_type' => 'browsing',
         ]);
 
         $response->assertOk();
-        $this->assertDatabaseHas('discord_rich_presences', [
+        $this->assertDatabaseHas('discord_rich_presence', [
             'user_id' => $user->id,
-            'activity_type' => 'watching_tournament',
+            'current_activity' => 'browsing',
         ]);
     }
 
@@ -79,19 +78,20 @@ class DiscordTest extends TestCase
         $user = User::factory()->create();
         DiscordRichPresence::create([
             'user_id' => $user->id,
-            'activity_type' => 'playing',
-            'details' => 'Conflict on Everon',
-            'is_enabled' => true,
+            'current_activity' => 'playing',
+            'activity_details' => ['server_name' => 'Conflict on Everon'],
+            'enabled' => true,
         ]);
 
         $response = $this->actingAs($user)->get('/api/discord/presence');
 
         $response->assertOk();
         $response->assertJsonStructure([
-            'state',
-            'details',
-            'large_image',
-            'small_image',
+            'enabled',
+            'presence',
+            'current_activity',
+            'started_at',
+            'elapsed_time',
         ]);
     }
 }
