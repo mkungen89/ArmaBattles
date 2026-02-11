@@ -164,13 +164,13 @@
     {{-- Showcase Management Modal (if logged in with player_uuid) --}}
     @auth
         @if(auth()->user()->player_uuid)
-            <div x-show="showcaseOpen"
-                 x-teleport="body"
-                 @click.self="showcaseOpen = false"
-                 @keydown.escape.window="showcaseOpen = false"
-                 class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-                <div @click.stop
-                     class="bg-gray-900 border border-white/5 rounded-2xl p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto relative">
+            <template x-teleport="body">
+                <div x-show="showcaseOpen"
+                     @click.self="showcaseOpen = false"
+                     @keydown.escape.window="showcaseOpen = false"
+                     class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+                    <div @click.stop
+                         class="bg-gray-900 border border-white/5 rounded-2xl p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto relative">
                     <div class="flex items-center justify-between mb-4">
                         <h2 class="text-2xl font-bold text-white">Achievement Showcase</h2>
                         <button type="button" @click="showcaseOpen = false" class="text-gray-400 hover:text-white transition">
@@ -228,8 +228,9 @@
                                 Save Showcase
                             </button>
                         </form>
+                    </div>
                 </div>
-            </div>
+            </template>
             <script>
                 function togglePin(achievementId) {
                     // This is a simple implementation - could be enhanced with API calls
