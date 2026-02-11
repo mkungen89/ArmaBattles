@@ -111,12 +111,19 @@ class DiscordPresenceService
     /**
      * Enable Discord presence for a user
      */
-    public function enablePresence(User $user, ?string $discordUserId = null): void
+    public function enablePresence(User $user, ?string $discordUserId = null, ?string $activityType = null): void
     {
-        $this->updateOrCreatePresence($user, [
+        $data = [
             'enabled' => true,
             'discord_user_id' => $discordUserId,
-        ]);
+        ];
+
+        if ($activityType) {
+            $data['activity_type'] = $activityType;
+            $data['current_activity'] = $activityType;
+        }
+
+        $this->updateOrCreatePresence($user, $data);
     }
 
     /**

@@ -120,15 +120,34 @@ class WeaponAdminController extends Controller
             ->with('success', 'Weapon deleted successfully.');
     }
 
+    public function uploadImage(Request $request, Weapon $weapon)
+    {
+        $validated = $request->validate([
+            'image' => 'required|image|mimes:png,jpg,jpeg,gif,webp|max:2048',
+        ]);
+
+        // Delete old image if exists
+        if ($weapon->image_path) {
+            Storage::disk('public')->delete($weapon->image_path);
+        }
+
+        $path = $request->file('image')->store('weapons', 'public');
+        $weapon->image_path = $path;
+        $weapon->save();
+
+        return redirect()->back()
+            ->with('success', 'Image uploaded successfully.');
+    }
+
     public function deleteImage(Weapon $weapon)
     {
         if ($weapon->image_path) {
-            Storage::disk('s3')->delete($weapon->image_path);
+            Storage::disk('public')->delete($weapon->image_path);
             $weapon->image_path = null;
             $weapon->save();
         }
 
-        return redirect()->route('admin.weapons.edit', $weapon)
+        return redirect()->back()
             ->with('success', 'Image removed successfully.');
     }
 

@@ -166,15 +166,20 @@ Route::prefix('clips')->name('clips.')->group(function () {
 
 // Discord Rich Presence
 Route::prefix('discord')->name('discord.')->middleware('auth')->group(function () {
+    Route::get('/settings', [\App\Http\Controllers\DiscordPresenceController::class, 'settings'])->name('settings');
     Route::get('/presence/settings', [\App\Http\Controllers\DiscordPresenceController::class, 'settings'])->name('presence.settings');
+    Route::post('/enable', [\App\Http\Controllers\DiscordPresenceController::class, 'enable'])->name('enable');
     Route::post('/presence/enable', [\App\Http\Controllers\DiscordPresenceController::class, 'enable'])->name('presence.enable');
+    Route::post('/disable', [\App\Http\Controllers\DiscordPresenceController::class, 'disable'])->name('disable');
     Route::delete('/presence/disable', [\App\Http\Controllers\DiscordPresenceController::class, 'disable'])->name('presence.disable');
+    Route::post('/update-activity', [\App\Http\Controllers\DiscordPresenceController::class, 'updateActivity'])->name('update-activity');
     Route::get('/presence/current', [\App\Http\Controllers\DiscordPresenceController::class, 'current'])->name('presence.current');
     Route::post('/presence/activity', [\App\Http\Controllers\DiscordPresenceController::class, 'updateActivity'])->name('presence.activity');
 });
 
 // Public Discord API (for Discord bot integration)
 Route::get('/api/discord/presences/active', [\App\Http\Controllers\DiscordPresenceController::class, 'active'])->name('api.discord.presences');
+Route::get('/api/discord/presence', [\App\Http\Controllers\DiscordPresenceController::class, 'current'])->middleware('auth')->name('api.discord.presence');
 
 // Weapon stats
 Route::get('/weapons', [WeaponStatsController::class, 'index'])->name('weapons.index');
@@ -448,7 +453,8 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
         Route::get('/{weapon}/edit', [\App\Http\Controllers\Admin\WeaponAdminController::class, 'edit'])->name('admin.weapons.edit');
         Route::put('/{weapon}', [\App\Http\Controllers\Admin\WeaponAdminController::class, 'update'])->name('admin.weapons.update');
         Route::delete('/{weapon}', [\App\Http\Controllers\Admin\WeaponAdminController::class, 'destroy'])->name('admin.weapons.destroy');
-        Route::delete('/{weapon}/image', [\App\Http\Controllers\Admin\WeaponAdminController::class, 'deleteImage'])->name('admin.weapons.delete-image');
+        Route::post('/{weapon}/upload-image', [\App\Http\Controllers\Admin\WeaponAdminController::class, 'uploadImage'])->name('admin.weapons.upload-image');
+        Route::delete('/{weapon}/delete-image', [\App\Http\Controllers\Admin\WeaponAdminController::class, 'deleteImage'])->name('admin.weapons.delete-image');
     });
 
     // Vehicles Admin Routes

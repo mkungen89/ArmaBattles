@@ -30,13 +30,15 @@ class DiscordPresenceController extends Controller
     {
         $request->validate([
             'discord_user_id' => 'nullable|string|max:100',
+            'activity_type' => 'nullable|string|in:playing,watching_tournament,browsing',
         ]);
 
         $user = Auth::user();
 
         $this->presenceService->enablePresence(
             $user,
-            $request->discord_user_id
+            $request->discord_user_id,
+            $request->activity_type ?? 'browsing'
         );
 
         return back()->with('success', 'Discord Rich Presence enabled successfully!');
@@ -82,15 +84,23 @@ class DiscordPresenceController extends Controller
     public function updateActivity(Request $request)
     {
         $request->validate([
-            'activity' => 'required|in:playing,watching_tournament,browsing,clear',
+            'activity' => 'nullable|in:playing,watching_tournament,browsing,clear',
+            'activity_type' => 'nullable|in:playing,watching_tournament,browsing,clear',
             'server_id' => 'nullable|exists:servers,id',
             'tournament_id' => 'nullable|exists:tournaments,id',
-            'details' => 'nullable|array',
+            'details' => 'nullable|array|string',
         ]);
 
         $user = Auth::user();
 
-        switch ($request->activity) {
+        // Support both 'activity' and 'activity_type' for backwards compatibility
+        $activity = $request->activity ?? $request->activity_type;
+
+        if (!$activity) {
+            return response()->json(['error' => 'Activity type is required'], 422);
+        }
+
+        switch ($activity) {
             case 'playing':
                 if (! $request->server_id) {
                     return response()->json(['error' => 'Server ID required for playing activity'], 422);
