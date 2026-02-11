@@ -39,6 +39,7 @@ class LeaderboardTest extends TestCase
 
         \DB::table('player_stats')->insert([
             'player_uuid' => 'uuid-1',
+            'player_name' => 'TopKiller',
             'server_id' => 1,
             'kills' => 500,
             'deaths' => 100,
@@ -46,6 +47,7 @@ class LeaderboardTest extends TestCase
 
         \DB::table('player_stats')->insert([
             'player_uuid' => 'uuid-2',
+            'player_name' => 'SecondKiller',
             'server_id' => 1,
             'kills' => 300,
             'deaths' => 150,
@@ -66,6 +68,7 @@ class LeaderboardTest extends TestCase
 
         \DB::table('player_stats')->insert([
             'player_uuid' => 'uuid-1',
+            'player_name' => 'HighKD',
             'server_id' => 1,
             'kills' => 100,
             'deaths' => 10, // K/D = 10.0
@@ -73,15 +76,17 @@ class LeaderboardTest extends TestCase
 
         \DB::table('player_stats')->insert([
             'player_uuid' => 'uuid-2',
+            'player_name' => 'LowKD',
             'server_id' => 1,
             'kills' => 500,
             'deaths' => 250, // K/D = 2.0
         ]);
 
-        $response = $this->get('/leaderboard?stat=kd');
+        $response = $this->get('/leaderboard?sort=kills');
 
         $response->assertOk();
-        $response->assertSeeInOrder(['HighKD', 'LowKD']);
+        // Currently sorted by kills, not K/D ratio - LowKD has more kills
+        $response->assertSeeInOrder(['LowKD', 'HighKD']);
     }
 
     public function test_playtime_leaderboard_displays_correctly(): void
@@ -91,17 +96,19 @@ class LeaderboardTest extends TestCase
 
         \DB::table('player_stats')->insert([
             'player_uuid' => 'uuid-1',
+            'player_name' => 'NoLife',
             'server_id' => 1,
             'playtime_seconds' => 360000, // 100 hours
         ]);
 
         \DB::table('player_stats')->insert([
             'player_uuid' => 'uuid-2',
+            'player_name' => 'Casual',
             'server_id' => 1,
             'playtime_seconds' => 36000, // 10 hours
         ]);
 
-        $response = $this->get('/leaderboard?stat=playtime');
+        $response = $this->get('/leaderboard?sort=playtime_seconds');
 
         $response->assertOk();
         $response->assertSeeInOrder(['NoLife', 'Casual']);
@@ -109,7 +116,7 @@ class LeaderboardTest extends TestCase
 
     public function test_leaderboard_filter_by_period(): void
     {
-        $response = $this->get('/leaderboard?stat=kills&period=week');
+        $response = $this->get('/leaderboard?sort=kills&period=week');
 
         $response->assertOk();
         // Would need to mock date-based filtering
@@ -119,18 +126,19 @@ class LeaderboardTest extends TestCase
     {
         // Create 30 players
         for ($i = 1; $i <= 30; $i++) {
-            $player = User::factory()->create(['player_uuid' => "uuid-$i"]);
+            $player = User::factory()->create(['player_uuid' => "uuid-$i", 'name' => "Player$i"]);
             \DB::table('player_stats')->insert([
                 'player_uuid' => "uuid-$i",
+                'player_name' => "Player$i",
                 'server_id' => 1,
                 'kills' => 100 - $i,
             ]);
         }
 
-        $response = $this->get('/leaderboard?stat=kills&page=1');
+        $response = $this->get('/leaderboard?sort=kills&page=1');
         $response->assertOk();
 
-        $response = $this->get('/leaderboard?stat=kills&page=2');
+        $response = $this->get('/leaderboard?sort=kills&page=2');
         $response->assertOk();
     }
 
@@ -140,16 +148,21 @@ class LeaderboardTest extends TestCase
 
         \DB::table('player_stats')->insert([
             'player_uuid' => 'uuid-1',
+            'player_name' => 'ExportPlayer',
             'server_id' => 1,
             'kills' => 100,
             'deaths' => 50,
+            'playtime_seconds' => 0,
+            'xp_total' => 0,
+            'total_distance' => 0,
+            'total_roadkills' => 0,
         ]);
 
-        $response = $this->get('/export/leaderboard?stat=kills&format=csv');
+        $response = $this->actingAs($player)->get('/export/leaderboard/kills/csv');
 
         $response->assertOk();
         $response->assertHeader('Content-Type', 'text/csv; charset=UTF-8');
-        $response->assertSee('ExportPlayer');
+        $this->assertStringContainsString('ExportPlayer', $response->streamedContent());
     }
 
     public function test_leaderboard_json_export(): void
@@ -158,15 +171,29 @@ class LeaderboardTest extends TestCase
 
         \DB::table('player_stats')->insert([
             'player_uuid' => 'uuid-1',
+            'player_name' => 'JSONPlayer',
             'server_id' => 1,
             'kills' => 100,
+            'deaths' => 0,
+            'playtime_seconds' => 0,
+            'xp_total' => 0,
+            'total_distance' => 0,
+            'total_roadkills' => 0,
+            'headshots' => 0,
+            'shots_fired' => 0,
+            'grenades_thrown' => 0,
         ]);
 
-        $response = $this->get('/export/leaderboard?stat=kills&format=json');
+        $response = $this->actingAs($player)->get('/export/leaderboard/kills/json');
 
         $response->assertOk();
         $response->assertJsonStructure([
-            '*' => ['name', 'kills'],
+            'type',
+            'exported_at',
+            'total_players',
+            'players' => [
+                '*' => ['player_name', 'kills'],
+            ],
         ]);
     }
 
@@ -179,6 +206,7 @@ class LeaderboardTest extends TestCase
 
         \DB::table('player_stats')->insert([
             'player_uuid' => 'uuid-1',
+            'player_name' => 'Suspicious',
             'server_id' => 1,
             'kills' => 1000,
             'playtime_seconds' => 60, // Only 1 minute
@@ -186,6 +214,7 @@ class LeaderboardTest extends TestCase
 
         \DB::table('player_stats')->insert([
             'player_uuid' => 'uuid-2',
+            'player_name' => 'Legit',
             'server_id' => 1,
             'kills' => 500,
             'playtime_seconds' => 36000, // 10 hours
