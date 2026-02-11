@@ -115,7 +115,7 @@
                                             </div>
                                         @endif
                                         <div>
-                                            <a href="{{ $player->user ? route('profile.public', $player->user) : '#' }}" class="font-medium text-white hover:text-green-400 transition">
+                                            <a href="{{ $player->user ? route('players.show', $player->user) : '#' }}" class="font-medium text-white hover:text-green-400 transition">
                                                 {{ $player->player_name }}
                                             </a>
                                             <div class="text-xs text-gray-500">
