@@ -106,7 +106,8 @@ class PlayerComparisonController extends Controller
             return response()->json([]);
         }
 
-        $results = PlayerStat::where('player_name', 'ILIKE', "%{$q}%")
+        // Use LIKE for case-insensitive search (works in both PostgreSQL and SQLite)
+        $results = PlayerStat::where('player_name', 'LIKE', "%{$q}%")
             ->orderByDesc('kills')
             ->limit(10)
             ->get(['player_uuid', 'player_name', 'kills', 'deaths']);

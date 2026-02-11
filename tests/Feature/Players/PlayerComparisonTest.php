@@ -58,6 +58,7 @@ class PlayerComparisonTest extends TestCase
 
         \DB::table('player_stats')->insert([
             'player_uuid' => 'uuid-1',
+            'player_name' => 'Player1',
             'server_id' => 1,
             'kills' => 100,
             'deaths' => 50,
@@ -65,6 +66,7 @@ class PlayerComparisonTest extends TestCase
 
         \DB::table('player_stats')->insert([
             'player_uuid' => 'uuid-2',
+            'player_name' => 'Player2',
             'server_id' => 1,
             'kills' => 80,
             'deaths' => 40,
@@ -126,7 +128,7 @@ class PlayerComparisonTest extends TestCase
             'killer_name' => $player1->name,
             'victim_uuid' => 'uuid-2',
             'victim_name' => $player2->name,
-            'weapon' => 'M4A1',
+            'weapon_name' => 'M4A1',
             'distance' => 100,
             'killed_at' => now(),
             'created_at' => now(),
@@ -143,9 +145,42 @@ class PlayerComparisonTest extends TestCase
 
     public function test_player_autocomplete_endpoint_returns_suggestions(): void
     {
-        User::factory()->create(['name' => 'TestPlayer1']);
-        User::factory()->create(['name' => 'TestPlayer2']);
-        User::factory()->create(['name' => 'OtherPlayer']);
+        $player1 = User::factory()->create(['name' => 'TestPlayer1', 'player_uuid' => 'uuid-1']);
+        $player2 = User::factory()->create(['name' => 'TestPlayer2', 'player_uuid' => 'uuid-2']);
+        $player3 = User::factory()->create(['name' => 'OtherPlayer', 'player_uuid' => 'uuid-3']);
+
+        // Create server
+        \DB::table('servers')->insert([
+            'battlemetrics_id' => '12345',
+            'name' => 'Test Server',
+            'ip' => '127.0.0.1',
+            'port' => 2001,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        // Create player stats so searchPlayer can find them
+        \DB::table('player_stats')->insert([
+            'player_uuid' => 'uuid-1',
+            'player_name' => 'TestPlayer1',
+            'server_id' => 1,
+            'kills' => 10,
+            'deaths' => 5,
+        ]);
+        \DB::table('player_stats')->insert([
+            'player_uuid' => 'uuid-2',
+            'player_name' => 'TestPlayer2',
+            'server_id' => 1,
+            'kills' => 20,
+            'deaths' => 10,
+        ]);
+        \DB::table('player_stats')->insert([
+            'player_uuid' => 'uuid-3',
+            'player_name' => 'OtherPlayer',
+            'server_id' => 1,
+            'kills' => 5,
+            'deaths' => 15,
+        ]);
 
         $response = $this->get('/api/players/search?q=Test');
 
