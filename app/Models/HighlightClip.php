@@ -16,6 +16,7 @@ class HighlightClip extends Model
         'description',
         'thumbnail_url',
         'votes',
+        'status',
         'is_featured',
         'featured_at',
     ];
@@ -149,6 +150,17 @@ class HighlightClip extends Model
     public function decrementVotes(): void
     {
         $this->decrement('votes');
+    }
+
+    /**
+     * Recalculate votes based on vote_type
+     */
+    public function recalculateVotes(): void
+    {
+        $upvotes = $this->clipVotes()->where('vote_type', 'upvote')->count();
+        $downvotes = $this->clipVotes()->where('vote_type', 'downvote')->count();
+        $this->votes = $upvotes - $downvotes;
+        $this->save();
     }
 
     /**

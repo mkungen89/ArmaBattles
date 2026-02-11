@@ -144,6 +144,7 @@ class CreatorsTest extends TestCase
         $response = $this->actingAs($user)->post('/clips', [
             'title' => 'Epic Kill',
             'url' => 'https://youtube.com/watch?v=test123',
+            'platform' => 'youtube',
             'description' => 'Amazing headshot',
         ]);
 

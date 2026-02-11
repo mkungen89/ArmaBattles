@@ -10,6 +10,7 @@ class ClipVote extends Model
     protected $fillable = [
         'user_id',
         'clip_id',
+        'vote_type',
     ];
 
     /**

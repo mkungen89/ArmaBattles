@@ -98,24 +98,35 @@ class HighlightClipController extends Controller
     /**
      * Vote for a clip
      */
-    public function vote(HighlightClip $clip)
+    public function vote(HighlightClip $clip, Request $request)
     {
         $user = Auth::user();
 
-        if ($clip->hasUserVoted($user->id)) {
-            return back()->with('error', 'You have already voted for this clip.');
+        // Check if clip is approved
+        if ($clip->status !== 'approved') {
+            abort(403, 'Cannot vote on pending or rejected clips.');
         }
 
-        DB::transaction(function () use ($clip, $user) {
-            ClipVote::create([
-                'user_id' => $user->id,
-                'clip_id' => $clip->id,
-            ]);
+        $validated = $request->validate([
+            'vote_type' => 'required|in:upvote,downvote',
+        ]);
 
-            $clip->incrementVotes();
+        DB::transaction(function () use ($clip, $user, $validated) {
+            // Update or create vote
+            ClipVote::updateOrCreate(
+                [
+                    'user_id' => $user->id,
+                    'clip_id' => $clip->id,
+                ],
+                [
+                    'vote_type' => $validated['vote_type'],
+                ]
+            );
+
+            $clip->recalculateVotes();
         });
 
-        return back()->with('success', 'Vote added!');
+        return back()->with('success', 'Vote recorded!');
     }
 
     /**
