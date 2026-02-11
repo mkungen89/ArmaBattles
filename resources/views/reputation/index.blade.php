@@ -18,6 +18,7 @@
                 </div>
             </div>
             {{-- Info Box --}}
+            @auth
             <div class="bg-green-500/10 border border-green-500/30 rounded-xl p-4 mb-6">
                 <div class="flex items-start gap-3">
                     <svg class="w-6 h-6 text-green-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -35,6 +36,7 @@
                     </div>
                 </div>
             </div>
+            @endauth
             {{-- Tabs --}}
             <div x-data="{ tab: 'top' }" class="space-y-6">
                 <div class="flex flex-wrap gap-2 border-b border-white/5">
@@ -172,7 +174,7 @@
                                     <tr>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Player</th>
                                         <th class="px-6 py-3 text-center text-xs font-medium text-gray-400 uppercase tracking-wider">Reputation</th>
-                                        <th class="px-6 py-3 text-center text-xs font-medium text-gray-400 uppercase tracking-wider">Votes</th>
+                                        <th class="px-6 py-3 text-center text-xs font-medium text-gray-400 uppercase tracking-wider">Ratings</th>
                                         <th class="px-6 py-3 text-center text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
                                     </tr>
                                 </thead>

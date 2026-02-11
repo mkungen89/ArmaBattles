@@ -90,6 +90,93 @@ class ReputationController extends Controller
     }
 
     /**
+     * Submit a reputation vote by target_user_id
+     */
+    public function voteById(Request $request)
+    {
+        $validated = $request->validate([
+            'target_user_id' => 'required|exists:users,id',
+            'vote_type' => 'required|in:positive,negative',
+            'category' => 'required|in:teamwork,leadership,sportsmanship,general',
+            'comment' => 'nullable|string|max:500',
+        ]);
+
+        // Cannot vote for yourself
+        if ($validated['target_user_id'] == auth()->id()) {
+            return back()->withErrors(['target_user_id' => 'You cannot vote for yourself.']);
+        }
+
+        $targetUser = User::findOrFail($validated['target_user_id']);
+
+        // Check if user already voted (within 24 hours)
+        $existingVote = ReputationVote::where('voter_id', auth()->id())
+            ->where('target_id', $targetUser->id)
+            ->first();
+
+        if ($existingVote) {
+            return back()->with('error', 'You have already voted for this player within 24 hours.');
+        }
+
+        // Create new vote
+        DB::transaction(function () use ($targetUser, $validated) {
+            ReputationVote::create([
+                'voter_id' => auth()->id(),
+                'target_id' => $targetUser->id,
+                'vote_type' => $validated['vote_type'],
+                'category' => $validated['category'],
+                'comment' => $validated['comment'] ?? null,
+            ]);
+
+            $this->updateReputationScore($targetUser, $validated['vote_type'], $validated['category'], 1);
+        });
+
+        return back()->with('success', 'Your vote has been submitted!');
+    }
+
+    /**
+     * Update an existing vote
+     */
+    public function updateVote(Request $request, ReputationVote $vote)
+    {
+        $validated = $request->validate([
+            'vote_type' => 'required|in:positive,negative',
+            'category' => 'nullable|in:teamwork,leadership,sportsmanship,general',
+            'comment' => 'nullable|string|max:500',
+        ]);
+
+        // Check if user owns this vote
+        if ($vote->voter_id !== auth()->id()) {
+            return response('You cannot update this vote.', 403);
+        }
+
+        // Check if vote can be changed (within 24h)
+        if ($vote->created_at->diffInHours(now()) >= 24) {
+            return response('You can only change your vote within 24 hours.', 403);
+        }
+
+        DB::transaction(function () use ($vote, $validated) {
+            $targetUser = $vote->target;
+
+            $newCategory = $validated['category'] ?? $vote->category;
+            $newComment = $validated['comment'] ?? $vote->comment;
+
+            // Revert old vote
+            $this->updateReputationScore($targetUser, $vote->vote_type, $vote->category, -1);
+
+            // Apply new vote
+            $vote->update([
+                'vote_type' => $validated['vote_type'],
+                'category' => $newCategory,
+                'comment' => $newComment,
+            ]);
+
+            $this->updateReputationScore($targetUser, $validated['vote_type'], $newCategory, 1);
+        });
+
+        return back()->with('success', 'Your vote has been updated!');
+    }
+
+    /**
      * Remove a vote
      */
     public function removeVote(User $user)

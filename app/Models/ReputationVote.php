@@ -13,6 +13,13 @@ class ReputationVote extends Model
         'vote_type',
         'category',
         'comment',
+        'created_at',
+        'updated_at',
+    ];
+
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
     ];
 
     public function voter(): BelongsTo

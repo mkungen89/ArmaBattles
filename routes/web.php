@@ -105,6 +105,8 @@ Route::get('/achievements/showcase/{playerUuid}', [\App\Http\Controllers\Achieve
 Route::get('/reputation', [\App\Http\Controllers\ReputationController::class, 'index'])->name('reputation.index');
 Route::get('/reputation/{user}', [\App\Http\Controllers\ReputationController::class, 'show'])->name('reputation.show');
 Route::post('/reputation/{user}/vote', [\App\Http\Controllers\ReputationController::class, 'vote'])->middleware('auth')->name('reputation.vote');
+Route::post('/reputation/vote', [\App\Http\Controllers\ReputationController::class, 'voteById'])->middleware('auth')->name('reputation.vote-by-id');
+Route::put('/reputation/votes/{vote}', [\App\Http\Controllers\ReputationController::class, 'updateVote'])->middleware('auth')->name('reputation.update-vote');
 Route::delete('/reputation/{user}/vote', [\App\Http\Controllers\ReputationController::class, 'removeVote'])->middleware('auth')->name('reputation.remove-vote');
 
 // Ranked (Competitive Ratings)
