@@ -4,12 +4,14 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Weapon;
+use App\Traits\LogsAdminActions;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class WeaponAdminController extends Controller
 {
+    use LogsAdminActions;
     public function index(Request $request)
     {
         $query = Weapon::query();
@@ -67,6 +69,13 @@ class WeaponAdminController extends Controller
         }
 
         $weapon->save();
+
+        $this->logAction(
+            'weapon.created',
+            'Weapon',
+            $weapon->id,
+            ['name' => $weapon->name]
+        );
 
         return redirect()->route('admin.weapons.index')
             ->with('success', 'Weapon created successfully.');

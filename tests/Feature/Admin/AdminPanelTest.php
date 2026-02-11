@@ -157,8 +157,6 @@ class AdminPanelTest extends TestCase
 
     public function test_audit_log_records_admin_actions(): void
     {
-        $this->markTestSkipped('Audit logging not yet implemented in WeaponAdminController');
-
         $this->actingAs($this->admin)->post('/admin/weapons', [
             'name' => 'TestGun',
             'display_name' => 'Test Gun',
@@ -172,26 +170,27 @@ class AdminPanelTest extends TestCase
 
     public function test_audit_log_can_filter_by_user(): void
     {
-        $this->markTestSkipped('Skipped until audit logging is fully implemented');
-
         $admin2 = User::factory()->create(['role' => 'admin']);
 
-        AdminAuditLog::create([
-            'user_id' => $this->admin->id,
-            'action' => 'weapon.created',
+        // Admin 1 creates a weapon
+        $this->actingAs($this->admin)->post('/admin/weapons', [
+            'name' => 'Admin1Weapon',
+            'display_name' => 'Admin 1 Weapon',
         ]);
 
-        AdminAuditLog::create([
-            'user_id' => $admin2->id,
-            'action' => 'vehicle.created',
+        // Admin 2 creates a weapon
+        $this->actingAs($admin2)->post('/admin/weapons', [
+            'name' => 'Admin2Weapon',
+            'display_name' => 'Admin 2 Weapon',
         ]);
 
+        // Filter by admin 1
         $response = $this->actingAs($this->admin)
             ->get("/admin/audit-log?user_id={$this->admin->id}");
 
         $response->assertOk();
-        $response->assertSee('weapon.created');
-        $response->assertDontSee('vehicle.created');
+        $response->assertSee('Admin1Weapon');
+        $response->assertDontSee('Admin2Weapon');
     }
 
     public function test_audit_log_csv_export(): void

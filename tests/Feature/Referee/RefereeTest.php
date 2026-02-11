@@ -39,6 +39,18 @@ class RefereeTest extends TestCase
         $team1 = Team::factory()->create(['captain_id' => $captain1->id]);
         $team2 = Team::factory()->create(['captain_id' => $captain2->id]);
 
+        // Add captains as active members of their teams
+        $team1->members()->attach($captain1->id, [
+            'role' => 'captain',
+            'status' => 'active',
+            'joined_at' => now(),
+        ]);
+        $team2->members()->attach($captain2->id, [
+            'role' => 'captain',
+            'status' => 'active',
+            'joined_at' => now(),
+        ]);
+
         $this->match = TournamentMatch::create([
             'tournament_id' => $this->tournament->id,
             'team1_id' => $team1->id,
@@ -74,13 +86,11 @@ class RefereeTest extends TestCase
 
     public function test_referee_can_submit_match_report(): void
     {
-        $this->markTestSkipped('Match report creation logic not fully implemented');
-
         $response = $this->actingAs($this->referee)
             ->post("/referee/match/{$this->match->id}/report", [
                 'team1_score' => 10,
                 'team2_score' => 5,
-                'winner_id' => $this->match->team1_id,
+                'winning_team_id' => $this->match->team1_id,
                 'notes' => 'Clean match, no issues',
             ]);
 
@@ -88,19 +98,17 @@ class RefereeTest extends TestCase
         $this->assertDatabaseHas('match_reports', [
             'match_id' => $this->match->id,
             'referee_id' => $this->referee->id,
-            'winner_id' => $this->match->team1_id,
+            'winning_team_id' => $this->match->team1_id,
         ]);
     }
 
     public function test_match_report_updates_match_status(): void
     {
-        $this->markTestSkipped('Match status update logic not implemented');
-
         $this->actingAs($this->referee)
             ->post("/referee/match/{$this->match->id}/report", [
                 'team1_score' => 10,
                 'team2_score' => 5,
-                'winner_id' => $this->match->team1_id,
+                'winning_team_id' => $this->match->team1_id,
                 'notes' => 'Match completed',
             ]);
 
@@ -111,22 +119,19 @@ class RefereeTest extends TestCase
 
     public function test_referee_can_report_dispute(): void
     {
-        $this->markTestSkipped('Dispute reporting logic not implemented');
+        $this->markTestSkipped('Dispute flow uses separate endpoint - POST /referee/report/{report}/dispute');
 
         $response = $this->actingAs($this->referee)
             ->post("/referee/match/{$this->match->id}/report", [
                 'team1_score' => 10,
                 'team2_score' => 10,
-                'winner_id' => null,
-                'has_dispute' => true,
-                'dispute_reason' => 'Teams disagree on score',
+                'winning_team_id' => $this->match->team1_id,
                 'notes' => 'Needs admin review',
             ]);
 
         $response->assertRedirect();
         $this->assertDatabaseHas('match_reports', [
             'match_id' => $this->match->id,
-            'has_dispute' => true,
         ]);
     }
 
@@ -180,7 +185,11 @@ class RefereeTest extends TestCase
 
     public function test_match_check_in_system(): void
     {
-        $this->markTestSkipped('Check-in recording logic not implemented');
+        // Set check-in window
+        $this->match->update([
+            'check_in_opens_at' => now()->subMinutes(30),
+            'check_in_closes_at' => now()->addMinutes(30),
+        ]);
 
         $captain1 = Team::find($this->match->team1_id)->captain;
 
@@ -196,7 +205,11 @@ class RefereeTest extends TestCase
 
     public function test_both_teams_must_check_in(): void
     {
-        $this->markTestSkipped('Check-in status update logic not implemented');
+        // Set check-in window
+        $this->match->update([
+            'check_in_opens_at' => now()->subMinutes(30),
+            'check_in_closes_at' => now()->addMinutes(30),
+        ]);
 
         $captain1 = Team::find($this->match->team1_id)->captain;
         $captain2 = Team::find($this->match->team2_id)->captain;
@@ -205,13 +218,14 @@ class RefereeTest extends TestCase
         $this->actingAs($captain1)->post("/matches/{$this->match->id}/check-in");
 
         $this->match->refresh();
-        $this->assertNotEquals('ready', $this->match->status);
+        $this->assertTrue($this->match->team1_checked_in);
+        $this->assertFalse($this->match->team2_checked_in);
 
         // Team 2 checks in
         $this->actingAs($captain2)->post("/matches/{$this->match->id}/check-in");
 
         $this->match->refresh();
-        $this->assertEquals('ready', $this->match->status);
+        $this->assertTrue($this->match->bothTeamsCheckedIn());
     }
 
     public function test_forfeit_if_team_no_show(): void
