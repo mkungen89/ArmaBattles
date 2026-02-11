@@ -27,9 +27,9 @@ class FavoriteTest extends TestCase
         $user = User::factory()->create();
         $player = User::factory()->create();
 
-        $response = $this->actingAs($user)->post('/favorites', [
-            'favoritable_type' => User::class,
-            'favoritable_id' => $player->id,
+        $response = $this->actingAs($user)->post('/favorites/toggle', [
+            'type' => 'player',
+            'id' => $player->id,
         ]);
 
         $response->assertRedirect();
@@ -46,9 +46,9 @@ class FavoriteTest extends TestCase
         $captain = User::factory()->create();
         $team = Team::factory()->create(['captain_id' => $captain->id]);
 
-        $response = $this->actingAs($user)->post('/favorites', [
-            'favoritable_type' => Team::class,
-            'favoritable_id' => $team->id,
+        $response = $this->actingAs($user)->post('/favorites/toggle', [
+            'type' => 'team',
+            'id' => $team->id,
         ]);
 
         $response->assertRedirect();
@@ -69,9 +69,9 @@ class FavoriteTest extends TestCase
             'port' => 2001,
         ]);
 
-        $response = $this->actingAs($user)->post('/favorites', [
-            'favoritable_type' => Server::class,
-            'favoritable_id' => $server->id,
+        $response = $this->actingAs($user)->post('/favorites/toggle', [
+            'type' => 'server',
+            'id' => $server->id,
         ]);
 
         $response->assertRedirect();
@@ -93,8 +93,10 @@ class FavoriteTest extends TestCase
             'favoritable_id' => $player->id,
         ]);
 
-        $response = $this->actingAs($user)
-            ->delete("/favorites/{$favorite->id}");
+        $response = $this->actingAs($user)->post('/favorites/toggle', [
+            'type' => 'player',
+            'id' => $player->id,
+        ]);
 
         $response->assertRedirect();
         $this->assertDatabaseMissing('favorites', [
@@ -107,19 +109,24 @@ class FavoriteTest extends TestCase
         $user = User::factory()->create();
         $player = User::factory()->create();
 
-        Favorite::create([
+        // First toggle - adds favorite
+        $this->actingAs($user)->post('/favorites/toggle', [
+            'type' => 'player',
+            'id' => $player->id,
+        ]);
+
+        // Second toggle - removes favorite
+        $response = $this->actingAs($user)->post('/favorites/toggle', [
+            'type' => 'player',
+            'id' => $player->id,
+        ]);
+
+        $response->assertRedirect();
+        $this->assertDatabaseMissing('favorites', [
             'user_id' => $user->id,
             'favoritable_type' => User::class,
             'favoritable_id' => $player->id,
         ]);
-
-        $response = $this->actingAs($user)->post('/favorites', [
-            'favoritable_type' => User::class,
-            'favoritable_id' => $player->id,
-        ]);
-
-        $response->assertRedirect();
-        $response->assertSessionHas('error');
     }
 
     public function test_favorites_page_shows_all_types(): void
@@ -168,9 +175,9 @@ class FavoriteTest extends TestCase
     {
         $player = User::factory()->create();
 
-        $response = $this->post('/favorites', [
-            'favoritable_type' => User::class,
-            'favoritable_id' => $player->id,
+        $response = $this->post('/favorites/toggle', [
+            'type' => 'player',
+            'id' => $player->id,
         ]);
 
         $response->assertRedirect('/login');

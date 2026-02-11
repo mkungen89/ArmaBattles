@@ -22,7 +22,7 @@
             <div class="flex items-center gap-3 bg-white/3 rounded-xl p-3 border border-white/5">
                 <img src="{{ $player->avatar_display }}" alt="{{ $player->name }}" class="w-10 h-10 rounded-full">
                 <div class="flex-1 min-w-0">
-                    <a href="{{ route('player.profile', $player) }}" class="text-white font-medium hover:text-green-400 transition truncate block">{{ $player->name }}</a>
+                    <a href="{{ route('players.show', $player) }}" class="text-white font-medium hover:text-green-400 transition truncate block">{{ $player->name }}</a>
                     <span class="text-xs text-gray-400">{{ ucfirst($player->role) }}</span>
                 </div>
                 <form action="{{ route('favorites.toggle') }}" method="POST">
