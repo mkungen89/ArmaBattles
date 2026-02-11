@@ -36,6 +36,20 @@ class HighlightClipAdminController extends Controller
         return view('admin.clips.index', compact('clips', 'stats'));
     }
 
+    public function approve(HighlightClip $clip)
+    {
+        $clip->update(['status' => 'approved']);
+
+        return back()->with('success', 'Clip has been approved.');
+    }
+
+    public function reject(HighlightClip $clip)
+    {
+        $clip->update(['status' => 'rejected']);
+
+        return back()->with('success', 'Clip has been rejected.');
+    }
+
     public function feature(HighlightClip $clip)
     {
         $clip->update([

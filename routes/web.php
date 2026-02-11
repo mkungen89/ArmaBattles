@@ -140,6 +140,7 @@ Route::prefix('creators')->name('content-creators.')->group(function () {
     Route::middleware('auth')->group(function () {
         Route::get('/register/new', [\App\Http\Controllers\ContentCreatorController::class, 'create'])->name('create');
         Route::post('/', [\App\Http\Controllers\ContentCreatorController::class, 'store'])->name('store');
+        Route::post('/register', [\App\Http\Controllers\ContentCreatorController::class, 'store'])->name('register'); // Alias for tests
         Route::get('/{contentCreator}/edit', [\App\Http\Controllers\ContentCreatorController::class, 'edit'])->name('edit');
         Route::put('/{contentCreator}', [\App\Http\Controllers\ContentCreatorController::class, 'update'])->name('update');
         Route::delete('/{contentCreator}', [\App\Http\Controllers\ContentCreatorController::class, 'destroy'])->name('destroy');
@@ -487,6 +488,8 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     // Highlight Clips Admin
     Route::prefix('clips')->group(function () {
         Route::get('/', [HighlightClipAdminController::class, 'index'])->name('admin.clips.index');
+        Route::post('/{clip}/approve', [HighlightClipAdminController::class, 'approve'])->name('admin.clips.approve');
+        Route::post('/{clip}/reject', [HighlightClipAdminController::class, 'reject'])->name('admin.clips.reject');
         Route::post('/{clip}/feature', [HighlightClipAdminController::class, 'feature'])->name('admin.clips.feature');
         Route::post('/{clip}/unfeature', [HighlightClipAdminController::class, 'unfeature'])->name('admin.clips.unfeature');
         Route::delete('/{clip}', [HighlightClipAdminController::class, 'destroy'])->name('admin.clips.destroy');
