@@ -103,4 +103,39 @@ class AnticheatAdminController extends Controller
 
         return view('admin.anticheat.stats-history', compact('statsHistory', 'serverIds'));
     }
+
+    public function apiStats(Request $request)
+    {
+        $range = $request->input('range', '24h');
+
+        // Parse range (24h, 7d, 30d)
+        $hours = match($range) {
+            '1h' => 1,
+            '6h' => 6,
+            '24h' => 24,
+            '7d' => 168,
+            '30d' => 720,
+            default => 24,
+        };
+
+        $since = now()->subHours($hours);
+
+        $stats = [
+            'total_events' => DB::table('anticheat_events')->where('event_time', '>=', $since)->count(),
+            'enforcement_actions' => DB::table('anticheat_events')
+                ->where('event_type', 'ENFORCEMENT_ACTION')
+                ->where('event_time', '>=', $since)
+                ->count(),
+            'enforcement_skipped' => DB::table('anticheat_events')
+                ->where('event_type', 'ENFORCEMENT_SKIPPED')
+                ->where('event_time', '>=', $since)
+                ->count(),
+            'unique_players' => DB::table('anticheat_events')
+                ->where('event_time', '>=', $since)
+                ->distinct('player_name')
+                ->count('player_name'),
+        ];
+
+        return response()->json(['stats' => $stats]);
+    }
 }

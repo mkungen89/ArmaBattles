@@ -376,6 +376,9 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/settings', [AdminController::class, 'settings'])->name('admin.settings');
     Route::post('/settings', [AdminController::class, 'updateSettings'])->name('admin.settings.update');
     Route::get('/audit-log', [AdminController::class, 'auditLog'])->name('admin.audit-log');
+    Route::get('/audit-log/export', function(\Illuminate\Http\Request $request) {
+        return app(\App\Http\Controllers\Admin\AdminController::class)->auditLog($request->merge(['export' => 'csv']));
+    })->name('admin.audit-log.export');
 
     // Tournament Admin Routes
     Route::prefix('tournaments')->group(function () {
@@ -443,6 +446,7 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
         Route::get('/', [AnticheatAdminController::class, 'index'])->name('admin.anticheat.index');
         Route::get('/events', [AnticheatAdminController::class, 'events'])->name('admin.anticheat.events');
         Route::get('/stats-history', [AnticheatAdminController::class, 'statsHistory'])->name('admin.anticheat.stats-history');
+        Route::get('/api/stats', [AnticheatAdminController::class, 'apiStats'])->name('admin.anticheat.api.stats');
     });
 
     // Weapons Admin Routes
@@ -535,6 +539,9 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
 
     // Metrics & Tracking
     Route::get('/metrics', [MetricsController::class, 'index'])->name('admin.metrics');
+    Route::get('/metrics/api/analytics', [MetricsController::class, 'apiAnalyticsData'])->name('admin.metrics.analytics');
+    Route::get('/metrics/api/usage', [MetricsController::class, 'apiUsageData'])->name('admin.metrics.usage');
+    Route::get('/metrics/api/performance', [MetricsController::class, 'apiPerformanceData'])->name('admin.metrics.performance');
     Route::get('/metrics/api/analytics-data', [MetricsController::class, 'apiAnalyticsData'])->name('admin.metrics.analytics-data');
     Route::get('/metrics/api/usage-data', [MetricsController::class, 'apiUsageData'])->name('admin.metrics.usage-data');
     Route::get('/metrics/api/performance-data', [MetricsController::class, 'apiPerformanceData'])->name('admin.metrics.performance-data');
