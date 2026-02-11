@@ -75,6 +75,7 @@ class AchievementTest extends TestCase
             'achievement_id' => $achievement->id,
             'current_value' => 45,
             'target_value' => 100,
+            'percentage' => 45.0,
         ]);
 
         $response = $this->actingAs($user)->get('/achievements');
@@ -119,6 +120,7 @@ class AchievementTest extends TestCase
             'achievement_id' => $achievement1->id,
             'current_value' => 50,
             'target_value' => 50,
+            'percentage' => 100.0,
         ]);
 
         AchievementProgress::create([
@@ -126,6 +128,13 @@ class AchievementTest extends TestCase
             'achievement_id' => $achievement2->id,
             'current_value' => 360000,
             'target_value' => 360000,
+            'percentage' => 100.0,
+        ]);
+
+        // Mark as earned in player_achievements table
+        \DB::table('player_achievements')->insert([
+            ['player_uuid' => 'test-uuid', 'achievement_id' => $achievement1->id, 'earned_at' => now()],
+            ['player_uuid' => 'test-uuid', 'achievement_id' => $achievement2->id, 'earned_at' => now()],
         ]);
 
         $response = $this->actingAs($user)->post('/achievements/showcase', [
