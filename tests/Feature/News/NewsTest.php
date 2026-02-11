@@ -27,7 +27,7 @@ class NewsTest extends TestCase
             'slug' => 'test-news-article',
             'content' => 'This is test content',
             'author_id' => $author->id,
-            'is_published' => true,
+            'status' => 'published',
             'published_at' => now(),
         ]);
 
@@ -46,7 +46,7 @@ class NewsTest extends TestCase
             'slug' => 'draft-article',
             'content' => 'Draft content',
             'author_id' => $author->id,
-            'is_published' => false,
+            'status' => 'draft',
         ]);
 
         $response = $this->get("/news/{$article->slug}");
@@ -63,19 +63,19 @@ class NewsTest extends TestCase
             'slug' => 'article',
             'content' => 'Content',
             'author_id' => $author->id,
-            'is_published' => true,
+            'status' => 'published',
             'published_at' => now(),
         ]);
 
-        $response = $this->actingAs($user)->post("/news/{$article->slug}/comments", [
-            'content' => 'Great article!',
+        $response = $this->actingAs($user)->post("/news/{$article->slug}/comment", [
+            'body' => 'Great article!',
         ]);
 
         $response->assertRedirect();
         $this->assertDatabaseHas('news_comments', [
-            'news_article_id' => $article->id,
+            'article_id' => $article->id,
             'user_id' => $user->id,
-            'content' => 'Great article!',
+            'body' => 'Great article!',
         ]);
     }
 
@@ -87,12 +87,12 @@ class NewsTest extends TestCase
             'slug' => 'article',
             'content' => 'Content',
             'author_id' => $author->id,
-            'is_published' => true,
+            'status' => 'published',
             'published_at' => now(),
         ]);
 
-        $response = $this->post("/news/{$article->slug}/comments", [
-            'content' => 'Comment',
+        $response = $this->post("/news/{$article->slug}/comment", [
+            'body' => 'Comment',
         ]);
 
         $response->assertRedirect('/login');
@@ -107,21 +107,21 @@ class NewsTest extends TestCase
             'slug' => 'article',
             'content' => 'Content',
             'author_id' => $author->id,
-            'is_published' => true,
+            'status' => 'published',
             'published_at' => now(),
         ]);
 
         $comment = NewsComment::create([
-            'news_article_id' => $article->id,
+            'article_id' => $article->id,
             'user_id' => $user->id,
-            'content' => 'My comment',
+            'body' => 'My comment',
         ]);
 
         $response = $this->actingAs($user)
             ->delete("/news/comments/{$comment->id}");
 
         $response->assertRedirect();
-        $this->assertSoftDeleted('news_comments', ['id' => $comment->id]);
+        $this->assertDatabaseMissing('news_comments', ['id' => $comment->id]);
     }
 
     public function test_user_cannot_delete_others_comment(): void
@@ -134,14 +134,14 @@ class NewsTest extends TestCase
             'slug' => 'article',
             'content' => 'Content',
             'author_id' => $author->id,
-            'is_published' => true,
+            'status' => 'published',
             'published_at' => now(),
         ]);
 
         $comment = NewsComment::create([
-            'news_article_id' => $article->id,
+            'article_id' => $article->id,
             'user_id' => $user1->id,
-            'content' => 'User1 comment',
+            'body' => 'User1 comment',
         ]);
 
         $response = $this->actingAs($user2)
@@ -159,7 +159,7 @@ class NewsTest extends TestCase
             'slug' => 'article',
             'content' => 'Content',
             'author_id' => $author->id,
-            'is_published' => true,
+            'status' => 'published',
             'published_at' => now(),
         ]);
 
@@ -168,7 +168,7 @@ class NewsTest extends TestCase
 
         $response->assertRedirect();
         $this->assertDatabaseHas('news_hoorahs', [
-            'news_article_id' => $article->id,
+            'article_id' => $article->id,
             'user_id' => $user->id,
         ]);
     }
@@ -182,7 +182,7 @@ class NewsTest extends TestCase
             'slug' => 'article',
             'content' => 'Content',
             'author_id' => $author->id,
-            'is_published' => true,
+            'status' => 'published',
             'published_at' => now(),
         ]);
 
@@ -195,7 +195,7 @@ class NewsTest extends TestCase
 
         $response->assertRedirect();
         $this->assertDatabaseMissing('news_hoorahs', [
-            'news_article_id' => $article->id,
+            'article_id' => $article->id,
             'user_id' => $user->id,
         ]);
     }
@@ -207,7 +207,7 @@ class NewsTest extends TestCase
         $response = $this->actingAs($admin)->post('/admin/news', [
             'title' => 'New Article',
             'content' => 'Article content',
-            'is_published' => true,
+            'status' => 'published',
         ]);
 
         $response->assertRedirect();
