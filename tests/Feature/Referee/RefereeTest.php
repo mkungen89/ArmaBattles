@@ -44,6 +44,7 @@ class RefereeTest extends TestCase
             'team1_id' => $team1->id,
             'team2_id' => $team2->id,
             'round' => 1,
+            'match_number' => 1,
             'status' => 'in_progress',
         ]);
     }

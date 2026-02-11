@@ -568,6 +568,7 @@ Route::prefix('gm')->middleware(['auth', 'gm'])->group(function () {
 // Referee Routes
 Route::prefix('referee')->middleware(['auth', 'referee'])->name('referee.')->group(function () {
     Route::get('/', [\App\Http\Controllers\RefereeController::class, 'index'])->name('dashboard');
+    Route::get('/matches', [\App\Http\Controllers\RefereeController::class, 'index'])->name('matches');
     Route::get('/match/{match}/report', [\App\Http\Controllers\RefereeController::class, 'showReportForm'])->name('match.report');
     Route::post('/match/{match}/report', [\App\Http\Controllers\RefereeController::class, 'submitReport'])->name('match.submit-report');
     Route::get('/report/{report}', [\App\Http\Controllers\RefereeController::class, 'viewReport'])->name('report.view');

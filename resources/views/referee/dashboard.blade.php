@@ -103,11 +103,11 @@
                                             <span class="font-semibold">{{ $match->team2->name }}</span>
                                         </div>
                                         <p class="text-sm text-gray-400 mt-1">
-                                            Scheduled: {{ $match->scheduled_at->format('M j, Y @ g:i A') }}
+                                            Scheduled: {{ $match->scheduled_at?->format('M j, Y @ g:i A') ?? 'TBD' }}
                                         </p>
                                     </div>
                                     <div class="flex gap-2">
-                                        <a href="{{ route('matches.show', $match->id) }}"
+                                        <a href="{{ route('referee.match.report', $match) }}"
                                            class="px-4 py-2 bg-white/5 hover:bg-white/10 text-white text-sm rounded-xl transition">
                                             View Match
                                         </a>
@@ -200,7 +200,7 @@
                                         @endif
                                     </div>
                                     <div class="flex gap-2">
-                                        <a href="{{ route('matches.show', $match->id) }}"
+                                        <a href="{{ route('referee.match.report', $match) }}"
                                            class="px-4 py-2 bg-white/5 hover:bg-white/10 text-white text-sm rounded-xl transition">
                                             View Match
                                         </a>
