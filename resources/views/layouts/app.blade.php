@@ -508,7 +508,7 @@
                                 const type = n.data?.type || n.type || 'general';
                                 if (['team_invitation','team_application','application_result'].includes(type)) return 'team';
                                 if (['match_scheduled','match_reminder'].includes(type)) return 'match';
-                                if (['achievement_unlocked','achievement','achievement_earned'].includes(type)) return 'achievement';
+                                if (['achievement_unlocked','achievement','achievement_earned','level_up'].includes(type)) return 'achievement';
                                 return 'general';
                             },
                             getCategoryIcon(cat) {

@@ -1421,6 +1421,18 @@ class StatsController extends Controller
             $this->getOrCreatePlayerStat($data['player_uuid'], $data['player_name'], $serverId);
             DB::table('player_stats')->where('player_uuid', $data['player_uuid'])->increment('xp_total', $data['xp_amount']);
 
+            // Check for level up
+            $stats = \App\Models\PlayerStat::where('player_uuid', $data['player_uuid'])->first();
+            if ($stats) {
+                $levelService = app(\App\Services\PlayerLevelService::class);
+                $newLevel = $levelService->updatePlayerLevel($stats);
+
+                // If level up occurred, send notification
+                if ($newLevel) {
+                    $this->sendLevelUpNotification($data['player_uuid'], $newLevel, $stats->tier);
+                }
+            }
+
             // Invalidate XP leaderboard cache
             $this->clearLeaderboardCaches();
         }
@@ -1558,6 +1570,25 @@ class StatsController extends Controller
 
             // Roadkills leaderboard
             Cache::forget("leaderboard:roadkills:limit_{$limit}");
+        }
+    }
+
+    /**
+     * Send level up notification to player
+     */
+    private function sendLevelUpNotification(string $playerUuid, int $newLevel, array $tier): void
+    {
+        try {
+            // Find user by player_uuid
+            $user = \App\Models\User::where('player_uuid', $playerUuid)->first();
+
+            if ($user) {
+                // Create database notification
+                $user->notify(new \App\Notifications\LevelUpNotification($newLevel, $tier));
+            }
+        } catch (\Exception $e) {
+            // Don't break on notification failure
+            \Log::warning("Failed to send level up notification: {$e->getMessage()}");
         }
     }
 }
