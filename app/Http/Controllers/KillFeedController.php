@@ -8,12 +8,16 @@ use Illuminate\Support\Facades\DB;
 
 class KillFeedController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $kills = DB::table('player_kills')
-            ->orderByDesc('killed_at')
-            ->limit(50)
-            ->get();
+        $query = DB::table('player_kills')
+            ->orderByDesc('killed_at');
+
+        if ($request->has('server_id')) {
+            $query->where('server_id', $request->get('server_id'));
+        }
+
+        $kills = $query->paginate(25);
 
         $weaponImages = Weapon::whereNotNull('image_path')
             ->pluck('image_path', 'name')
