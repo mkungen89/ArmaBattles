@@ -125,6 +125,7 @@ Route::middleware('auth')->prefix('scrims')->name('scrims.')->group(function () 
     Route::get('/', [\App\Http\Controllers\ScrimController::class, 'index'])->name('index');
     Route::get('/create', [\App\Http\Controllers\ScrimController::class, 'create'])->name('create');
     Route::post('/', [\App\Http\Controllers\ScrimController::class, 'store'])->name('store');
+    Route::post('/invite', [\App\Http\Controllers\ScrimController::class, 'invite'])->name('invite');
     Route::get('/{scrim}', [\App\Http\Controllers\ScrimController::class, 'show'])->name('show');
     Route::post('/invitations/{invitation}/accept', [\App\Http\Controllers\ScrimController::class, 'accept'])->name('invitations.accept');
     Route::post('/invitations/{invitation}/decline', [\App\Http\Controllers\ScrimController::class, 'decline'])->name('invitations.decline');

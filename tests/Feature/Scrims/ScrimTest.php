@@ -90,6 +90,7 @@ class ScrimTest extends TestCase
             'invited_team_id' => $this->team2->id,
             'proposed_time' => now()->addDay(),
             'status' => 'pending',
+            'expires_at' => now()->addDays(7),
         ]);
 
         $response = $this->actingAs($this->captain2)
@@ -116,6 +117,7 @@ class ScrimTest extends TestCase
             'invited_team_id' => $this->team2->id,
             'proposed_time' => now()->addDay(),
             'status' => 'pending',
+            'expires_at' => now()->addDays(7),
         ]);
 
         $response = $this->actingAs($this->captain2)
@@ -149,7 +151,8 @@ class ScrimTest extends TestCase
         $scrim = ScrimMatch::create([
             'team1_id' => $this->team1->id,
             'team2_id' => $this->team2->id,
-            'scheduled_time' => now()->addDay(),
+            'created_by' => $this->captain1->id,
+            'scheduled_at' => now()->addDay(),
             'status' => 'scheduled',
         ]);
 
@@ -168,7 +171,8 @@ class ScrimTest extends TestCase
         $scrim = ScrimMatch::create([
             'team1_id' => $this->team1->id,
             'team2_id' => $this->team2->id,
-            'scheduled_time' => now()->subHour(),
+            'created_by' => $this->captain1->id,
+            'scheduled_at' => now()->subHour(),
             'status' => 'in_progress',
         ]);
 
@@ -192,7 +196,8 @@ class ScrimTest extends TestCase
         $scrim = ScrimMatch::create([
             'team1_id' => $this->team1->id,
             'team2_id' => $this->team2->id,
-            'scheduled_time' => now()->subHour(),
+            'created_by' => $this->captain1->id,
+            'scheduled_at' => now()->subHour(),
             'status' => 'in_progress',
         ]);
 

@@ -80,6 +80,47 @@ class ScrimController extends Controller
     }
 
     /**
+     * Send scrim invitation
+     */
+    public function invite(Request $request)
+    {
+        $user = auth()->user();
+        $userTeam = $user->activeTeam;
+
+        if (! $userTeam) {
+            return back()->with('error', 'You must be in a team to send scrim invitations.');
+        }
+
+        if (! $userTeam->isUserCaptainOrOfficer($user)) {
+            abort(403, 'Only team captains and officers can send scrim invitations.');
+        }
+
+        $validated = $request->validate([
+            'invited_team_id' => 'required|exists:teams,id',
+            'proposed_time' => 'required|date|after:now',
+            'message' => 'nullable|string|max:1000',
+        ]);
+
+        // Cannot invite yourself
+        if ($validated['invited_team_id'] == $userTeam->id) {
+            return back()->with('error', 'You cannot invite your own team.');
+        }
+
+        // Create invitation (match created on acceptance)
+        ScrimInvitation::create([
+            'scrim_match_id' => null, // Created when accepted
+            'inviting_team_id' => $userTeam->id,
+            'invited_team_id' => $validated['invited_team_id'],
+            'proposed_time' => $validated['proposed_time'],
+            'message' => $validated['message'] ?? null,
+            'status' => 'pending',
+            'expires_at' => now()->addDays(7),
+        ]);
+
+        return redirect()->route('scrims.index')->with('success', 'Scrim invitation sent!');
+    }
+
+    /**
      * Store a new scrim challenge
      */
     public function store(Request $request)
@@ -172,19 +213,39 @@ class ScrimController extends Controller
         }
 
         if (! $invitation->canRespond()) {
-            return back()->with('error', 'This invitation has expired or already been responded to.');
+            abort(403, 'This invitation has expired or already been responded to.');
         }
 
-        DB::transaction(function () use ($invitation) {
-            $invitation->update([
-                'status' => 'accepted',
-                'responded_at' => now(),
-            ]);
+        DB::transaction(function () use ($invitation, $user) {
+            // Create scrim match if it doesn't exist yet
+            if (! $invitation->scrim_match_id) {
+                $scrimMatch = ScrimMatch::create([
+                    'team1_id' => $invitation->inviting_team_id,
+                    'team2_id' => $invitation->invited_team_id,
+                    'created_by' => $user->id,
+                    'scheduled_at' => $invitation->proposed_time ?? now()->addDay(),
+                    'status' => 'scheduled',
+                ]);
 
-            $invitation->scrimMatch->update([
-                'status' => 'scheduled',
-            ]);
+                $invitation->update([
+                    'scrim_match_id' => $scrimMatch->id,
+                    'status' => 'accepted',
+                    'responded_at' => now(),
+                ]);
+            } else {
+                // Match already exists, just update status
+                $invitation->update([
+                    'status' => 'accepted',
+                    'responded_at' => now(),
+                ]);
+
+                $invitation->scrimMatch->update([
+                    'status' => 'scheduled',
+                ]);
+            }
         });
+
+        $invitation->refresh();
 
         return redirect()->route('scrims.show', $invitation->scrimMatch)
             ->with('success', 'Scrim invitation accepted!');
@@ -207,7 +268,7 @@ class ScrimController extends Controller
         }
 
         if (! $invitation->canRespond()) {
-            return back()->with('error', 'This invitation has expired or already been responded to.');
+            abort(403, 'This invitation has expired or already been responded to.');
         }
 
         DB::transaction(function () use ($invitation) {
@@ -216,9 +277,12 @@ class ScrimController extends Controller
                 'responded_at' => now(),
             ]);
 
-            $invitation->scrimMatch->update([
-                'status' => 'cancelled',
-            ]);
+            // Cancel match if it exists
+            if ($invitation->scrimMatch) {
+                $invitation->scrimMatch->update([
+                    'status' => 'cancelled',
+                ]);
+            }
         });
 
         return redirect()->route('scrims.index')->with('success', 'Scrim invitation declined.');
@@ -272,8 +336,8 @@ class ScrimController extends Controller
             return back()->with('error', 'You cannot report results for this scrim.');
         }
 
-        if (! $scrim->isScheduled() && ! $scrim->isInProgress()) {
-            return back()->with('error', 'Can only report results for scheduled or in-progress scrims.');
+        if (! $scrim->isScheduled() && ! $scrim->isInProgress() && ! $scrim->isCompleted()) {
+            return back()->with('error', 'Can only report results for scheduled, in-progress, or completed scrims.');
         }
 
         $validated = $request->validate([
@@ -288,13 +352,31 @@ class ScrimController extends Controller
             $winnerId = $scrim->team2_id;
         }
 
-        $scrim->update([
-            'status' => 'completed',
-            'team1_score' => $validated['team1_score'],
-            'team2_score' => $validated['team2_score'],
-            'winner_id' => $winnerId,
-            'completed_at' => now(),
-        ]);
+        // Check if this is the first report or if scores match
+        if ($scrim->team1_score === null && $scrim->team2_score === null) {
+            // First report - save scores and mark as completed
+            $scrim->update([
+                'status' => 'completed',
+                'team1_score' => $validated['team1_score'],
+                'team2_score' => $validated['team2_score'],
+                'winner_id' => $winnerId,
+                'completed_at' => now(),
+            ]);
+        } elseif ($scrim->team1_score == $validated['team1_score'] && $scrim->team2_score == $validated['team2_score']) {
+            // Scores match - keep as completed
+            $scrim->update([
+                'status' => 'completed',
+                'winner_id' => $winnerId,
+                'completed_at' => now(),
+            ]);
+        } else {
+            // Scores don't match - revert to in_progress (dispute)
+            $scrim->update([
+                'status' => 'in_progress',
+                'completed_at' => null,
+            ]);
+            // Keep the first team's reported scores
+        }
 
         return redirect()->route('scrims.show', $scrim)->with('success', 'Scrim result reported!');
     }
