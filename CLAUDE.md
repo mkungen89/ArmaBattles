@@ -33,6 +33,9 @@ php artisan server:track --server-id=<battlemetrics_id>
 # Sync mod metadata from Reforger Workshop
 php artisan mods:sync --server=<battlemetrics_id>
 
+# Recalculate player levels (after XP changes or new system)
+php artisan levels:recalculate
+
 # Run database seeders
 php artisan db:seed
 php artisan db:seed --class=SiteSettingsSeeder  # Specific seeder
@@ -133,7 +136,7 @@ When displaying scenario names, always use `$server->scenario_display_name` (not
 ### Game Statistics Tables
 
 **Aggregated:**
-- `player_stats` — Accumulated player stats. Key columns: kills, deaths, headshots, team_kills, total_roadkills, playtime_seconds, total_distance, shots_fired, grenades_thrown, heals_given, heals_received, bases_captured, supplies_delivered, xp_total, hits_head/torso/arms/legs, total_hits, total_damage_dealt. Accessed via `$user->gameStats()` which returns a `PlayerStat` model.
+- `player_stats` — Accumulated player stats. Key columns: kills, deaths, headshots, team_kills, total_roadkills, playtime_seconds, total_distance, shots_fired, grenades_thrown, heals_given, heals_received, bases_captured, supplies_delivered, xp_total, hits_head/torso/arms/legs, total_hits, total_damage_dealt, **level** (1-100), **level_xp** (xp_total + achievement_points), **achievement_points**. Accessed via `$user->gameStats()` which returns a `PlayerStat` model.
 
 **Stats aggregation mapping (store method → player_stats columns):**
 
@@ -211,6 +214,8 @@ When displaying scenario names, always use `$server->scenario_display_name` (not
 
 **Audit:** `AdminAuditLog` — Tracks admin and security actions with the `LogsAdminActions` trait.
 
+**Player Leveling System:** Level 1-100 progression with 6 tiers (Recruit, Soldier, Veteran, Elite, Master, Legend). Exponential XP curve: `BASE_XP (1000) * pow(level, 1.15)`. Service: `PlayerLevelService` handles all level calculations, tier assignment, and progress tracking. Database: `player_stats` has `level`, `level_xp`, `achievement_points` columns. XP sources: `xp_total` (game XP) + `achievement_points` = `level_xp`. Auto level-up: `StatsController::updatePlayerXp()` checks for level ups and sends `LevelUpNotification`. Command: `levels:recalculate` for bulk recalculation. Leaderboard: `/levels` route with tier distribution, stats overview, paginated rankings. Model accessors: `$stats->tier`, `$stats->level_progress`, `$stats->level_display`. UI: Level badges and XP progress bars on profile headers.
+
 ### Route Groups
 
 - `/` — Public pages (home, rules, news)
@@ -241,9 +246,13 @@ When displaying scenario names, always use `$server->scenario_display_name` (not
 - `/referee/*` — Referee dashboard and match reporting (requires referee middleware)
 - `/favorites` — User's favorited players, teams, servers
 - `/leaderboard` — Public leaderboards with sort/period/export
+- `/levels` — Level leaderboard with tier distribution, stats overview (total players, highest level, avg level, legends count), paginated rankings with progress bars
 - `/news/*` — Community news articles with comments
 - `/discord/*` — Discord Rich Presence settings
 - `/admin/*` — Admin panel (requires AdminMiddleware)
+  - `/admin/users` — User management with all 7 roles (user/moderator/admin/gm/referee/observer/caster), player UUID column, Reset 2FA, ban/unban
+  - `/admin/users/{user}/edit` — Full user editor: name, role, email, player_uuid, discord connection, profile visibility, custom avatar. User Activity section: links to game stats, teams, tournaments (via teams), audit log. Admin Actions: impersonate user, delete user. Cannot impersonate/delete self.
+  - `/admin/users/{user}/impersonate` — Log in as another user (stores original user in session). Purple banner shown when impersonating with "Stop Impersonating" button.
   - `/admin/server/*` — Server Manager: dashboard, player history, performance graphs, scheduled restarts, quick messages, mod update checker, server comparison, plus service controls/config/logs/mods
   - `/admin/game-stats/*` — Game stats dashboard, player profiles, event tables, API tokens
   - `/admin/anticheat/*` — Raven Anti-Cheat dashboard, events log, stats history
@@ -302,6 +311,38 @@ TOTP-based 2FA (Google Authenticator, Authy). Opt-in per user from profile setti
 - `MaintenanceModeMiddleware` — Web middleware (appended). Checks `maintenance_mode` site setting. Allows admins, login/auth routes, and API through. Returns 503 with configurable message.
 - CSRF is disabled for `api/*` routes in `bootstrap/app.php`
 - Default `throttle:api` is removed from the api middleware group (custom `api.rate` handles rate limiting instead)
+
+### Admin User Management (`/admin/users/*`)
+
+`AdminController` provides comprehensive user management for all 7 roles with impersonation and advanced editing.
+
+**User List (`/admin/users`):**
+- Filterable by role (user/moderator/admin/gm/referee/observer/caster), banned status, search by name/Steam ID
+- Displays: avatar, name, Steam ID, player UUID (truncated), role with color coding, status (active/banned + 2FA indicator), joined date
+- Role colors: admin=red, moderator=yellow, gm=purple, referee=blue, observer=cyan, caster=pink, user=gray
+- Actions per user: Edit, Reset 2FA (if 2FA enabled), Ban/Unban
+- Pagination: 20 users per page
+
+**User Editor (`/admin/users/{user}/edit`):**
+- **Basic Info:** name, role (all 7 roles), email, profile visibility (public/private)
+- **Game Integration:** player_uuid (links to game stats), custom_avatar (override Steam avatar)
+- **Discord:** discord_id, discord_username
+- **User Activity Links:** Game Stats (if player_uuid exists), Teams (with count), Tournaments (count via teams), Audit Log (filtered for user)
+- **2FA Management:** Shows if 2FA enabled with confirmation date, Reset 2FA button
+- **Account Status:** Ban/Unban with optional reason field
+- **Admin Actions:** Impersonate User (login as them), Delete User (permanent with confirmation)
+- **Protection:** Cannot impersonate or delete yourself
+
+**Impersonation System:**
+- Stores original admin user ID in `session('impersonating')`
+- Purple banner displayed at top of all pages when impersonating with "Stop Impersonating" button
+- Route: `POST /stop-impersonating` (available to any authenticated user, not just admins)
+- Audit logging: `user.impersonate` action logged with target user info
+- Use case: debugging user-specific issues, testing permissions
+
+**Validation:** All 7 roles accepted in `updateUser()`. Fields: name, role, email (nullable), player_uuid (nullable), discord_id/username (nullable), profile_visibility (required), custom_avatar (nullable URL).
+
+**Tournament Count:** Tournaments counted via user's teams (`foreach ($user->teams as $team) { $count += $team->registrations()->count() }`) since tournament registrations are team-based, not user-based.
 
 ### Server Manager (`/admin/server/*`)
 
