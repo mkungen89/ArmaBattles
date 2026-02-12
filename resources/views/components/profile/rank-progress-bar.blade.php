@@ -35,7 +35,7 @@
     $nextRankInfo = $nextRank <= 50 ? \App\Models\RankLogo::forRank($nextRank) : null;
 
     // Level within current rank (1-10)
-    $levelInRank = $level - ($rankInfo->min_level - 1);
+    $levelInRank = $rankInfo ? ($level - ($rankInfo->min_level - 1)) : 1;
 @endphp
 
 {{-- Military Battlelog Card --}}

@@ -297,7 +297,7 @@ class CreatorsTest extends TestCase
         $response = $this->get('/clips');
 
         $response->assertOk();
-        $response->assertSee('Clip of the Week');
+        $response->assertSee('Video of the Week');
         $response->assertSee('Best Clip Ever');
     }
 }

@@ -60,18 +60,22 @@
                             $levelService = app(\App\Services\PlayerLevelService::class);
                             $currentRank = $levelService->getRankForLevel($gameStats->level);
                             $rankInfo = \App\Models\RankLogo::forRank($currentRank);
-                            $levelInRank = $gameStats->level - ($rankInfo->min_level - 1); // Level within current rank (1-10)
-                            $levelsInRank = 10; // Each rank spans 10 levels
                         @endphp
-                        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg text-xs font-semibold border"
-                              style="background-color: {{ $rankInfo->color }}15; color: {{ $rankInfo->color }}; border-color: {{ $rankInfo->color }}40;"
-                              title="Level {{ $gameStats->level }} - {{ $levelInRank }}/{{ $levelsInRank }} levels in {{ $rankInfo->name }}">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                            </svg>
-                            Level {{ $gameStats->level }}
-                            <span class="opacity-60 text-[10px]">({{ $levelInRank }}/{{ $levelsInRank }})</span>
-                        </span>
+                        @if($rankInfo)
+                            @php
+                                $levelInRank = $gameStats->level - ($rankInfo->min_level - 1); // Level within current rank (1-10)
+                                $levelsInRank = 10; // Each rank spans 10 levels
+                            @endphp
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg text-xs font-semibold border"
+                                  style="background-color: {{ $rankInfo->color }}15; color: {{ $rankInfo->color }}; border-color: {{ $rankInfo->color }}40;"
+                                  title="Level {{ $gameStats->level }} - {{ $levelInRank }}/{{ $levelsInRank }} levels in {{ $rankInfo->name }}">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                                </svg>
+                                Level {{ $gameStats->level }}
+                                <span class="opacity-60 text-[10px]">({{ $levelInRank }}/{{ $levelsInRank }})</span>
+                            </span>
+                        @endif
                     @endif
                 </div>
 

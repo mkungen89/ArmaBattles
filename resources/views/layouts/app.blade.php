@@ -722,9 +722,14 @@
 
         {{-- Site Announcements --}}
         @php
-            $announcements = Cache::remember('active_announcements', 300, function () {
-                return \App\Models\Announcement::active()->orderBy('created_at', 'desc')->get();
-            });
+            try {
+                $announcements = Cache::remember('active_announcements', 300, function () {
+                    return \App\Models\Announcement::active()->orderBy('created_at', 'desc')->get();
+                });
+            } catch (\Exception $e) {
+                // Gracefully handle missing table (e.g., in tests)
+                $announcements = collect();
+            }
         @endphp
 
         @foreach($announcements as $announcement)
