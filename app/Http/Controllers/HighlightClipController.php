@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\ClipVote;
 use App\Models\HighlightClip;
+use App\Notifications\VideoSubmittedNotification;
+use App\Services\VideoMetadataService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -11,14 +13,14 @@ use Illuminate\Support\Facades\DB;
 class HighlightClipController extends Controller
 {
     /**
-     * Display highlight clips gallery
+     * Display videos gallery
      */
     public function index(Request $request)
     {
         $sort = $request->query('sort', 'popular'); // popular, recent, featured
         $platform = $request->query('platform');
 
-        $query = HighlightClip::with('user');
+        $query = HighlightClip::with('user')->where('status', 'approved');
 
         // Filter by platform
         if ($platform && in_array($platform, ['twitch', 'youtube', 'tiktok', 'kick'])) {
@@ -36,23 +38,24 @@ class HighlightClipController extends Controller
 
         $clips = $query->paginate(12);
 
-        // Get clip of the week (most votes in last 7 days)
+        // Get clip of the week (most votes in last 7 days, approved only)
         $clipOfTheWeek = HighlightClip::with('user')
+            ->where('status', 'approved')
             ->where('created_at', '>=', now()->subDays(7))
             ->orderByDesc('votes')
             ->first();
 
         $stats = [
-            'total' => HighlightClip::count(),
-            'this_week' => HighlightClip::where('created_at', '>=', now()->subWeek())->count(),
-            'featured' => HighlightClip::where('is_featured', true)->count(),
+            'total' => HighlightClip::where('status', 'approved')->count(),
+            'this_week' => HighlightClip::where('status', 'approved')->where('created_at', '>=', now()->subWeek())->count(),
+            'featured' => HighlightClip::where('status', 'approved')->where('is_featured', true)->count(),
         ];
 
         return view('clips.index', compact('clips', 'clipOfTheWeek', 'stats', 'sort', 'platform'));
     }
 
     /**
-     * Show clip submission form
+     * Show video submission form
      */
     public function create()
     {
@@ -60,31 +63,81 @@ class HighlightClipController extends Controller
     }
 
     /**
-     * Store new highlight clip
+     * Fetch video metadata from URL (AJAX endpoint)
+     */
+    public function fetchMetadata(Request $request, VideoMetadataService $metadataService)
+    {
+        $request->validate([
+            'url' => 'required|url',
+        ]);
+
+        $metadata = $metadataService->fetchMetadata($request->url);
+
+        if (!$metadata) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Could not fetch video metadata. Please enter details manually.',
+            ], 400);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $metadata,
+        ]);
+    }
+
+    /**
+     * Store new video
      */
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'title' => 'required|string|max:255',
             'url' => 'required|url|max:255',
-            'platform' => 'required|in:youtube,twitch,tiktok,kick',
+            'title' => 'nullable|string|max:255',
             'description' => 'nullable|string|max:1000',
+            'platform' => 'nullable|in:youtube,twitch,tiktok,kick',
+            'author' => 'nullable|string|max:255',
+            'thumbnail_url' => 'nullable|url|max:500',
         ]);
 
-        HighlightClip::create([
+        // If metadata not provided, try to fetch it
+        if (!isset($validated['title']) || !isset($validated['platform'])) {
+            $metadataService = app(VideoMetadataService::class);
+            $metadata = $metadataService->fetchMetadata($validated['url']);
+
+            if ($metadata) {
+                $validated['title'] = $validated['title'] ?? $metadata['title'];
+                $validated['description'] = $validated['description'] ?? $metadata['description'];
+                $validated['platform'] = $validated['platform'] ?? $metadata['platform'];
+                $validated['author'] = $validated['author'] ?? $metadata['author'];
+                $validated['thumbnail_url'] = $validated['thumbnail_url'] ?? $metadata['thumbnail_url'];
+            }
+        }
+
+        // Platform is required at this point
+        if (!isset($validated['platform'])) {
+            return back()->withErrors(['url' => 'Could not detect video platform. Please try again.'])->withInput();
+        }
+
+        $clip = HighlightClip::create([
             'user_id' => Auth::id(),
-            'title' => $validated['title'],
+            'title' => $validated['title'] ?? 'Untitled Video',
             'url' => $validated['url'],
             'platform' => $validated['platform'],
+            'author' => $validated['author'] ?? null,
             'description' => $validated['description'] ?? null,
+            'thumbnail_url' => $validated['thumbnail_url'] ?? null,
         ]);
 
+        // Send notification to user
+        Auth::user()->notify(new VideoSubmittedNotification($clip));
+
         return redirect()->route('clips.index')
-            ->with('success', 'Highlight clip submitted!');
+            ->with('success', 'Video submitted successfully! You will be notified when it\'s reviewed.');
     }
 
     /**
-     * Show clip details
+     * Show video details
      */
     public function show(HighlightClip $clip)
     {
@@ -96,15 +149,15 @@ class HighlightClipController extends Controller
     }
 
     /**
-     * Vote for a clip
+     * Vote for a video
      */
     public function vote(HighlightClip $clip, Request $request)
     {
         $user = Auth::user();
 
-        // Check if clip is approved
+        // Check if video is approved
         if ($clip->status !== 'approved') {
-            abort(403, 'Cannot vote on pending or rejected clips.');
+            abort(403, 'Cannot vote on pending or rejected videos.');
         }
 
         $validated = $request->validate([
@@ -130,7 +183,7 @@ class HighlightClipController extends Controller
     }
 
     /**
-     * Remove vote from a clip
+     * Remove vote from a video
      */
     public function unvote(HighlightClip $clip)
     {
@@ -141,7 +194,7 @@ class HighlightClipController extends Controller
             ->first();
 
         if (! $vote) {
-            return back()->with('error', 'You have not voted for this clip.');
+            return back()->with('error', 'You have not voted for this video.');
         }
 
         DB::transaction(function () use ($vote, $clip) {
@@ -153,7 +206,7 @@ class HighlightClipController extends Controller
     }
 
     /**
-     * Feature a clip (admin only)
+     * Feature a video (admin only)
      */
     public function feature(HighlightClip $clip)
     {
@@ -166,11 +219,11 @@ class HighlightClipController extends Controller
             'featured_at' => now(),
         ]);
 
-        return back()->with('success', 'Clip featured!');
+        return back()->with('success', 'Video featured!');
     }
 
     /**
-     * Unfeature a clip (admin only)
+     * Unfeature a video (admin only)
      */
     public function unfeature(HighlightClip $clip)
     {
@@ -183,23 +236,23 @@ class HighlightClipController extends Controller
             'featured_at' => null,
         ]);
 
-        return back()->with('success', 'Clip unfeatured.');
+        return back()->with('success', 'Video unfeatured.');
     }
 
     /**
-     * Delete a clip
+     * Delete a video
      */
     public function destroy(HighlightClip $clip)
     {
         $user = Auth::user();
 
         if ($clip->user_id !== $user->id && ! $user->isAdmin()) {
-            abort(403, 'You cannot delete this clip.');
+            abort(403, 'You cannot delete this video.');
         }
 
         $clip->delete();
 
         return redirect()->route('clips.index')
-            ->with('success', 'Clip deleted.');
+            ->with('success', 'Video deleted.');
     }
 }

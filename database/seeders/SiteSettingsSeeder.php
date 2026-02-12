@@ -51,9 +51,15 @@ class SiteSettingsSeeder extends Seeder
             ['key' => 'tournament_default_max_teams', 'value' => '32', 'group' => 'Tournaments', 'type' => 'integer', 'label' => 'Default Max Teams', 'description' => 'Default maximum number of teams for a tournament', 'sort_order' => 3],
             ['key' => 'tournament_registration_reminder_hours', 'value' => '24', 'group' => 'Tournaments', 'type' => 'integer', 'label' => 'Registration Reminder (hours)', 'description' => 'Hours before deadline to send registration reminder', 'sort_order' => 4],
 
-            // Moderation (2)
+            // Moderation (8)
             ['key' => 'blocked_chat_words', 'value' => null, 'group' => 'Moderation', 'type' => 'text', 'label' => 'Blocked Chat Words', 'description' => 'Comma-separated list of blocked words for chat filtering', 'sort_order' => 1],
             ['key' => 'auto_ban_threshold', 'value' => '0', 'group' => 'Moderation', 'type' => 'integer', 'label' => 'Auto-Ban Threshold', 'description' => 'Number of anti-cheat flags before automatic ban (0 = disabled)', 'sort_order' => 2],
+            ['key' => 'reputation_vote_cooldown_hours', 'value' => '24', 'group' => 'Moderation', 'type' => 'integer', 'label' => 'Reputation Vote Cooldown (hours)', 'description' => 'Hours before a user can change their reputation vote', 'sort_order' => 3],
+            ['key' => 'reputation_tier_trusted', 'value' => '100', 'group' => 'Moderation', 'type' => 'integer', 'label' => 'Reputation: Trusted Tier', 'description' => 'Minimum score for Trusted tier', 'sort_order' => 4],
+            ['key' => 'reputation_tier_good', 'value' => '50', 'group' => 'Moderation', 'type' => 'integer', 'label' => 'Reputation: Good Tier', 'description' => 'Minimum score for Good tier', 'sort_order' => 5],
+            ['key' => 'reputation_tier_poor', 'value' => '-50', 'group' => 'Moderation', 'type' => 'integer', 'label' => 'Reputation: Poor Tier', 'description' => 'Minimum score for Poor tier (below this is Flagged)', 'sort_order' => 6],
+            ['key' => 'reputation_max_votes_per_day', 'value' => '10', 'group' => 'Moderation', 'type' => 'integer', 'label' => 'Max Reputation Votes/Day', 'description' => 'Maximum reputation votes a user can cast per day (0 = unlimited)', 'sort_order' => 7],
+            ['key' => 'player_report_auto_flag_count', 'value' => '3', 'group' => 'Moderation', 'type' => 'integer', 'label' => 'Auto-Flag Report Count', 'description' => 'Number of reports before player is auto-flagged for review (0 = disabled)', 'sort_order' => 8],
 
             // Notifications (3)
             ['key' => 'discord_webhook_url', 'value' => null, 'group' => 'Notifications', 'type' => 'string', 'label' => 'Discord Webhook URL', 'description' => 'Discord webhook for admin notifications', 'sort_order' => 1],
@@ -75,6 +81,54 @@ class SiteSettingsSeeder extends Seeder
             ['key' => 'custom_logo_url', 'value' => null, 'group' => 'Appearance', 'type' => 'string', 'label' => 'Custom Logo URL', 'description' => 'URL to a custom logo image (replaces text brand)', 'sort_order' => 1],
             ['key' => 'primary_accent_color', 'value' => '#22c55e', 'group' => 'Appearance', 'type' => 'color', 'label' => 'Primary Accent Color', 'description' => 'Main accent color used across the site', 'sort_order' => 2],
             ['key' => 'custom_css', 'value' => null, 'group' => 'Appearance', 'type' => 'text', 'label' => 'Custom CSS', 'description' => 'Additional CSS injected into every page', 'sort_order' => 3],
+
+            // Player Progression (10)
+            ['key' => 'leveling_base_xp', 'value' => '1000', 'group' => 'Player Progression', 'type' => 'integer', 'label' => 'Leveling: Base XP', 'description' => 'Base XP required for level 1 (exponential curve from this)', 'sort_order' => 1],
+            ['key' => 'leveling_xp_curve_exponent', 'value' => '1.15', 'group' => 'Player Progression', 'type' => 'string', 'label' => 'Leveling: XP Curve Exponent', 'description' => 'Exponent for XP curve formula: BASE_XP * pow(level, exponent)', 'sort_order' => 2],
+            ['key' => 'leveling_level_cap', 'value' => '500', 'group' => 'Player Progression', 'type' => 'integer', 'label' => 'Leveling: Max Level', 'description' => 'Maximum player level (50 ranks across 10 eras)', 'sort_order' => 3],
+            ['key' => 'leveling_achievement_points_weight', 'value' => '1.0', 'group' => 'Player Progression', 'type' => 'string', 'label' => 'Leveling: Achievement Points Weight', 'description' => 'Multiplier for achievement points in level XP calculation', 'sort_order' => 4],
+            ['key' => 'achievement_rarity_common_max', 'value' => '50', 'group' => 'Player Progression', 'type' => 'integer', 'label' => 'Achievement: Common Rarity (%)', 'description' => 'Maximum percentage of players with achievement for Common rarity', 'sort_order' => 5],
+            ['key' => 'achievement_rarity_rare_max', 'value' => '25', 'group' => 'Player Progression', 'type' => 'integer', 'label' => 'Achievement: Rare Rarity (%)', 'description' => 'Maximum percentage of players with achievement for Rare rarity', 'sort_order' => 6],
+            ['key' => 'achievement_rarity_epic_max', 'value' => '10', 'group' => 'Player Progression', 'type' => 'integer', 'label' => 'Achievement: Epic Rarity (%)', 'description' => 'Maximum percentage of players with achievement for Epic rarity', 'sort_order' => 7],
+            ['key' => 'achievement_rarity_legendary_max', 'value' => '5', 'group' => 'Player Progression', 'type' => 'integer', 'label' => 'Achievement: Legendary Rarity (%)', 'description' => 'Below this percentage is Legendary rarity', 'sort_order' => 8],
+            ['key' => 'achievement_showcase_max', 'value' => '3', 'group' => 'Player Progression', 'type' => 'integer', 'label' => 'Achievement: Max Showcase', 'description' => 'Maximum achievements a player can showcase on profile', 'sort_order' => 9],
+            ['key' => 'achievement_points_multiplier', 'value' => '100', 'group' => 'Player Progression', 'type' => 'integer', 'label' => 'Achievement: Base Points', 'description' => 'Base achievement points (multiplied by rarity)', 'sort_order' => 10],
+
+            // Ranked System (13)
+            ['key' => 'ranked_base_rating', 'value' => '1500', 'group' => 'Ranked System', 'type' => 'integer', 'label' => 'Base Rating', 'description' => 'Starting rating for new competitive players (Glicko-2)', 'sort_order' => 1],
+            ['key' => 'ranked_starting_rd', 'value' => '350', 'group' => 'Ranked System', 'type' => 'integer', 'label' => 'Starting Rating Deviation', 'description' => 'Initial RD (rating uncertainty) for new players', 'sort_order' => 2],
+            ['key' => 'ranked_volatility', 'value' => '0.06', 'group' => 'Ranked System', 'type' => 'string', 'label' => 'Volatility', 'description' => 'System volatility constant (how quickly ratings change)', 'sort_order' => 3],
+            ['key' => 'ranked_placement_games', 'value' => '10', 'group' => 'Ranked System', 'type' => 'integer', 'label' => 'Placement Games', 'description' => 'Number of games required before placement', 'sort_order' => 4],
+            ['key' => 'ranked_decay_days', 'value' => '14', 'group' => 'Ranked System', 'type' => 'integer', 'label' => 'Rating Decay Days', 'description' => 'Days of inactivity before rating decay starts', 'sort_order' => 5],
+            ['key' => 'ranked_phantom_vehicle', 'value' => '1600', 'group' => 'Ranked System', 'type' => 'integer', 'label' => 'Phantom: Vehicle Destroy', 'description' => 'Phantom opponent rating for vehicle kills', 'sort_order' => 6],
+            ['key' => 'ranked_phantom_base', 'value' => '1500', 'group' => 'Ranked System', 'type' => 'integer', 'label' => 'Phantom: Base Capture', 'description' => 'Phantom opponent rating for base captures', 'sort_order' => 7],
+            ['key' => 'ranked_phantom_heal', 'value' => '1300', 'group' => 'Ranked System', 'type' => 'integer', 'label' => 'Phantom: Heal', 'description' => 'Phantom opponent rating for healing teammates', 'sort_order' => 8],
+            ['key' => 'ranked_phantom_supply', 'value' => '1300', 'group' => 'Ranked System', 'type' => 'integer', 'label' => 'Phantom: Supply Delivery', 'description' => 'Phantom opponent rating for supply deliveries', 'sort_order' => 9],
+            ['key' => 'ranked_phantom_building', 'value' => '1200', 'group' => 'Ranked System', 'type' => 'integer', 'label' => 'Phantom: Building', 'description' => 'Phantom opponent rating for placing buildings', 'sort_order' => 10],
+            ['key' => 'ranked_teamkill_penalty_rd', 'value' => '150', 'group' => 'Ranked System', 'type' => 'integer', 'label' => 'Team Kill Penalty RD', 'description' => 'Phantom opponent RD for team kill penalties (higher = more severe)', 'sort_order' => 11],
+            ['key' => 'ranked_friendly_fire_penalty_rd', 'value' => '250', 'group' => 'Ranked System', 'type' => 'integer', 'label' => 'Friendly Fire Penalty RD', 'description' => 'Phantom opponent RD for friendly fire penalties', 'sort_order' => 12],
+            ['key' => 'ranked_calculation_interval_hours', 'value' => '4', 'group' => 'Ranked System', 'type' => 'integer', 'label' => 'Calculation Interval (hours)', 'description' => 'How often the rating calculation job runs', 'sort_order' => 13],
+
+            // Teams (5)
+            ['key' => 'team_max_size', 'value' => '16', 'group' => 'Teams', 'type' => 'integer', 'label' => 'Max Team Size', 'description' => 'Maximum number of members per team', 'sort_order' => 1],
+            ['key' => 'team_min_size_tournament', 'value' => '4', 'group' => 'Teams', 'type' => 'integer', 'label' => 'Min Size for Tournaments', 'description' => 'Minimum team size to register for tournaments', 'sort_order' => 2],
+            ['key' => 'team_invitation_expiry_days', 'value' => '7', 'group' => 'Teams', 'type' => 'integer', 'label' => 'Invitation Expiry (days)', 'description' => 'Days before team invitations expire', 'sort_order' => 3],
+            ['key' => 'team_application_expiry_days', 'value' => '7', 'group' => 'Teams', 'type' => 'integer', 'label' => 'Application Expiry (days)', 'description' => 'Days before team applications expire', 'sort_order' => 4],
+            ['key' => 'scrim_invitation_expiry_days', 'value' => '7', 'group' => 'Teams', 'type' => 'integer', 'label' => 'Scrim Invitation Expiry (days)', 'description' => 'Days before scrim invitations expire', 'sort_order' => 5],
+
+            // Content Creators (5)
+            ['key' => 'creator_verification_followers', 'value' => '100', 'group' => 'Content Creators', 'type' => 'integer', 'label' => 'Verification: Min Followers', 'description' => 'Minimum followers for automatic verification consideration', 'sort_order' => 1],
+            ['key' => 'creator_featured_slots', 'value' => '3', 'group' => 'Content Creators', 'type' => 'integer', 'label' => 'Featured Creator Slots', 'description' => 'Number of featured creator slots on homepage', 'sort_order' => 2],
+            ['key' => 'clip_approval_threshold', 'value' => '10', 'group' => 'Content Creators', 'type' => 'integer', 'label' => 'Clip: Auto-Approval Votes', 'description' => 'Votes needed for automatic clip approval (0 = manual only)', 'sort_order' => 3],
+            ['key' => 'clip_of_week_rotation_day', 'value' => '1', 'group' => 'Content Creators', 'type' => 'integer', 'label' => 'Clip of Week: Rotation Day', 'description' => 'Day of week for Clip of the Week rotation (1 = Monday, 7 = Sunday)', 'sort_order' => 4],
+            ['key' => 'clip_max_duration_seconds', 'value' => '120', 'group' => 'Content Creators', 'type' => 'integer', 'label' => 'Clip: Max Duration (seconds)', 'description' => 'Maximum clip duration in seconds', 'sort_order' => 5],
+
+            // System Performance (5)
+            ['key' => 'analytics_retention_days', 'value' => '90', 'group' => 'System Performance', 'type' => 'integer', 'label' => 'Analytics Retention (days)', 'description' => 'Days to keep analytics events before cleanup', 'sort_order' => 1],
+            ['key' => 'metrics_retention_days', 'value' => '90', 'group' => 'System Performance', 'type' => 'integer', 'label' => 'Metrics Retention (days)', 'description' => 'Days to keep system metrics before cleanup', 'sort_order' => 2],
+            ['key' => 'cache_warm_interval_minutes', 'value' => '4', 'group' => 'System Performance', 'type' => 'integer', 'label' => 'Cache Warm Interval (minutes)', 'description' => 'How often leaderboard cache warming runs', 'sort_order' => 3],
+            ['key' => 'max_concurrent_jobs', 'value' => '3', 'group' => 'System Performance', 'type' => 'integer', 'label' => 'Max Concurrent Queue Jobs', 'description' => 'Maximum number of queue jobs to process simultaneously', 'sort_order' => 4],
+            ['key' => 'api_rate_limit_burst', 'value' => '10', 'group' => 'System Performance', 'type' => 'integer', 'label' => 'API Rate Limit Burst', 'description' => 'Additional requests allowed in burst for API rate limiting', 'sort_order' => 5],
         ];
 
         foreach ($settings as $setting) {

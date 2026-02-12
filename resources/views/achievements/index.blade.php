@@ -12,6 +12,7 @@
                     <div>
                         <h1 class="text-3xl font-bold text-white mb-2">Achievements</h1>
                         <p class="text-gray-400">Track your progress and showcase your accomplishments</p>
+                        <p class="text-sm text-gray-500 mt-1">Showing {{ $achievements->firstItem() ?? 0 }}-{{ $achievements->lastItem() ?? 0 }} of {{ $achievements->total() }} achievements</p>
                     </div>
                     <div class="flex items-center gap-4">
                         @auth
@@ -57,7 +58,7 @@
                         $isRare = $rarity < 1.0;
                         $isUltraRare = $rarity < 0.1;
                     @endphp
-                    <div class="achievement-card glass-card backdrop-blur {{ $isEarned ? 'border border-green-500/30 achievement-earned' : '' }} rounded-xl p-6 relative overflow-hidden group hover:border-green-500/30 transition"
+                    <div class="achievement-card glass-card backdrop-blur {{ $isEarned ? 'border border-green-500/30 achievement-earned' : '' }} rounded-xl p-4 relative overflow-hidden group hover:border-green-500/30 transition"
                          x-data="{ showDetails: false }">
                         {{-- Rare Badge --}}
                         @if($isEarned && ($isRare || $isUltraRare))
@@ -76,16 +77,16 @@
                             </div>
                         @endif
                         {{-- Icon --}}
-                        <div class="flex items-center justify-center mb-4">
-                            @if($achievement->badge_path && $isEarned)
-                                <x-blur-image src="{{ asset('storage/' . $achievement->badge_path) }}"
+                        <div class="flex items-center justify-center mb-1">
+                            @if($achievement->badge_url && $isEarned)
+                                <x-blur-image src="{{ $achievement->badge_url }}"
                                      alt="{{ $achievement->name }}"
-                                     class="w-24 h-24 object-contain {{ !$isEarned ? 'opacity-30 grayscale' : '' }}" />
+                                     class="w-[250px] h-[250px] object-contain {{ !$isEarned ? 'opacity-30 grayscale' : '' }}" />
                             @else
-                                <div class="w-24 h-24 rounded-full flex items-center justify-center {{ !$isEarned ? 'opacity-30 grayscale' : '' }}"
+                                <div class="w-[250px] h-[250px] rounded-full flex items-center justify-center {{ !$isEarned ? 'opacity-30 grayscale' : '' }}"
                                      style="background-color: {{ $achievement->color }}20;">
                                     <i data-lucide="{{ $achievement->icon }}"
-                                       class="w-12 h-12"
+                                       class="w-[125px] h-[125px]"
                                        style="color: {{ $isEarned ? $achievement->color : '#6b7280' }};"></i>
                                 </div>
                             @endif
@@ -158,6 +159,13 @@
                     </svg>
                     <h3 class="text-xl font-semibold text-gray-400 mb-2">No Achievements Found</h3>
                     <p class="text-gray-500">Check back later for new achievements!</p>
+                </div>
+            @endif
+
+            {{-- Pagination --}}
+            @if($achievements->hasPages())
+                <div class="mt-8">
+                    {{ $achievements->links() }}
                 </div>
             @endif
 

@@ -97,10 +97,43 @@
         </div>
 
         <div>
-            <label class="block text-sm font-medium text-gray-300 mb-1">Badge Image</label>
+            <label class="block text-sm font-medium text-gray-300 mb-1">Badge SVG URL</label>
+            <input type="url" name="badge_svg_url" value="{{ old('badge_svg_url', $achievement->badge_svg_url) }}" placeholder="https://example.com/badge.svg" class="w-full px-3 py-2 bg-white/3 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:border-green-500">
+            <p class="text-xs text-gray-500 mt-1">Highest priority - external SVG link</p>
+            @error('badge_svg_url') <p class="text-red-400 text-xs mt-1">{{ $message }}</p> @enderror
+        </div>
+
+        @if(count($presetBadges) > 0)
+        <div>
+            <label class="block text-sm font-medium text-gray-300 mb-2">Preset Badges</label>
+            <div class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-3">
+                @foreach($presetBadges as $badge)
+                <label class="relative cursor-pointer group">
+                    <input type="radio" name="preset_badge" value="{{ $badge }}" {{ old('preset_badge', $achievement->preset_badge) === $badge ? 'checked' : '' }} class="peer sr-only">
+                    <div class="w-full aspect-square bg-white/3 border-2 border-white/10 peer-checked:border-green-500 rounded-lg p-2 hover:border-white/30 transition flex items-center justify-center overflow-hidden">
+                        <img src="{{ asset('images/Achivements/' . $badge) }}" alt="{{ $badge }}" class="max-w-full max-h-full object-contain">
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1 truncate text-center">{{ pathinfo($badge, PATHINFO_FILENAME) }}</p>
+                </label>
+                @endforeach
+                <label class="relative cursor-pointer group">
+                    <input type="radio" name="preset_badge" value="" {{ old('preset_badge', $achievement->preset_badge) === '' || !old('preset_badge', $achievement->preset_badge) ? 'checked' : '' }} class="peer sr-only">
+                    <div class="w-full aspect-square bg-white/3 border-2 border-white/10 peer-checked:border-green-500 rounded-lg p-2 hover:border-white/30 transition flex items-center justify-center">
+                        <svg class="w-8 h-8 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1 text-center">None</p>
+                </label>
+            </div>
+            <p class="text-xs text-gray-500 mt-2">Select a pre-uploaded badge (used if SVG URL is empty)</p>
+            @error('preset_badge') <p class="text-red-400 text-xs mt-1">{{ $message }}</p> @enderror
+        </div>
+        @endif
+
+        <div>
+            <label class="block text-sm font-medium text-gray-300 mb-1">Badge Image Upload</label>
             @if($achievement->badge_path)
                 <div class="flex items-center gap-3 mb-2">
-                    <img src="{{ $achievement->badge_url }}" alt="" class="w-16 h-16 rounded-lg border border-white/10">
+                    <img src="{{ asset('storage/' . $achievement->badge_path) }}" alt="" class="w-16 h-16 rounded-lg border border-white/10">
                     <form action="{{ route('admin.achievements.delete-badge', $achievement) }}" method="POST" onsubmit="return confirm('Remove badge image?')">
                         @csrf
                         @method('DELETE')
@@ -109,6 +142,7 @@
                 </div>
             @endif
             <input type="file" name="badge" accept="image/*" class="w-full px-3 py-2 bg-white/3 border border-white/10 rounded-lg text-white text-sm file:mr-4 file:py-1 file:px-3 file:rounded file:border-0 file:bg-green-600 file:text-white file:text-sm file:cursor-pointer">
+            <p class="text-xs text-gray-500 mt-1">Lowest priority - upload custom image (used if SVG URL and preset are empty)</p>
             @error('badge') <p class="text-red-400 text-xs mt-1">{{ $message }}</p> @enderror
         </div>
 

@@ -950,7 +950,9 @@ class StatsController extends Controller
         $cacheKey = "leaderboard:kills:limit_{$limit}";
 
         $leaderboard = Cache::remember($cacheKey, 300, function () use ($limit) {
+            $registeredUuids = $this->getRegisteredPlayerUuids();
             return DB::table('player_stats')
+                ->whereIn('player_uuid', $registeredUuids)
                 ->orderByDesc('kills')
                 ->limit($limit)
                 ->get(['player_uuid', 'player_name', 'kills', 'deaths', 'playtime_seconds']);
@@ -965,7 +967,9 @@ class StatsController extends Controller
         $cacheKey = "leaderboard:deaths:limit_{$limit}";
 
         $leaderboard = Cache::remember($cacheKey, 300, function () use ($limit) {
+            $registeredUuids = $this->getRegisteredPlayerUuids();
             return DB::table('player_stats')
+                ->whereIn('player_uuid', $registeredUuids)
                 ->orderByDesc('deaths')
                 ->limit($limit)
                 ->get(['player_uuid', 'player_name', 'kills', 'deaths', 'playtime_seconds']);
@@ -981,7 +985,9 @@ class StatsController extends Controller
         $cacheKey = "leaderboard:kd:limit_{$limit}:min_{$minKills}";
 
         $leaderboard = Cache::remember($cacheKey, 300, function () use ($limit, $minKills) {
+            $registeredUuids = $this->getRegisteredPlayerUuids();
             return DB::table('player_stats')
+                ->whereIn('player_uuid', $registeredUuids)
                 ->where('player_kills_count', '>=', $minKills)
                 ->selectRaw('player_uuid, player_name, kills, player_kills_count, deaths, playtime_seconds, CASE WHEN deaths > 0 THEN ROUND(player_kills_count::numeric / deaths, 2) ELSE player_kills_count END as kd_ratio')
                 ->orderByDesc('kd_ratio')
@@ -998,7 +1004,9 @@ class StatsController extends Controller
         $cacheKey = "leaderboard:playtime:limit_{$limit}";
 
         $leaderboard = Cache::remember($cacheKey, 300, function () use ($limit) {
+            $registeredUuids = $this->getRegisteredPlayerUuids();
             return DB::table('player_stats')
+                ->whereIn('player_uuid', $registeredUuids)
                 ->orderByDesc('playtime_seconds')
                 ->limit($limit)
                 ->get(['player_uuid', 'player_name', 'playtime_seconds', 'kills', 'deaths']);
@@ -1013,7 +1021,9 @@ class StatsController extends Controller
         $cacheKey = "leaderboard:xp:limit_{$limit}";
 
         $leaderboard = Cache::remember($cacheKey, 300, function () use ($limit) {
+            $registeredUuids = $this->getRegisteredPlayerUuids();
             return DB::table('player_stats')
+                ->whereIn('player_uuid', $registeredUuids)
                 ->orderByDesc('xp_total')
                 ->limit($limit)
                 ->get(['player_uuid', 'player_name', 'xp_total', 'kills', 'deaths']);
@@ -1028,7 +1038,9 @@ class StatsController extends Controller
         $cacheKey = "leaderboard:distance:limit_{$limit}";
 
         $leaderboard = Cache::remember($cacheKey, 300, function () use ($limit) {
+            $registeredUuids = $this->getRegisteredPlayerUuids();
             return DB::table('player_stats')
+                ->whereIn('player_uuid', $registeredUuids)
                 ->orderByDesc('total_distance')
                 ->limit($limit)
                 ->get(['player_uuid', 'player_name', 'total_distance', 'playtime_seconds']);
@@ -1043,7 +1055,9 @@ class StatsController extends Controller
         $cacheKey = "leaderboard:roadkills:limit_{$limit}";
 
         $leaderboard = Cache::remember($cacheKey, 300, function () use ($limit) {
+            $registeredUuids = $this->getRegisteredPlayerUuids();
             return DB::table('player_stats')
+                ->whereIn('player_uuid', $registeredUuids)
                 ->where('total_roadkills', '>', 0)
                 ->orderByDesc('total_roadkills')
                 ->limit($limit)
@@ -1419,17 +1433,30 @@ class StatsController extends Controller
         if (! empty($data['player_uuid'])) {
             $serverId = $data['server_id'] ?? 1;
             $this->getOrCreatePlayerStat($data['player_uuid'], $data['player_name'], $serverId);
+
+            // Get old rank before update
+            $stats = \App\Models\PlayerStat::where('player_uuid', $data['player_uuid'])->first();
+            $levelService = app(\App\Services\PlayerLevelService::class);
+            $oldRank = $stats ? $levelService->getRankForLevel($stats->level) : 1;
+
             DB::table('player_stats')->where('player_uuid', $data['player_uuid'])->increment('xp_total', $data['xp_amount']);
 
-            // Check for level up
-            $stats = \App\Models\PlayerStat::where('player_uuid', $data['player_uuid'])->first();
+            // Check for level up and rank up
+            $stats->refresh();
             if ($stats) {
-                $levelService = app(\App\Services\PlayerLevelService::class);
                 $newLevel = $levelService->updatePlayerLevel($stats);
 
-                // If level up occurred, send notification
+                // If level up occurred, check for rank up
                 if ($newLevel) {
-                    $this->sendLevelUpNotification($data['player_uuid'], $newLevel, $stats->tier);
+                    $newRank = $levelService->getRankForLevel($newLevel);
+
+                    // Send rank up notification if rank changed
+                    if ($newRank > $oldRank) {
+                        $rankInfo = \App\Models\RankLogo::forRank($newRank);
+                        if ($rankInfo) {
+                            $this->sendRankUpNotification($data['player_uuid'], $newRank, $rankInfo);
+                        }
+                    }
                 }
             }
 
@@ -1590,5 +1617,34 @@ class StatsController extends Controller
             // Don't break on notification failure
             \Log::warning("Failed to send level up notification: {$e->getMessage()}");
         }
+    }
+
+    /**
+     * Send rank up notification to player
+     */
+    private function sendRankUpNotification(string $playerUuid, int $newRank, \App\Models\RankLogo $rankInfo): void
+    {
+        try {
+            // Find user by player_uuid
+            $user = \App\Models\User::where('player_uuid', $playerUuid)->first();
+
+            if ($user) {
+                // Create database notification
+                $user->notify(new \App\Notifications\RankUpNotification($newRank, $rankInfo));
+            }
+        } catch (\Exception $e) {
+            // Don't break on notification failure
+            \Log::warning("Failed to send rank up notification: {$e->getMessage()}");
+        }
+    }
+
+    /**
+     * Get array of registered player UUIDs (users who have linked their Arma ID)
+     */
+    private function getRegisteredPlayerUuids(): array
+    {
+        return Cache::remember('registered_player_uuids', 300, function () {
+            return \App\Models\User::whereNotNull('player_uuid')->pluck('player_uuid')->toArray();
+        });
     }
 }

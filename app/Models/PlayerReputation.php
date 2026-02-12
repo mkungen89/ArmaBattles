@@ -43,19 +43,21 @@ class PlayerReputation extends Model
     }
 
     /**
-     * Check if user has "Trusted Player" status (100+ rep)
+     * Check if user has "Trusted Player" status
      */
     public function isTrusted(): bool
     {
-        return $this->total_score >= 100;
+        $trustedTier = (int) site_setting('reputation_tier_trusted', 100);
+        return $this->total_score >= $trustedTier;
     }
 
     /**
-     * Check if user has concerning low reputation (-50 or lower)
+     * Check if user has concerning low reputation
      */
     public function isFlagged(): bool
     {
-        return $this->total_score <= -50;
+        $poorTier = (int) site_setting('reputation_tier_poor', -50);
+        return $this->total_score < $poorTier;
     }
 
     /**
@@ -64,14 +66,17 @@ class PlayerReputation extends Model
     public function getBadgeColorAttribute(): string
     {
         $score = $this->total_score;
+        $trustedTier = (int) site_setting('reputation_tier_trusted', 100);
+        $goodTier = (int) site_setting('reputation_tier_good', 50);
+        $poorTier = (int) site_setting('reputation_tier_poor', -50);
 
-        if ($score >= 100) {
+        if ($score >= $trustedTier) {
             return 'text-green-400'; // Trusted
-        } elseif ($score >= 50) {
+        } elseif ($score >= $goodTier) {
             return 'text-blue-400'; // Good
         } elseif ($score >= 0) {
             return 'text-gray-400'; // Neutral
-        } elseif ($score >= -50) {
+        } elseif ($score >= $poorTier) {
             return 'text-yellow-400'; // Poor
         } else {
             return 'text-red-400'; // Flagged
@@ -84,14 +89,17 @@ class PlayerReputation extends Model
     public function getLabelAttribute(): string
     {
         $score = $this->total_score;
+        $trustedTier = (int) site_setting('reputation_tier_trusted', 100);
+        $goodTier = (int) site_setting('reputation_tier_good', 50);
+        $poorTier = (int) site_setting('reputation_tier_poor', -50);
 
-        if ($score >= 100) {
+        if ($score >= $trustedTier) {
             return 'Trusted Player';
-        } elseif ($score >= 50) {
+        } elseif ($score >= $goodTier) {
             return 'Good Standing';
         } elseif ($score >= 0) {
             return 'Neutral';
-        } elseif ($score >= -50) {
+        } elseif ($score >= $poorTier) {
             return 'Poor Standing';
         } else {
             return 'Flagged';

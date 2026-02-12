@@ -263,6 +263,13 @@ class TeamController extends Controller
             return back()->with('error', 'You must leave your current platoon first.');
         }
 
+        // Check if team is full
+        $maxTeamSize = (int) site_setting('team_max_size', 16);
+        $currentSize = $invitation->team->members()->wherePivot('status', 'active')->count();
+        if ($currentSize >= $maxTeamSize) {
+            return back()->with('error', 'This platoon is full (max '.$maxTeamSize.' members).');
+        }
+
         $invitation->team->members()->attach($user->id, [
             'role' => 'member',
             'status' => 'active',
@@ -662,6 +669,13 @@ class TeamController extends Controller
             ]);
 
             return back()->with('error', 'This user has joined another platoon.');
+        }
+
+        // Check if team is full
+        $maxTeamSize = (int) site_setting('team_max_size', 16);
+        $currentSize = $team->members()->wherePivot('status', 'active')->count();
+        if ($currentSize >= $maxTeamSize) {
+            return back()->with('error', 'This platoon is full (max '.$maxTeamSize.' members).');
         }
 
         // Add to team

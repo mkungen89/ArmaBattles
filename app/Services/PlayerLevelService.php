@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\PlayerStat;
+use App\Models\RankLogo;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -10,7 +11,8 @@ use Illuminate\Support\Facades\Log;
 class PlayerLevelService
 {
     /**
-     * Level tier definitions
+     * Legacy tier definitions (kept for backwards compatibility)
+     * @deprecated Use getRankInfo() instead
      */
     public const TIERS = [
         'recruit' => ['min' => 1, 'max' => 10, 'color' => 'gray', 'label' => 'Recruit'],
@@ -22,14 +24,36 @@ class PlayerLevelService
     ];
 
     /**
-     * Base XP required for level 1 → 2
+     * Get base XP from settings (with fallback)
      */
-    protected const BASE_XP = 1000;
+    protected function getBaseXp(): int
+    {
+        return (int) site_setting('leveling_base_xp', 1000);
+    }
 
     /**
-     * Exponential growth factor
+     * Get XP curve exponent from settings (with fallback)
      */
-    protected const GROWTH_FACTOR = 1.15;
+    protected function getGrowthFactor(): float
+    {
+        return (float) site_setting('leveling_xp_curve_exponent', 1.15);
+    }
+
+    /**
+     * Get max level from settings (with fallback)
+     */
+    protected function getMaxLevel(): int
+    {
+        return (int) site_setting('leveling_level_cap', 500);
+    }
+
+    /**
+     * Get achievement points weight from settings (with fallback)
+     */
+    protected function getAchievementPointsWeight(): float
+    {
+        return (float) site_setting('leveling_achievement_points_weight', 1.0);
+    }
 
     /**
      * Calculate XP required for a specific level
@@ -41,7 +65,10 @@ class PlayerLevelService
         }
 
         // Exponential curve: base_xp * (level ^ growth_factor)
-        return (int) round(self::BASE_XP * pow($level, self::GROWTH_FACTOR));
+        $baseXp = $this->getBaseXp();
+        $growthFactor = $this->getGrowthFactor();
+
+        return (int) round($baseXp * pow($level, $growthFactor));
     }
 
     /**
@@ -62,15 +89,17 @@ class PlayerLevelService
      */
     public function calculateLevelFromXp(int $totalXp): int
     {
-        if ($totalXp < self::BASE_XP) {
+        $baseXp = $this->getBaseXp();
+        if ($totalXp < $baseXp) {
             return 1;
         }
 
         $level = 1;
         $xpUsed = 0;
+        $maxLevel = $this->getMaxLevel();
 
         // Find highest level we can afford
-        while ($level < 100) {
+        while ($level < $maxLevel) {
             $nextLevelXp = $this->xpRequiredForLevel($level + 1);
             if ($xpUsed + $nextLevelXp > $totalXp) {
                 break;
@@ -88,7 +117,8 @@ class PlayerLevelService
      */
     public function getProgressToNextLevel(PlayerStat $stats): float
     {
-        if ($stats->level >= 100) {
+        $maxLevel = $this->getMaxLevel();
+        if ($stats->level >= $maxLevel) {
             return 100.0;
         }
 
@@ -109,7 +139,8 @@ class PlayerLevelService
      */
     public function getXpToNextLevel(PlayerStat $stats): int
     {
-        if ($stats->level >= 100) {
+        $maxLevel = $this->getMaxLevel();
+        if ($stats->level >= $maxLevel) {
             return 0;
         }
 
@@ -120,7 +151,8 @@ class PlayerLevelService
     }
 
     /**
-     * Get tier info for a level
+     * Get tier info for a level (legacy method)
+     * @deprecated Use getRankInfo() instead
      */
     public function getTierForLevel(int $level): array
     {
@@ -135,12 +167,95 @@ class PlayerLevelService
     }
 
     /**
+     * Get rank number (1-50) for a given level
+     */
+    public function getRankForLevel(int $level): int
+    {
+        // Every 10 levels = 1 rank
+        // Level 1-10 = Rank 1, Level 11-20 = Rank 2, etc.
+        return (int) ceil($level / 10);
+    }
+
+    /**
+     * Get era number (1-10) for a given level
+     */
+    public function getEraForLevel(int $level): int
+    {
+        // Every 50 levels = 1 era
+        // Level 1-50 = Era 1, Level 51-100 = Era 2, etc.
+        return (int) ceil($level / 50);
+    }
+
+    /**
+     * Get rank info (logo, name, era, etc) for a given level
+     * Returns null if no rank found
+     */
+    public function getRankInfo(int $level): ?RankLogo
+    {
+        return RankLogo::forLevel($level);
+    }
+
+    /**
+     * Get progress within current rank (0-100%)
+     * Each rank spans 10 levels
+     */
+    public function getProgressInRank(PlayerStat $stats): float
+    {
+        $rank = $this->getRankForLevel($stats->level);
+        $rankLogo = RankLogo::forRank($rank);
+
+        if (!$rankLogo) {
+            return 0.0;
+        }
+
+        // Get total XP at start of rank
+        $rankStartTotalXp = $this->totalXpForLevel($rankLogo->min_level);
+        // Get total XP at end of rank
+        $rankEndTotalXp = $this->totalXpForLevel($rankLogo->max_level + 1); // +1 because we want XP to reach next level
+
+        // Current player XP within this rank
+        $xpInRank = $stats->level_xp - $rankStartTotalXp;
+        $xpNeededForRank = $rankEndTotalXp - $rankStartTotalXp;
+
+        if ($xpNeededForRank <= 0) {
+            return 100.0;
+        }
+
+        return round(($xpInRank / $xpNeededForRank) * 100, 1);
+    }
+
+    /**
+     * Get progress to next rank (XP needed)
+     */
+    public function getXpToNextRank(PlayerStat $stats): int
+    {
+        $rank = $this->getRankForLevel($stats->level);
+        $rankLogo = RankLogo::forRank($rank);
+
+        if (!$rankLogo) {
+            return 0;
+        }
+
+        // Max level reached
+        if ($stats->level >= 500) {
+            return 0;
+        }
+
+        // Get total XP needed to reach next rank (which starts at max_level + 1)
+        $nextRankStartLevel = $rankLogo->max_level + 1;
+        $xpToNextRank = $this->totalXpForLevel($nextRankStartLevel);
+
+        return max(0, $xpToNextRank - $stats->level_xp);
+    }
+
+    /**
      * Update player level based on XP and achievements
      */
     public function updatePlayerLevel(PlayerStat $stats): ?int
     {
-        // Calculate total XP (game XP + achievement points)
-        $totalXp = ($stats->xp_total ?? 0) + ($stats->achievement_points ?? 0);
+        // Calculate total XP (game XP + weighted achievement points)
+        $achievementWeight = $this->getAchievementPointsWeight();
+        $totalXp = ($stats->xp_total ?? 0) + (int)(($stats->achievement_points ?? 0) * $achievementWeight);
 
         // Update level_xp
         $stats->level_xp = $totalXp;

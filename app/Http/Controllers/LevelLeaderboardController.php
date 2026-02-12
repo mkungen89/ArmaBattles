@@ -19,12 +19,16 @@ class LevelLeaderboardController extends Controller
         $perPage = 50;
         $page = $request->get('page', 1);
 
+        // Get only registered players
+        $registeredUuids = User::whereNotNull('player_uuid')->pluck('player_uuid')->toArray();
+
         // Cache key for pagination
         $cacheKey = "levels:leaderboard:page_{$page}:limit_{$perPage}";
 
-        $leaderboard = Cache::remember($cacheKey, now()->addMinutes(5), function () use ($perPage, $page) {
+        $leaderboard = Cache::remember($cacheKey, now()->addMinutes(5), function () use ($perPage, $page, $registeredUuids) {
             return PlayerStat::select('player_uuid', 'player_name', 'level', 'level_xp', 'achievement_points', 'xp_total', 'kills', 'deaths', 'playtime_seconds')
                 ->where('level', '>', 0)
+                ->whereIn('player_uuid', $registeredUuids)
                 ->orderBy('level', 'desc')
                 ->orderBy('level_xp', 'desc')
                 ->paginate($perPage);
@@ -43,27 +47,29 @@ class LevelLeaderboardController extends Controller
             });
         }
 
-        // Stats for the page
+        // Stats for the page (only registered players)
         $stats = [
-            'total_players' => Cache::remember('levels:total_players', now()->addMinutes(5), function () {
-                return PlayerStat::where('level', '>', 0)->count();
+            'total_players' => Cache::remember('levels:total_players', now()->addMinutes(5), function () use ($registeredUuids) {
+                return PlayerStat::where('level', '>', 0)->whereIn('player_uuid', $registeredUuids)->count();
             }),
-            'max_level' => Cache::remember('levels:max_level', now()->addMinutes(5), function () {
-                return PlayerStat::max('level') ?? 1;
+            'max_level' => Cache::remember('levels:max_level', now()->addMinutes(5), function () use ($registeredUuids) {
+                return PlayerStat::whereIn('player_uuid', $registeredUuids)->max('level') ?? 1;
             }),
-            'avg_level' => Cache::remember('levels:avg_level', now()->addMinutes(5), function () {
-                return round(PlayerStat::where('level', '>', 0)->avg('level'), 1);
+            'avg_level' => Cache::remember('levels:avg_level', now()->addMinutes(5), function () use ($registeredUuids) {
+                return round(PlayerStat::where('level', '>', 0)->whereIn('player_uuid', $registeredUuids)->avg('level'), 1);
             }),
-            'legends_count' => Cache::remember('levels:legends_count', now()->addMinutes(5), function () {
-                return PlayerStat::where('level', '>=', 81)->count();
+            'legends_count' => Cache::remember('levels:legends_count', now()->addMinutes(5), function () use ($registeredUuids) {
+                return PlayerStat::where('level', '>=', 81)->whereIn('player_uuid', $registeredUuids)->count();
             }),
         ];
 
-        // Tier distribution
-        $tierDistribution = Cache::remember('levels:tier_distribution', now()->addMinutes(5), function () {
+        // Tier distribution (only registered players)
+        $tierDistribution = Cache::remember('levels:tier_distribution', now()->addMinutes(5), function () use ($registeredUuids) {
             $distribution = [];
             foreach (PlayerLevelService::TIERS as $key => $tier) {
-                $distribution[$key] = PlayerStat::whereBetween('level', [$tier['min'], $tier['max']])->count();
+                $distribution[$key] = PlayerStat::whereBetween('level', [$tier['min'], $tier['max']])
+                    ->whereIn('player_uuid', $registeredUuids)
+                    ->count();
             }
 
             return $distribution;

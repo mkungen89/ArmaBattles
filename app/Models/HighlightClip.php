@@ -13,6 +13,7 @@ class HighlightClip extends Model
         'title',
         'url',
         'platform',
+        'author',
         'description',
         'thumbnail_url',
         'votes',

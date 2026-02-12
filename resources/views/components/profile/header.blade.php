@@ -54,25 +54,23 @@
                         </a>
                     @endif
 
-                    {{-- Level badge --}}
+                    {{-- Level badge (shows progress to next rank) --}}
                     @if($gameStats && isset($gameStats->level))
                         @php
-                            $tier = $gameStats->tier;
-                            $tierColors = [
-                                'gray' => 'bg-gray-500/15 text-gray-400 border-gray-500/20',
-                                'green' => 'bg-green-500/15 text-green-400 border-green-500/20',
-                                'blue' => 'bg-blue-500/15 text-blue-400 border-blue-500/20',
-                                'purple' => 'bg-purple-500/15 text-purple-400 border-purple-500/20',
-                                'yellow' => 'bg-yellow-500/15 text-yellow-400 border-yellow-500/20',
-                                'red' => 'bg-gradient-to-r from-red-500/15 to-orange-500/15 text-red-400 border-red-500/20',
-                            ];
-                            $colorClass = $tierColors[$tier['color']] ?? $tierColors['gray'];
+                            $levelService = app(\App\Services\PlayerLevelService::class);
+                            $currentRank = $levelService->getRankForLevel($gameStats->level);
+                            $rankInfo = \App\Models\RankLogo::forRank($currentRank);
+                            $levelInRank = $gameStats->level - ($rankInfo->min_level - 1); // Level within current rank (1-10)
+                            $levelsInRank = 10; // Each rank spans 10 levels
                         @endphp
-                        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg text-xs font-semibold {{ $colorClass }} border" title="{{ $gameStats->level_display }}">
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg text-xs font-semibold border"
+                              style="background-color: {{ $rankInfo->color }}15; color: {{ $rankInfo->color }}; border-color: {{ $rankInfo->color }}40;"
+                              title="Level {{ $gameStats->level }} - {{ $levelInRank }}/{{ $levelsInRank }} levels in {{ $rankInfo->name }}">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                             </svg>
                             Level {{ $gameStats->level }}
+                            <span class="opacity-60 text-[10px]">({{ $levelInRank }}/{{ $levelsInRank }})</span>
                         </span>
                     @endif
                 </div>
@@ -90,22 +88,13 @@
                     <span class="text-sm"><span class="text-blue-400 font-bold">{{ $hours }}h</span> <span class="text-gray-500">playtime</span></span>
                 </div>
 
-                {{-- Level Progress Bar --}}
-                @if($gameStats && isset($gameStats->level) && $gameStats->level < 100)
+                {{-- Rank & Level Progress --}}
+                @if($gameStats)
                     @php
-                        $progress = $gameStats->level_progress;
-                        $xpToNext = number_format($gameStats->xp_to_next_level);
-                        $tier = $gameStats->tier;
+                        $levelService = app(\App\Services\PlayerLevelService::class);
                     @endphp
                     <div class="mb-3">
-                        <div class="flex items-center justify-between text-xs mb-1.5">
-                            <span class="text-gray-400 font-medium">{{ $tier['label'] }} Progress</span>
-                            <span class="text-gray-500">{{ number_format($progress, 1) }}% • {{ $xpToNext }} XP to Level {{ $gameStats->level + 1 }}</span>
-                        </div>
-                        <div class="h-2 bg-gray-800/60 rounded-full overflow-hidden border border-gray-700/30">
-                            <div class="h-full bg-gradient-to-r from-{{ $tier['color'] }}-500 to-{{ $tier['color'] }}-400 rounded-full transition-all duration-500 shadow-lg shadow-{{ $tier['color'] }}-500/30"
-                                 style="width: {{ $progress }}%"></div>
-                        </div>
+                        <x-profile.rank-progress-bar :gameStats="$gameStats" :levelService="$levelService" />
                     </div>
                 @endif
                 @endif

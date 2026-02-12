@@ -15,6 +15,8 @@ class Achievement extends Model
         'description',
         'icon',
         'badge_path',
+        'badge_svg_url',
+        'preset_badge',
         'color',
         'category',
         'stat_field',
@@ -55,26 +57,46 @@ class Achievement extends Model
     }
 
     /**
-     * Check if this is a rare achievement (< 1% unlock rate)
+     * Check if this is a legendary achievement
      */
-    public function isRare(): bool
+    public function isLegendary(): bool
     {
-        return $this->rarity_percentage < 1.0;
+        $legendaryMax = (float) site_setting('achievement_rarity_legendary_max', 5);
+        return $this->rarity_percentage < $legendaryMax;
     }
 
     /**
-     * Check if this is an ultra rare achievement (< 0.1% unlock rate)
+     * Check if this is an epic achievement
      */
-    public function isUltraRare(): bool
+    public function isEpic(): bool
     {
-        return $this->rarity_percentage < 0.1;
+        $epicMax = (float) site_setting('achievement_rarity_epic_max', 10);
+        return $this->rarity_percentage < $epicMax;
+    }
+
+    /**
+     * Check if this is a rare achievement
+     */
+    public function isRare(): bool
+    {
+        $rareMax = (float) site_setting('achievement_rarity_rare_max', 25);
+        return $this->rarity_percentage < $rareMax;
     }
 
     /**
      * Get badge URL or fallback to icon
+     * Priority: badge_svg_url → preset_badge → badge_path → null
      */
     public function getBadgeUrlAttribute(): ?string
     {
+        if ($this->badge_svg_url) {
+            return $this->badge_svg_url;
+        }
+
+        if ($this->preset_badge) {
+            return asset('images/Achivements/'.$this->preset_badge);
+        }
+
         if ($this->badge_path) {
             return asset('storage/'.$this->badge_path);
         }
@@ -88,15 +110,21 @@ class Achievement extends Model
     public function getRarityColorAttribute(): string
     {
         $rarity = $this->rarity_percentage;
+        $legendaryMax = (float) site_setting('achievement_rarity_legendary_max', 5);
+        $epicMax = (float) site_setting('achievement_rarity_epic_max', 10);
+        $rareMax = (float) site_setting('achievement_rarity_rare_max', 25);
+        $commonMax = (float) site_setting('achievement_rarity_common_max', 50);
 
-        if ($rarity < 0.1) {
-            return 'from-purple-500 to-pink-500'; // Ultra Rare
-        } elseif ($rarity < 1.0) {
-            return 'from-yellow-500 to-orange-500'; // Rare
-        } elseif ($rarity < 10.0) {
-            return 'from-blue-500 to-cyan-500'; // Uncommon
+        if ($rarity < $legendaryMax) {
+            return 'from-purple-500 to-pink-500'; // Legendary
+        } elseif ($rarity < $epicMax) {
+            return 'from-yellow-500 to-orange-500'; // Epic
+        } elseif ($rarity < $rareMax) {
+            return 'from-blue-500 to-cyan-500'; // Rare
+        } elseif ($rarity < $commonMax) {
+            return 'from-green-500 to-emerald-500'; // Common
         } else {
-            return 'from-gray-500 to-gray-600'; // Common
+            return 'from-gray-500 to-gray-600'; // Very Common
         }
     }
 
@@ -106,15 +134,21 @@ class Achievement extends Model
     public function getRarityLabelAttribute(): string
     {
         $rarity = $this->rarity_percentage;
+        $legendaryMax = (float) site_setting('achievement_rarity_legendary_max', 5);
+        $epicMax = (float) site_setting('achievement_rarity_epic_max', 10);
+        $rareMax = (float) site_setting('achievement_rarity_rare_max', 25);
+        $commonMax = (float) site_setting('achievement_rarity_common_max', 50);
 
-        if ($rarity < 0.1) {
-            return 'Ultra Rare';
-        } elseif ($rarity < 1.0) {
+        if ($rarity < $legendaryMax) {
+            return 'Legendary';
+        } elseif ($rarity < $epicMax) {
+            return 'Epic';
+        } elseif ($rarity < $rareMax) {
             return 'Rare';
-        } elseif ($rarity < 10.0) {
-            return 'Uncommon';
-        } else {
+        } elseif ($rarity < $commonMax) {
             return 'Common';
+        } else {
+            return 'Very Common';
         }
     }
 }

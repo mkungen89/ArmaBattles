@@ -85,18 +85,35 @@ export function animateStaggerIn(selector, options = {}) {
     const elements = document.querySelectorAll(selector);
     if (!elements.length) return;
 
-    gsap.from(elements, {
-        y,
-        opacity: 0,
-        duration,
-        stagger,
-        ease: 'power2.out',
-        scrollTrigger: {
-            trigger: elements[0],
-            start: 'top 85%',
-            once: true,
-        },
-    });
+    // Check if first element is already in viewport
+    const firstElement = elements[0];
+    const rect = firstElement.getBoundingClientRect();
+    const isInViewport = rect.top < window.innerHeight && rect.bottom >= 0;
+
+    // If elements are already visible, animate immediately without ScrollTrigger
+    if (isInViewport) {
+        gsap.from(elements, {
+            y,
+            opacity: 0,
+            duration,
+            stagger,
+            ease: 'power2.out',
+        });
+    } else {
+        // Use ScrollTrigger for off-screen elements
+        gsap.from(elements, {
+            y,
+            opacity: 0,
+            duration,
+            stagger,
+            ease: 'power2.out',
+            scrollTrigger: {
+                trigger: firstElement,
+                start: 'top 85%',
+                once: true,
+            },
+        });
+    }
 }
 
 /**
@@ -223,6 +240,10 @@ document.addEventListener('DOMContentLoaded', () => {
         animateAchievementUnlock(el);
     });
 
-    // Stagger-in for achievement cards
-    animateStaggerIn('.achievement-card');
+    // Stagger-in for achievement cards (disabled for paginated pages)
+    // Only animate if not on a paginated achievements page
+    const isPaginatedPage = document.querySelector('.achievement-card') && document.querySelector('nav[role="navigation"]');
+    if (!isPaginatedPage) {
+        animateStaggerIn('.achievement-card');
+    }
 });

@@ -36,7 +36,7 @@ class AchievementController extends Controller
             $achievementsQuery->where('category', $category);
         }
 
-        $achievements = $achievementsQuery->get();
+        $achievements = $achievementsQuery->paginate(30)->withQueryString();
 
         // Calculate rarity for each achievement
         $totalPlayers = PlayerStat::count();

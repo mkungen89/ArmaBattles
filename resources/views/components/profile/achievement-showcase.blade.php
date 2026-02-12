@@ -18,8 +18,8 @@
                 @foreach($showcaseAchievements as $achievement)
                 <div class="flex-shrink-0 w-48 sm:w-auto glass-card glow-gold p-4 text-center group">
                     <div class="relative flex items-center justify-center mb-3">
-                        @if($achievement->badge_path)
-                            <img src="{{ asset('storage/' . $achievement->badge_path) }}" alt="{{ $achievement->name }}" class="w-14 h-14 object-contain drop-shadow-lg">
+                        @if($achievement->badge_url)
+                            <img src="{{ $achievement->badge_url }}" alt="{{ $achievement->name }}" class="w-14 h-14 object-contain drop-shadow-lg">
                         @else
                             <div class="w-14 h-14 rounded-full flex items-center justify-center" style="background: {{ $achievement->color }}15; box-shadow: 0 0 20px {{ $achievement->color }}30;">
                                 <i data-lucide="{{ $achievement->icon }}" class="w-7 h-7" style="color: {{ $achievement->color }};"></i>

@@ -423,4 +423,188 @@ class ProfileController extends Controller
 
         return back()->with('success', 'Settings updated successfully!');
     }
+
+    /**
+     * Reset all game statistics for the user
+     */
+    public function resetStatistics(Request $request)
+    {
+        $validated = $request->validate([
+            'confirmation' => 'required|in:RESET MY STATS',
+        ], [
+            'confirmation.required' => 'You must type the confirmation text to proceed.',
+            'confirmation.in' => 'The confirmation text does not match. Please type exactly: RESET MY STATS',
+        ]);
+
+        $user = Auth::user();
+
+        if (!$user->player_uuid) {
+            return back()->with('error', 'You do not have any game statistics to reset.');
+        }
+
+        $uuid = $user->player_uuid;
+
+        DB::beginTransaction();
+        try {
+            // Delete all game statistics
+            DB::table('player_stats')->where('player_uuid', $uuid)->delete();
+            DB::table('player_kills')->where('killer_uuid', $uuid)->orWhere('victim_uuid', $uuid)->delete();
+            DB::table('connections')->where('player_uuid', $uuid)->delete();
+            DB::table('damage_events')->where('killer_uuid', $uuid)->orWhere('victim_uuid', $uuid)->delete();
+            DB::table('xp_events')->where('player_uuid', $uuid)->delete();
+            DB::table('player_distance')->where('player_uuid', $uuid)->delete();
+            DB::table('player_shooting')->where('player_uuid', $uuid)->delete();
+            DB::table('player_grenades')->where('player_uuid', $uuid)->delete();
+            DB::table('player_healing_rjs')->where('player_uuid', $uuid)->orWhere('target_uuid', $uuid)->delete();
+            DB::table('supply_deliveries')->where('player_uuid', $uuid)->delete();
+            DB::table('base_events')->where('player_uuid', $uuid)->delete();
+            DB::table('building_events')->where('player_uuid', $uuid)->delete();
+            DB::table('consciousness_events')->where('player_uuid', $uuid)->delete();
+            DB::table('group_events')->where('player_uuid', $uuid)->delete();
+            DB::table('chat_events')->where('player_uuid', $uuid)->delete();
+            DB::table('editor_actions')->where('player_uuid', $uuid)->delete();
+            DB::table('gm_sessions')->where('player_uuid', $uuid)->delete();
+
+            // Optionally delete achievements and ratings (destructive)
+            DB::table('achievement_progress')->where('player_uuid', $uuid)->delete();
+            DB::table('achievement_showcase')->where('player_uuid', $uuid)->delete();
+            DB::table('player_ratings')->where('user_id', $user->id)->delete();
+            DB::table('rating_history')->where('user_id', $user->id)->delete();
+            DB::table('rated_kills_queue')->where('player_uuid', $uuid)->orWhere('killer_uuid', $uuid)->orWhere('victim_uuid', $uuid)->delete();
+
+            // Log the action
+            DB::table('admin_audit_log')->insert([
+                'user_id' => $user->id,
+                'action' => 'user.statistics-reset',
+                'target_type' => 'User',
+                'target_id' => $user->id,
+                'metadata' => json_encode(['player_uuid' => $uuid]),
+                'ip_address' => $request->ip(),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            DB::commit();
+
+            return back()->with('success', 'All your game statistics have been permanently deleted. Your account remains active.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'An error occurred while resetting your statistics. Please try again or contact support.');
+        }
+    }
+
+    /**
+     * Delete user account permanently
+     */
+    public function deleteAccount(Request $request)
+    {
+        $validated = $request->validate([
+            'confirmation' => 'required|in:DELETE MY ACCOUNT',
+        ], [
+            'confirmation.required' => 'You must type the confirmation text to proceed.',
+            'confirmation.in' => 'The confirmation text does not match. Please type exactly: DELETE MY ACCOUNT',
+        ]);
+
+        $user = Auth::user();
+
+        // Prevent admins from deleting their own account via this route
+        if ($user->isAdmin()) {
+            return back()->with('error', 'Administrators cannot delete their own accounts. Please contact another admin.');
+        }
+
+        DB::beginTransaction();
+        try {
+            // Log the action before deletion
+            DB::table('admin_audit_log')->insert([
+                'user_id' => $user->id,
+                'action' => 'user.account-deleted',
+                'target_type' => 'User',
+                'target_id' => $user->id,
+                'metadata' => json_encode([
+                    'name' => $user->name,
+                    'steam_id' => $user->steam_id,
+                    'player_uuid' => $user->player_uuid,
+                ]),
+                'ip_address' => $request->ip(),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            $uuid = $user->player_uuid;
+
+            // Delete all user-related data
+            if ($uuid) {
+                // Game statistics
+                DB::table('player_stats')->where('player_uuid', $uuid)->delete();
+                DB::table('player_kills')->where('killer_uuid', $uuid)->orWhere('victim_uuid', $uuid)->delete();
+                DB::table('connections')->where('player_uuid', $uuid)->delete();
+                DB::table('damage_events')->where('killer_uuid', $uuid)->orWhere('victim_uuid', $uuid)->delete();
+                DB::table('xp_events')->where('player_uuid', $uuid)->delete();
+                DB::table('player_distance')->where('player_uuid', $uuid)->delete();
+                DB::table('player_shooting')->where('player_uuid', $uuid)->delete();
+                DB::table('player_grenades')->where('player_uuid', $uuid)->delete();
+                DB::table('player_healing_rjs')->where('player_uuid', $uuid)->orWhere('target_uuid', $uuid)->delete();
+                DB::table('supply_deliveries')->where('player_uuid', $uuid)->delete();
+                DB::table('base_events')->where('player_uuid', $uuid)->delete();
+                DB::table('building_events')->where('player_uuid', $uuid)->delete();
+                DB::table('consciousness_events')->where('player_uuid', $uuid)->delete();
+                DB::table('group_events')->where('player_uuid', $uuid)->delete();
+                DB::table('chat_events')->where('player_uuid', $uuid)->delete();
+                DB::table('editor_actions')->where('player_uuid', $uuid)->delete();
+                DB::table('gm_sessions')->where('player_uuid', $uuid)->delete();
+                DB::table('achievement_progress')->where('player_uuid', $uuid)->delete();
+                DB::table('achievement_showcase')->where('player_uuid', $uuid)->delete();
+                DB::table('rated_kills_queue')->where('player_uuid', $uuid)->orWhere('killer_uuid', $uuid)->orWhere('victim_uuid', $uuid)->delete();
+            }
+
+            // Delete user-specific data
+            DB::table('player_ratings')->where('user_id', $user->id)->delete();
+            DB::table('rating_history')->where('user_id', $user->id)->delete();
+            DB::table('player_reputation')->where('user_id', $user->id)->delete();
+            DB::table('reputation_votes')->where('voter_id', $user->id)->orWhere('user_id', $user->id)->delete();
+            DB::table('notifications')->where('notifiable_id', $user->id)->where('notifiable_type', 'App\\Models\\User')->delete();
+            DB::table('favorites')->where('user_id', $user->id)->delete();
+            DB::table('clip_votes')->where('user_id', $user->id)->delete();
+            DB::table('highlight_clips')->where('user_id', $user->id)->delete();
+            DB::table('news_comments')->where('user_id', $user->id)->delete();
+            DB::table('news_hoorahs')->where('user_id', $user->id)->delete();
+            DB::table('discord_rich_presence')->where('user_id', $user->id)->delete();
+
+            // Handle team memberships
+            DB::table('team_members')->where('user_id', $user->id)->delete();
+            DB::table('team_invitations')->where('user_id', $user->id)->delete();
+            DB::table('team_applications')->where('user_id', $user->id)->delete();
+
+            // Handle tournament and match data
+            DB::table('tournament_registrations')->where('captain_id', $user->id)->delete();
+            DB::table('match_check_ins')->where('user_id', $user->id)->delete();
+            DB::table('match_reports')->where('reporter_id', $user->id)->delete();
+
+            // Delete scrim invitations
+            DB::table('scrim_invitations')->where('sender_id', $user->id)->orWhere('receiver_id', $user->id)->delete();
+
+            // Delete custom avatar from S3 if it exists
+            if ($user->custom_avatar && Storage::disk('s3')->exists($user->custom_avatar)) {
+                Storage::disk('s3')->delete($user->custom_avatar);
+            }
+
+            // Invalidate all API tokens
+            $user->tokens()->delete();
+
+            // Finally, delete the user account
+            $user->delete();
+
+            // Logout the user
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            DB::commit();
+
+            return redirect()->route('home')->with('success', 'Your account has been permanently deleted. We\'re sorry to see you go!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'An error occurred while deleting your account. Please try again or contact support.');
+        }
+    }
 }

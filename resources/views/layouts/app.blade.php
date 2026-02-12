@@ -244,7 +244,7 @@
                 </a>
                 <a href="{{ route('clips.index') }}" class="group flex items-center px-3 py-2 rounded-lg text-sm font-medium hover:bg-white/5 transition-all duration-200 {{ request()->routeIs('clips.*') ? 'nav-link-active text-white' : 'text-gray-300' }}">
                     <svg class="w-5 h-5 mr-3 transition-transform duration-200 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z"/></svg>
-                    Clips
+                    Videos
                 </a>
                 <a href="{{ route('weapons.index') }}" class="group flex items-center px-3 py-2 rounded-lg text-sm font-medium hover:bg-white/5 transition-all duration-200 {{ request()->routeIs('weapons.*') ? 'nav-link-active text-white' : 'text-gray-300' }}">
                     <svg class="w-5 h-5 mr-3 transition-transform duration-200 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5"/></svg>
@@ -513,6 +513,7 @@
                                 if (['team_invitation','team_application','application_result'].includes(type)) return 'team';
                                 if (['match_scheduled','match_reminder'].includes(type)) return 'match';
                                 if (['achievement_unlocked','achievement','achievement_earned','level_up'].includes(type)) return 'achievement';
+                                if (['video_submitted','video_approved','video_rejected'].includes(type)) return 'video';
                                 return 'general';
                             },
                             getCategoryIcon(cat) {
@@ -520,18 +521,20 @@
                                     team: '<path stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot; stroke-width=&quot;2&quot; d=&quot;M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z&quot;/>',
                                     match: '<path stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot; stroke-width=&quot;2&quot; d=&quot;M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z&quot;/>',
                                     achievement: '<path stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot; stroke-width=&quot;2&quot; d=&quot;M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z&quot;/>',
+                                    video: '<path stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot; stroke-width=&quot;2&quot; d=&quot;M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z&quot;/>',
                                     general: '<path stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot; stroke-width=&quot;2&quot; d=&quot;M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9&quot;/>'
                                 };
                                 return icons[cat] || icons.general;
                             },
                             getCategoryColor(cat) {
-                                return { team: 'text-blue-400', match: 'text-orange-400', achievement: 'text-yellow-400', general: 'text-gray-400' }[cat] || 'text-gray-400';
+                                return { team: 'text-blue-400', match: 'text-orange-400', achievement: 'text-yellow-400', video: 'text-purple-400', general: 'text-gray-400' }[cat] || 'text-gray-400';
                             },
                             get filtered() {
                                 if (this.filter === 'all') return this.notifications;
                                 return this.notifications.filter(n => this.getCategory(n) === this.filter);
                             },
                             getLink(n) {
+                                if (n.data && n.data.url) return n.data.url;
                                 if (n.data && n.data.action_url) return n.data.action_url;
                                 if (!n.data || !n.data.type) return null;
                                 if (n.data.type === 'team_invitation' || n.data.type === 'team_application' || n.data.type === 'application_result') {
@@ -539,6 +542,9 @@
                                 }
                                 if (n.data.type === 'match_scheduled') {
                                     return n.data.match_id ? '/matches/' + n.data.match_id : null;
+                                }
+                                if (['video_submitted', 'video_approved', 'video_rejected'].includes(n.data.type) && n.data.video_id) {
+                                    return '/clips/' + n.data.video_id;
                                 }
                                 return null;
                             }
@@ -579,7 +585,7 @@
                                 </div>
                                 {{-- Category filters --}}
                                 <div class="flex items-center gap-1 px-3 py-2 border-b border-white/5">
-                                    <template x-for="cat in ['all','team','match','achievement','general']" :key="cat">
+                                    <template x-for="cat in ['all','team','match','achievement','video','general']" :key="cat">
                                         <button @click="filter = cat"
                                                 :class="filter === cat ? 'bg-green-500/20 text-green-400 border-green-500/30' : 'bg-white/3 text-gray-400 border-white/10 hover:text-white'"
                                                 class="px-2 py-1 text-xs rounded-md border capitalize transition" x-text="cat"></button>
@@ -660,6 +666,10 @@
                                     <svg class="w-4 h-4 mr-3 text-purple-500" fill="currentColor" viewBox="0 0 24 24"><path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189z"/></svg>
                                     Discord Presence
                                 </a>
+                                <a href="{{ route('faq') }}" class="flex items-center px-4 py-2 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition">
+                                    <svg class="w-4 h-4 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                    FAQ & Help
+                                </a>
                                 @if(auth()->user()->isAdmin())
                                 <a href="{{ route('admin.dashboard') }}" class="flex items-center px-4 py-2 text-sm text-green-400 hover:bg-white/5 hover:text-green-300 transition">
                                     <svg class="w-4 h-4 mr-3 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
@@ -709,6 +719,33 @@
 
     <main class="flex-1 min-w-0 overflow-x-hidden relative py-6 px-4 sm:px-6 lg:px-8">
         <div id="main-inner" class="max-w-6xl mx-auto w-full">
+
+        {{-- Site Announcements --}}
+        @php
+            $announcements = Cache::remember('active_announcements', 300, function () {
+                return \App\Models\Announcement::active()->orderBy('created_at', 'desc')->get();
+            });
+        @endphp
+
+        @foreach($announcements as $announcement)
+        <div class="mb-4 border {{ $announcement->type_classes }} rounded-xl p-4" x-data="{ show: true }" x-show="show" x-cloak>
+            <div class="flex items-start gap-3">
+                <div class="flex-shrink-0 mt-0.5">
+                    {!! $announcement->type_icon !!}
+                </div>
+                <div class="flex-1 min-w-0">
+                    @if($announcement->title)
+                    <p class="font-semibold text-sm mb-1">{{ $announcement->title }}</p>
+                    @endif
+                    <p class="text-sm">{{ $announcement->message }}</p>
+                </div>
+                <button @click="show = false" class="flex-shrink-0 hover:opacity-70 transition">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+                </button>
+            </div>
+        </div>
+        @endforeach
+
         @if(session('success'))
             <div class="mb-4 p-4 bg-green-600 rounded-md">
                 {{ session('success') }}

@@ -9,34 +9,62 @@ use Illuminate\Support\Facades\DB;
 
 class RatingCalculationService
 {
-    // Synthetic opponent ratings for objective-based events.
-    // These create "phantom" opponents in Glicko-2 so objective play
-    // impacts rating without needing a real opponent.
-    //
-    // Vehicle destroy  = win vs 1600 (high value — destroying armor is hard and impactful)
-    // Base capture     = win vs 1500 (equal to beating an average player)
-    // Healing teammate = win vs 1300 (smaller boost, rewards medics)
-    // Supply delivery  = win vs 1300 (smaller boost, rewards logistics)
-    // Building placed  = win vs 1200 (small boost, lower value due to farm risk)
-    // Team kill        = LOSS vs own rating, RD 150 (significant penalty)
-    // Friendly fire    = LOSS vs own rating, RD 250 (moderate penalty, less than TK)
-    private const PHANTOM_RD = 150;
-
-    private const PHANTOM_RD_FRIENDLY_FIRE = 250;
-
-    private const PHANTOM_RATING_VEHICLE_DESTROY = 1600;
-
-    private const PHANTOM_RATING_BASE_CAPTURE = 1500;
-
-    private const PHANTOM_RATING_HEAL = 1300;
-
-    private const PHANTOM_RATING_SUPPLY = 1300;
-
-    private const PHANTOM_RATING_BUILDING = 1200;
-
     public function __construct(
         private Glicko2Service $glicko2
     ) {}
+
+    /**
+     * Get phantom opponent settings
+     */
+    protected function getPhantomRd(): int
+    {
+        return (int) site_setting('ranked_teamkill_penalty_rd', 150);
+    }
+
+    protected function getPhantomRdFriendlyFire(): int
+    {
+        return (int) site_setting('ranked_friendly_fire_penalty_rd', 250);
+    }
+
+    protected function getPhantomRatingVehicle(): int
+    {
+        return (int) site_setting('ranked_phantom_vehicle', 1600);
+    }
+
+    protected function getPhantomRatingBase(): int
+    {
+        return (int) site_setting('ranked_phantom_base', 1500);
+    }
+
+    protected function getPhantomRatingHeal(): int
+    {
+        return (int) site_setting('ranked_phantom_heal', 1300);
+    }
+
+    protected function getPhantomRatingSupply(): int
+    {
+        return (int) site_setting('ranked_phantom_supply', 1300);
+    }
+
+    protected function getPhantomRatingBuilding(): int
+    {
+        return (int) site_setting('ranked_phantom_building', 1200);
+    }
+
+    protected function getPlacementGames(): int
+    {
+        return (int) site_setting('ranked_placement_games', 10);
+    }
+
+    protected function getDecayDays(): int
+    {
+        return (int) site_setting('ranked_decay_days', 14);
+    }
+
+    protected function getMaxRd(): int
+    {
+        return (int) site_setting('ranked_starting_rd', 350);
+    }
 
     /**
      * Get the cached set of competitive player UUIDs.
@@ -219,7 +247,7 @@ class RatingCalculationService
                     if ($killerRating) {
                         $playerEncounters[$event->killer_uuid]['opponents'][] = [
                             'rating' => (float) $killerRating->rating,
-                            'rd' => self::PHANTOM_RD,
+                            'rd' => $this->getPhantomRd(),
                         ];
                         $playerEncounters[$event->killer_uuid]['outcomes'][] = 0.0;
                         // Count as a death for stats (friendly fire = self-inflicted)
@@ -229,12 +257,12 @@ class RatingCalculationService
 
                 case 'friendly_fire':
                     // Friendly fire penalty: attacker "loses" against phantom at own rating
-                    // Uses higher phantom RD (250) than team_kill (150) = less severe
+                    // Uses higher phantom RD than team_kill = less severe
                     $attackerRating = $ratings->get($event->killer_uuid);
                     if ($attackerRating) {
                         $playerEncounters[$event->killer_uuid]['opponents'][] = [
                             'rating' => (float) $attackerRating->rating,
-                            'rd' => self::PHANTOM_RD_FRIENDLY_FIRE,
+                            'rd' => $this->getPhantomRdFriendlyFire(),
                         ];
                         $playerEncounters[$event->killer_uuid]['outcomes'][] = 0.0;
                     }
@@ -245,8 +273,8 @@ class RatingCalculationService
                     $uuid = $event->player_uuid ?? $event->killer_uuid;
                     if ($ratings->has($uuid)) {
                         $playerEncounters[$uuid]['opponents'][] = [
-                            'rating' => self::PHANTOM_RATING_VEHICLE_DESTROY,
-                            'rd' => self::PHANTOM_RD,
+                            'rating' => $this->getPhantomRatingVehicle(),
+                            'rd' => $this->getPhantomRd(),
                         ];
                         $playerEncounters[$uuid]['outcomes'][] = 1.0;
                     }
@@ -257,8 +285,8 @@ class RatingCalculationService
                     $uuid = $event->player_uuid ?? $event->killer_uuid;
                     if ($ratings->has($uuid)) {
                         $playerEncounters[$uuid]['opponents'][] = [
-                            'rating' => self::PHANTOM_RATING_BASE_CAPTURE,
-                            'rd' => self::PHANTOM_RD,
+                            'rating' => $this->getPhantomRatingBase(),
+                            'rd' => $this->getPhantomRd(),
                         ];
                         $playerEncounters[$uuid]['outcomes'][] = 1.0;
                     }
@@ -269,8 +297,8 @@ class RatingCalculationService
                     $uuid = $event->player_uuid ?? $event->killer_uuid;
                     if ($ratings->has($uuid)) {
                         $playerEncounters[$uuid]['opponents'][] = [
-                            'rating' => self::PHANTOM_RATING_HEAL,
-                            'rd' => self::PHANTOM_RD,
+                            'rating' => $this->getPhantomRatingHeal(),
+                            'rd' => $this->getPhantomRd(),
                         ];
                         $playerEncounters[$uuid]['outcomes'][] = 1.0;
                     }
@@ -281,8 +309,8 @@ class RatingCalculationService
                     $uuid = $event->player_uuid ?? $event->killer_uuid;
                     if ($ratings->has($uuid)) {
                         $playerEncounters[$uuid]['opponents'][] = [
-                            'rating' => self::PHANTOM_RATING_SUPPLY,
-                            'rd' => self::PHANTOM_RD,
+                            'rating' => $this->getPhantomRatingSupply(),
+                            'rd' => $this->getPhantomRd(),
                         ];
                         $playerEncounters[$uuid]['outcomes'][] = 1.0;
                     }
@@ -293,8 +321,8 @@ class RatingCalculationService
                     $uuid = $event->player_uuid ?? $event->killer_uuid;
                     if ($ratings->has($uuid)) {
                         $playerEncounters[$uuid]['opponents'][] = [
-                            'rating' => self::PHANTOM_RATING_BUILDING,
-                            'rd' => self::PHANTOM_RD,
+                            'rating' => $this->getPhantomRatingBuilding(),
+                            'rd' => $this->getPhantomRd(),
                         ];
                         $playerEncounters[$uuid]['outcomes'][] = 1.0;
                     }
@@ -325,7 +353,8 @@ class RatingCalculationService
             $totalEncounters = count($encounters['opponents']);
             $newGamesPlayed = $playerRating->games_played + $totalEncounters;
             $newPlacementGames = $playerRating->placement_games + $totalEncounters;
-            $isPlaced = $playerRating->is_placed || $newPlacementGames >= 10;
+            $placementGamesRequired = $this->getPlacementGames();
+            $isPlaced = $playerRating->is_placed || $newPlacementGames >= $placementGamesRequired;
             $newTier = PlayerRating::calculateTier($newRating['rating'], $isPlaced);
             $newPeak = max((float) $playerRating->peak_rating, $newRating['rating']);
 
@@ -358,7 +387,7 @@ class RatingCalculationService
                 'ranked_kills' => $playerRating->ranked_kills + $periodKills,
                 'ranked_deaths' => $playerRating->ranked_deaths + $periodDeaths,
                 'games_played' => $newGamesPlayed,
-                'placement_games' => min($newPlacementGames, 10),
+                'placement_games' => min($newPlacementGames, $placementGamesRequired),
                 'is_placed' => $isPlaced,
                 'peak_rating' => $newPeak,
                 'last_rated_at' => $periodEnd,
@@ -386,8 +415,10 @@ class RatingCalculationService
     /**
      * Apply inactivity decay — increase RD for players who haven't played.
      */
-    public function applyInactivityDecay(int $daysThreshold = 14): int
+    public function applyInactivityDecay(?int $daysThreshold = null): int
     {
+        $daysThreshold = $daysThreshold ?? $this->getDecayDays();
+        $maxRd = $this->getMaxRd();
         $cutoff = now()->subDays($daysThreshold);
 
         $inactivePlayers = PlayerRating::competitive()
@@ -395,7 +426,7 @@ class RatingCalculationService
                 $q->where('last_rated_at', '<', $cutoff)
                     ->orWhereNull('last_rated_at');
             })
-            ->where('rating_deviation', '<', 350)
+            ->where('rating_deviation', '<', $maxRd)
             ->get();
 
         $decayed = 0;

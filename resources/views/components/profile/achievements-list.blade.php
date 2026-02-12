@@ -38,15 +38,16 @@
              class="relative rounded-xl p-3 text-center transition group {{ $earned ? '' : 'achievement-locked' }}"
              title="{{ $achievement->name }}: {{ $achievement->description }}">
             <div class="flex items-center justify-center mb-1.5">
-                @if($achievement->badge_path)
-                    <img src="{{ asset('storage/' . $achievement->badge_path) }}" alt="{{ $achievement->name }}" class="w-10 h-10 object-contain">
+                @if($achievement->badge_url)
+                    <img src="{{ $achievement->badge_url }}" alt="{{ $achievement->name }}" class="w-10 h-10 object-contain">
                 @else
                     <div class="w-10 h-10 rounded-full flex items-center justify-center" style="background: {{ $earned ? $achievement->color : '#374151' }}15;">
                         <i data-lucide="{{ $achievement->icon }}" class="w-5 h-5" style="color: {{ $earned ? $achievement->color : '#6b7280' }};"></i>
                     </div>
                 @endif
             </div>
-            <p class="text-[10px] font-medium {{ $earned ? 'text-white' : 'text-gray-600' }} truncate">{{ $achievement->name }}</p>
+            <p class="text-[10px] font-medium {{ $earned ? 'text-white' : 'text-gray-600' }} truncate mb-0.5">{{ $achievement->name }}</p>
+            <p class="text-[9px] text-gray-500 line-clamp-2 leading-tight">{{ $achievement->description }}</p>
             @if(!$earned && $progress > 0)
             <div class="mt-1 w-full bg-white/5 rounded-full h-1">
                 <div class="h-1 rounded-full" style="width: {{ $progress }}%; background: {{ $achievement->color }}"></div>

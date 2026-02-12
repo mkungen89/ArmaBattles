@@ -14,12 +14,30 @@ class Glicko2Service
     private const EPSILON = 0.000001;
 
     /**
+     * Get base rating from settings
+     */
+    protected function getBaseRating(): int
+    {
+        return (int) site_setting('ranked_base_rating', 1500);
+    }
+
+    /**
+     * Get max RD from settings
+     */
+    protected function getMaxRd(): int
+    {
+        return (int) site_setting('ranked_starting_rd', 350);
+    }
+
+    /**
      * Convert Glicko-1 rating/RD to Glicko-2 scale
      */
     public function toGlicko2Scale(float $rating, float $rd): array
     {
+        $baseRating = $this->getBaseRating();
+
         return [
-            'mu' => ($rating - 1500) / self::SCALE_FACTOR,
+            'mu' => ($rating - $baseRating) / self::SCALE_FACTOR,
             'phi' => $rd / self::SCALE_FACTOR,
         ];
     }
@@ -29,8 +47,10 @@ class Glicko2Service
      */
     public function fromGlicko2Scale(float $mu, float $phi): array
     {
+        $baseRating = $this->getBaseRating();
+
         return [
-            'rating' => $mu * self::SCALE_FACTOR + 1500,
+            'rating' => $mu * self::SCALE_FACTOR + $baseRating,
             'rd' => $phi * self::SCALE_FACTOR,
         ];
     }
@@ -56,10 +76,11 @@ class Glicko2Service
         if (empty($opponents)) {
             $phiStar = sqrt($phi * $phi + $volatility * $volatility);
             $result = $this->fromGlicko2Scale($mu, $phiStar);
+            $maxRd = $this->getMaxRd();
 
             return [
                 'rating' => $result['rating'],
-                'rd' => min($result['rd'], 350),
+                'rd' => min($result['rd'], $maxRd),
                 'volatility' => $volatility,
             ];
         }
@@ -96,10 +117,11 @@ class Glicko2Service
 
         // Convert back to Glicko-1 scale
         $result = $this->fromGlicko2Scale($newMu, $newPhi);
+        $maxRd = $this->getMaxRd();
 
         return [
             'rating' => round($result['rating'], 2),
-            'rd' => round(min($result['rd'], 350), 2),
+            'rd' => round(min($result['rd'], $maxRd), 2),
             'volatility' => round($newVolatility, 6),
         ];
     }
@@ -109,13 +131,15 @@ class Glicko2Service
      */
     public function applyRdIncrease(float $rd, float $volatility, int $periodsInactive = 1): float
     {
+        $maxRd = $this->getMaxRd();
+
         for ($i = 0; $i < $periodsInactive; $i++) {
             $phi = $rd / self::SCALE_FACTOR;
             $phiStar = sqrt($phi * $phi + $volatility * $volatility);
             $rd = $phiStar * self::SCALE_FACTOR;
         }
 
-        return min(round($rd, 2), 350);
+        return min(round($rd, 2), $maxRd);
     }
 
     /**

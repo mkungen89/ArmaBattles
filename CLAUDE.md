@@ -452,9 +452,30 @@ Available: kills, deaths, kd, playtime, xp, distance, roadkills.
 
 Database-backed settings via `SiteSetting` model with 1-hour cache. Access anywhere with the `site_setting($key, $default)` helper. Settings are managed in admin panel and seeded via `SiteSettingsSeeder`.
 
-Key setting groups: General (site_name, maintenance_mode), SEO (meta_description, og_image_url, analytics_code), Security (allow_registration, force_2fa_staff), Server Tracking (BM cache TTLs, A2S query settings), Leaderboard (per_page, min_playtime), Appearance (custom_logo_url, primary_accent_color, custom_css).
+**All setting groups (15 groups, ~80 settings total):**
 
-Auto-casts types: string, text, integer, boolean, json, color. Gracefully falls back if DB unavailable.
+1. **General** (5) — site_name, site_description, maintenance_mode, maintenance_message, custom_footer_text
+2. **SEO** (6) — meta_description, meta_keywords, og_image_url, analytics_code, robots_meta, custom_head_html
+3. **Security** (5) — allow_registration, allow_steam_login, force_2fa_staff, login_rate_limit, session_lifetime
+4. **Server Tracking** (6) — bm_cache_ttl_live/history, a2s_query_timeout/retries, default_server_id, server_tracking_interval
+5. **Leaderboard** (3) — leaderboard_per_page, leaderboard_min_playtime, leaderboard_categories (JSON)
+6. **Tournaments** (4) — tournament_default_swiss_rounds/min_teams/max_teams, tournament_registration_reminder_hours
+7. **Moderation** (8) — blocked_chat_words, auto_ban_threshold, reputation_vote_cooldown_hours, reputation_tier_trusted/good/poor, reputation_max_votes_per_day, player_report_auto_flag_count
+8. **Notifications** (6) — discord_webhook_url, notification_retention_days, audit_log_retention_days, discord_notify_server_restart/notable_kills, discord_notable_kill_distance
+9. **Server Manager** (1) — broadcast_templates (JSON array of quick messages)
+10. **Appearance** (3) — custom_logo_url, primary_accent_color, custom_css
+11. **Player Progression** (10) — leveling_base_xp, leveling_xp_curve_exponent, leveling_level_cap, leveling_achievement_points_weight, achievement_rarity_common/rare/epic/legendary_max, achievement_showcase_max, achievement_points_multiplier
+12. **Ranked System** (13) — ranked_base_rating, ranked_starting_rd, ranked_volatility, ranked_placement_games, ranked_decay_days, ranked_phantom_vehicle/base/heal/supply/building, ranked_teamkill_penalty_rd, ranked_friendly_fire_penalty_rd, ranked_calculation_interval_hours
+13. **Teams** (5) — team_max_size, team_min_size_tournament, team_invitation_expiry_days, team_application_expiry_days, scrim_invitation_expiry_days
+14. **Content Creators** (5) — creator_verification_followers, creator_featured_slots, clip_approval_threshold, clip_of_week_rotation_day, clip_max_duration_seconds
+15. **System Performance** (5) — analytics_retention_days, metrics_retention_days, cache_warm_interval_minutes, max_concurrent_jobs, api_rate_limit_burst
+
+**Type system:** Auto-casts types: string, text, integer, boolean, json, color. Gracefully falls back if DB unavailable.
+
+**Usage examples:**
+- `site_setting('site_name')` — Get site name
+- `site_setting('leveling_base_xp', 1000)` — Get leveling base XP with default fallback
+- `site_setting('reputation_tier_trusted', 100)` — Get reputation tier threshold
 
 ### Favicon & Branding
 

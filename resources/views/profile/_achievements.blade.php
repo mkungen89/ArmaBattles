@@ -21,7 +21,11 @@
         <div x-show="showAll || {{ $loop->index }} < 16" x-transition
              class="relative rounded-xl p-4 text-center transition {{ $earned ? 'bg-white/5 border border-white/10' : 'bg-white/[0.02] border border-white/5 opacity-60' }}">
             <div class="flex items-center justify-center mb-2">
-                <i data-lucide="{{ $achievement->icon }}" class="w-7 h-7" style="color: {{ $earned ? $achievement->color : '#6b7280' }};"></i>
+                @if($achievement->badge_url && $earned)
+                    <img src="{{ $achievement->badge_url }}" alt="{{ $achievement->name }}" class="w-14 h-14 object-contain">
+                @else
+                    <i data-lucide="{{ $achievement->icon }}" class="w-7 h-7" style="color: {{ $earned ? $achievement->color : '#6b7280' }};"></i>
+                @endif
             </div>
             <p class="text-sm font-medium {{ $earned ? 'text-white' : 'text-gray-500' }} truncate" title="{{ $achievement->name }}">
                 {{ $achievement->name }}

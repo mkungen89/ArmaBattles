@@ -95,6 +95,94 @@
             </div>
         </div>
     </div>
+    {{-- Rank & Level System --}}
+    <div id="rank-system" class="space-y-6 mt-10">
+        <h2 class="text-2xl font-bold text-green-500">Rank & Level System</h2>
+        <div class="space-y-3" x-data="{ open: null }">
+            {{-- Q: How does the ranking system work? --}}
+            <div class="glass-card rounded-xl">
+                <button @click="open = open === 1 ? null : 1" class="w-full flex items-center justify-between p-6 text-left">
+                    <span class="font-semibold text-white">How does the ranking system work?</span>
+                    <svg class="w-5 h-5 text-green-500 transition-transform duration-200" :class="open === 1 ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </button>
+                <div x-show="open === 1" x-collapse x-cloak class="px-6 pb-6 text-gray-300">
+                    Our progression system has <strong class="text-white">50 military ranks</strong> spread across <strong class="text-white">10 eras</strong>. You earn XP by playing on our servers (kills, objectives, healing, supply drops, etc.). Every <strong class="text-white">10 levels = 1 rank promotion</strong>.
+                    <div class="mt-3 bg-white/5 rounded-lg p-4 border border-white/10">
+                        <p class="font-semibold text-white mb-2">Example:</p>
+                        <ul class="list-disc list-inside space-y-1 text-sm">
+                            <li><strong class="text-green-400">Level 1-10</strong> → Rank 1 (Recruit)</li>
+                            <li><strong class="text-blue-400">Level 11-20</strong> → Rank 2 (Private)</li>
+                            <li><strong class="text-purple-400">Level 41-50</strong> → Rank 5 (Specialist)</li>
+                            <li><strong class="text-yellow-400">Level 491-500</strong> → Rank 50 (Eternal Warlord)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            {{-- Q: What's the difference between Rank and Level? --}}
+            <div class="glass-card rounded-xl">
+                <button @click="open = open === 2 ? null : 2" class="w-full flex items-center justify-between p-6 text-left">
+                    <span class="font-semibold text-white">What's the difference between Rank and Level?</span>
+                    <svg class="w-5 h-5 text-green-500 transition-transform duration-200" :class="open === 2 ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </button>
+                <div x-show="open === 2" x-collapse x-cloak class="px-6 pb-6 text-gray-300">
+                    <strong class="text-white">Rank (1-50)</strong> is your <span class="text-green-400">military status</span> with unique names and logos (Recruit, Sergeant, Colonel, War Master, etc.). This is your main progression marker.
+                    <br><br>
+                    <strong class="text-white">Level (1-500)</strong> shows your <span class="text-blue-400">detailed progress</span> within your current rank. It helps you see exactly how many levels you have left until your next promotion.
+                    <div class="mt-3 bg-white/5 rounded-lg p-4 border border-green-500/20">
+                        <p class="text-sm"><strong class="text-white">Example:</strong> If you're <strong class="text-green-400">Level 43</strong>, you are:</p>
+                        <ul class="list-disc list-inside mt-2 text-sm space-y-1">
+                            <li><strong class="text-white">Rank 5</strong> (Specialist)</li>
+                            <li><strong class="text-green-400">3 out of 10</strong> levels complete in this rank</li>
+                            <li><strong class="text-yellow-400">7 more levels</strong> until promotion to Rank 6 (Senior Specialist)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            {{-- Q: What are Eras? --}}
+            <div class="glass-card rounded-xl">
+                <button @click="open = open === 3 ? null : 3" class="w-full flex items-center justify-between p-6 text-left">
+                    <span class="font-semibold text-white">What are Eras?</span>
+                    <svg class="w-5 h-5 text-green-500 transition-transform duration-200" :class="open === 3 ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </button>
+                <div x-show="open === 3" x-collapse x-cloak class="px-6 pb-6 text-gray-300">
+                    Ranks are grouped into <strong class="text-white">10 military eras</strong>, each spanning 50 levels (5 ranks). Eras have unique color themes:
+                    <div class="mt-3 grid grid-cols-2 gap-2 text-sm">
+                        <div class="flex items-center gap-2"><div class="w-4 h-4 rounded" style="background: #22c55e;"></div><strong class="text-white">Era I-II:</strong> Green</div>
+                        <div class="flex items-center gap-2"><div class="w-4 h-4 rounded" style="background: #3b82f6;"></div><strong class="text-white">Era III-IV:</strong> Blue</div>
+                        <div class="flex items-center gap-2"><div class="w-4 h-4 rounded" style="background: #a855f7;"></div><strong class="text-white">Era V-VI:</strong> Purple</div>
+                        <div class="flex items-center gap-2"><div class="w-4 h-4 rounded" style="background: #f97316;"></div><strong class="text-white">Era VII-VIII:</strong> Orange</div>
+                        <div class="flex items-center gap-2"><div class="w-4 h-4 rounded" style="background: linear-gradient(90deg, #ef4444, #fbbf24);"></div><strong class="text-white">Era IX-X:</strong> Red/Gold</div>
+                    </div>
+                </div>
+            </div>
+            {{-- Q: How do I earn XP? --}}
+            <div class="glass-card rounded-xl">
+                <button @click="open = open === 4 ? null : 4" class="w-full flex items-center justify-between p-6 text-left">
+                    <span class="font-semibold text-white">How do I earn XP and rank up?</span>
+                    <svg class="w-5 h-5 text-green-500 transition-transform duration-200" :class="open === 4 ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </button>
+                <div x-show="open === 4" x-collapse x-cloak class="px-6 pb-6 text-gray-300">
+                    You earn XP by playing on our tracked servers. Actions that grant XP include:
+                    <ul class="list-disc list-inside mt-2 space-y-1">
+                        <li><strong class="text-white">Kills</strong> — Player and vehicle eliminations</li>
+                        <li><strong class="text-white">Objectives</strong> — Capturing bases and radio towers</li>
+                        <li><strong class="text-white">Support</strong> — Healing teammates, delivering supplies</li>
+                        <li><strong class="text-white">Teamwork</strong> — Squad actions and assists</li>
+                        <li><strong class="text-white">Achievements</strong> — Unlocking achievements grants bonus XP</li>
+                    </ul>
+                    <p class="mt-3 text-sm text-yellow-400">💡 Every 10 levels, you'll receive a <strong class="text-white">promotion notification</strong> and unlock the next rank!</p>
+                </div>
+            </div>
+        </div>
+    </div>
     {{-- Tournaments --}}
     <div class="space-y-6 mt-10">
         <h2 class="text-2xl font-bold text-green-500">Tournaments</h2>

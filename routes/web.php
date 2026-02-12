@@ -163,6 +163,7 @@ Route::prefix('clips')->name('clips.')->group(function () {
     Route::middleware('auth')->group(function () {
         Route::get('/submit/new', [\App\Http\Controllers\HighlightClipController::class, 'create'])->name('create');
         Route::post('/', [\App\Http\Controllers\HighlightClipController::class, 'store'])->name('store');
+        Route::post('/fetch-metadata', [\App\Http\Controllers\HighlightClipController::class, 'fetchMetadata'])->name('fetch-metadata');
         Route::post('/{clip}/vote', [\App\Http\Controllers\HighlightClipController::class, 'vote'])->name('vote');
         Route::delete('/{clip}/vote', [\App\Http\Controllers\HighlightClipController::class, 'unvote'])->name('unvote');
         Route::post('/{clip}/feature', [\App\Http\Controllers\HighlightClipController::class, 'feature'])->name('feature');
@@ -232,6 +233,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile/avatar', [ProfileController::class, 'removeAvatar'])->name('profile.remove-avatar');
     Route::post('/profile/social-links', [ProfileController::class, 'updateSocialLinks'])->name('profile.update-social-links');
     Route::post('/profile/settings', [ProfileController::class, 'updateSettings'])->name('profile.update-settings');
+    Route::post('/profile/reset-statistics', [ProfileController::class, 'resetStatistics'])->name('profile.reset-statistics');
+    Route::post('/profile/delete-account', [ProfileController::class, 'deleteAccount'])->name('profile.delete-account');
 
     // Stop impersonating
     Route::post('/stop-impersonating', [AdminController::class, 'stopImpersonating'])->name('stop-impersonating');
@@ -512,6 +515,17 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
         Route::delete('/{clip}', [HighlightClipAdminController::class, 'destroy'])->name('admin.clips.destroy');
     });
 
+    // Announcements Admin
+    Route::prefix('announcements')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\AnnouncementController::class, 'index'])->name('admin.announcements.index');
+        Route::get('/create', [\App\Http\Controllers\Admin\AnnouncementController::class, 'create'])->name('admin.announcements.create');
+        Route::post('/', [\App\Http\Controllers\Admin\AnnouncementController::class, 'store'])->name('admin.announcements.store');
+        Route::get('/{announcement}/edit', [\App\Http\Controllers\Admin\AnnouncementController::class, 'edit'])->name('admin.announcements.edit');
+        Route::put('/{announcement}', [\App\Http\Controllers\Admin\AnnouncementController::class, 'update'])->name('admin.announcements.update');
+        Route::delete('/{announcement}', [\App\Http\Controllers\Admin\AnnouncementController::class, 'destroy'])->name('admin.announcements.destroy');
+        Route::post('/{announcement}/toggle', [\App\Http\Controllers\Admin\AnnouncementController::class, 'toggle'])->name('admin.announcements.toggle');
+    });
+
     // Achievements Admin
     Route::prefix('achievements')->group(function () {
         Route::get('/', [AchievementAdminController::class, 'index'])->name('admin.achievements.index');
@@ -521,6 +535,14 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
         Route::put('/{achievement}', [AchievementAdminController::class, 'update'])->name('admin.achievements.update');
         Route::delete('/{achievement}', [AchievementAdminController::class, 'destroy'])->name('admin.achievements.destroy');
         Route::delete('/{achievement}/badge', [AchievementAdminController::class, 'deleteBadge'])->name('admin.achievements.delete-badge');
+    });
+
+    // Rank Logos Admin (500-level system with 50 ranks)
+    Route::prefix('ranks')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\RankLogoController::class, 'index'])->name('admin.ranks.index');
+        Route::get('/{rank}/edit', [\App\Http\Controllers\Admin\RankLogoController::class, 'edit'])->name('admin.ranks.edit');
+        Route::put('/{rank}', [\App\Http\Controllers\Admin\RankLogoController::class, 'update'])->name('admin.ranks.update');
+        Route::delete('/{rank}/logo', [\App\Http\Controllers\Admin\RankLogoController::class, 'deleteLogo'])->name('admin.ranks.delete-logo');
     });
 
     // Reputation Admin

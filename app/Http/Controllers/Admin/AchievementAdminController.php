@@ -42,8 +42,9 @@ class AchievementAdminController extends Controller
     public function create()
     {
         $categories = Achievement::distinct()->pluck('category')->filter()->sort()->values();
+        $presetBadges = $this->getPresetBadges();
 
-        return view('admin.achievements.create', compact('categories'));
+        return view('admin.achievements.create', compact('categories', 'presetBadges'));
     }
 
     public function store(Request $request)
@@ -60,6 +61,8 @@ class AchievementAdminController extends Controller
             'points' => 'required|integer|min:0',
             'sort_order' => 'nullable|integer|min:0',
             'badge' => 'nullable|image|mimes:png,jpg,jpeg,gif,webp|max:2048',
+            'badge_svg_url' => 'nullable|url|max:500',
+            'preset_badge' => 'nullable|string|max:255',
         ]);
 
         $validated['slug'] = $validated['slug'] ?: Str::slug($validated['name']);
@@ -79,8 +82,9 @@ class AchievementAdminController extends Controller
     {
         $achievement->loadCount('players');
         $categories = Achievement::distinct()->pluck('category')->filter()->sort()->values();
+        $presetBadges = $this->getPresetBadges();
 
-        return view('admin.achievements.edit', compact('achievement', 'categories'));
+        return view('admin.achievements.edit', compact('achievement', 'categories', 'presetBadges'));
     }
 
     public function update(Request $request, Achievement $achievement)
@@ -97,6 +101,8 @@ class AchievementAdminController extends Controller
             'points' => 'required|integer|min:0',
             'sort_order' => 'nullable|integer|min:0',
             'badge' => 'nullable|image|mimes:png,jpg,jpeg,gif,webp|max:2048',
+            'badge_svg_url' => 'nullable|url|max:500',
+            'preset_badge' => 'nullable|string|max:255',
         ]);
 
         $validated['slug'] = $validated['slug'] ?: Str::slug($validated['name']);
@@ -134,5 +140,24 @@ class AchievementAdminController extends Controller
         $achievement->delete();
 
         return redirect()->route('admin.achievements.index')->with('success', 'Achievement deleted.');
+    }
+
+    /**
+     * Get list of preset badge files from public/images/Achivements
+     */
+    private function getPresetBadges(): array
+    {
+        $path = public_path('images/Achivements');
+
+        if (!is_dir($path)) {
+            return [];
+        }
+
+        $files = array_diff(scandir($path), ['.', '..']);
+
+        return array_values(array_filter($files, function ($file) use ($path) {
+            $filePath = $path.'/'.$file;
+            return is_file($filePath) && in_array(strtolower(pathinfo($file, PATHINFO_EXTENSION)), ['svg', 'png', 'jpg', 'jpeg', 'gif', 'webp']);
+        }));
     }
 }

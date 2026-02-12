@@ -23,8 +23,12 @@ class LeaderboardController extends Controller
             $period = 'all';
         }
 
+        // Get only registered players (those who have linked their player_uuid to a User account)
+        $registeredUuids = User::whereNotNull('player_uuid')->pluck('player_uuid')->toArray();
+
         if ($period === 'all') {
-            $query = PlayerStat::where($sort, '>', 0);
+            $query = PlayerStat::where($sort, '>', 0)
+                ->whereIn('player_uuid', $registeredUuids);
 
             $minPlaytime = site_setting('leaderboard_min_playtime', 0);
             if ($minPlaytime > 0) {
@@ -35,7 +39,7 @@ class LeaderboardController extends Controller
                 ->paginate(site_setting('leaderboard_per_page', 50));
         } else {
             $since = $period === 'weekly' ? now()->subWeek() : now()->subMonth();
-            $players = $this->getTimeBasedLeaderboard($sort, $since);
+            $players = $this->getTimeBasedLeaderboard($sort, $since, $registeredUuids);
         }
 
         $uuids = $players->pluck('player_uuid')->filter()->toArray();
@@ -88,7 +92,7 @@ class LeaderboardController extends Controller
         ]);
     }
 
-    private function getTimeBasedLeaderboard(string $sort, $since)
+    private function getTimeBasedLeaderboard(string $sort, $since, array $registeredUuids)
     {
         $perPage = site_setting('leaderboard_per_page', 50);
 
@@ -97,6 +101,7 @@ class LeaderboardController extends Controller
                 ->select('killer_uuid as player_uuid', 'killer_name as player_name', DB::raw('COUNT(*) as value'))
                 ->where('killed_at', '>=', $since)
                 ->whereNotNull('killer_uuid')
+                ->whereIn('killer_uuid', $registeredUuids)
                 ->groupBy('killer_uuid', 'killer_name'),
 
             'deaths' => DB::table('player_kills')
@@ -104,6 +109,7 @@ class LeaderboardController extends Controller
                 ->where('killed_at', '>=', $since)
                 ->whereNotNull('victim_uuid')
                 ->where('victim_type', '!=', 'AI')
+                ->whereIn('victim_uuid', $registeredUuids)
                 ->groupBy('victim_uuid', 'victim_name'),
 
             'headshots' => DB::table('player_kills')
@@ -111,30 +117,35 @@ class LeaderboardController extends Controller
                 ->where('killed_at', '>=', $since)
                 ->where('is_headshot', true)
                 ->whereNotNull('killer_uuid')
+                ->whereIn('killer_uuid', $registeredUuids)
                 ->groupBy('killer_uuid', 'killer_name'),
 
             'playtime_seconds' => DB::table('player_distance')
                 ->select('player_uuid', 'player_name', DB::raw('COALESCE(SUM(playtime_seconds), 0) as value'))
                 ->where('created_at', '>=', $since)
                 ->whereNotNull('player_uuid')
+                ->whereIn('player_uuid', $registeredUuids)
                 ->groupBy('player_uuid', 'player_name'),
 
             'xp_total' => DB::table('xp_events')
                 ->select('player_uuid', 'player_name', DB::raw('COALESCE(SUM(xp_amount), 0) as value'))
                 ->where('created_at', '>=', $since)
                 ->whereNotNull('player_uuid')
+                ->whereIn('player_uuid', $registeredUuids)
                 ->groupBy('player_uuid', 'player_name'),
 
             'total_distance' => DB::table('player_distance')
                 ->select('player_uuid', 'player_name', DB::raw('COALESCE(SUM(walking_distance), 0) as value'))
                 ->where('created_at', '>=', $since)
                 ->whereNotNull('player_uuid')
+                ->whereIn('player_uuid', $registeredUuids)
                 ->groupBy('player_uuid', 'player_name'),
 
             'heals_given' => DB::table('player_healing_rjs')
                 ->select('player_uuid', 'player_name', DB::raw('COUNT(*) as value'))
                 ->where('created_at', '>=', $since)
                 ->whereNotNull('player_uuid')
+                ->whereIn('player_uuid', $registeredUuids)
                 ->groupBy('player_uuid', 'player_name'),
 
             'bases_captured' => DB::table('base_events')
@@ -142,18 +153,21 @@ class LeaderboardController extends Controller
                 ->where('created_at', '>=', $since)
                 ->whereIn('event_type', ['CAPTURED', 'CAPTURE', 'BASE_SEIZED', 'BASE_CAPTURE'])
                 ->whereNotNull('player_uuid')
+                ->whereIn('player_uuid', $registeredUuids)
                 ->groupBy('player_uuid', 'player_name'),
 
             'supplies_delivered' => DB::table('supply_deliveries')
                 ->select('player_uuid', 'player_name', DB::raw('COUNT(*) as value'))
                 ->where('created_at', '>=', $since)
                 ->whereNotNull('player_uuid')
+                ->whereIn('player_uuid', $registeredUuids)
                 ->groupBy('player_uuid', 'player_name'),
 
             default => DB::table('player_kills')
                 ->select('killer_uuid as player_uuid', 'killer_name as player_name', DB::raw('COUNT(*) as value'))
                 ->where('killed_at', '>=', $since)
                 ->whereNotNull('killer_uuid')
+                ->whereIn('killer_uuid', $registeredUuids)
                 ->groupBy('killer_uuid', 'killer_name'),
         };
 

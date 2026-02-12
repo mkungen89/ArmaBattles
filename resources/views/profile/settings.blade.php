@@ -711,5 +711,333 @@
             @endif
         @endif
     </div>
+
+    {{-- Danger Zone: Reset Statistics --}}
+    @if($user->player_uuid)
+    <div class="glass-card p-6 border-2 border-red-500/30 bg-red-500/5">
+        <div class="flex items-start gap-4">
+            <div class="w-10 h-10 rounded-lg bg-red-500/20 flex items-center justify-center flex-shrink-0">
+                <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                </svg>
+            </div>
+            <div class="flex-1">
+                <h3 class="text-sm font-semibold text-red-400 uppercase tracking-wider mb-1">Danger Zone</h3>
+                <p class="text-gray-400 text-xs mb-4">
+                    This action cannot be undone. Please proceed with caution.
+                </p>
+
+                <div class="bg-red-900/20 border border-red-500/30 rounded-xl p-4 mb-4">
+                    <h4 class="text-white font-semibold text-sm mb-2">Reset All Statistics</h4>
+                    <p class="text-gray-400 text-xs mb-3">
+                        Permanently delete all your game statistics and start fresh. This will remove:
+                    </p>
+                    <ul class="space-y-1 text-xs text-gray-400 mb-4">
+                        <li class="flex items-center gap-2">
+                            <span class="text-red-400">•</span>
+                            All kills, deaths, and combat records
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <span class="text-red-400">•</span>
+                            Playtime and distance traveled
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <span class="text-red-400">•</span>
+                            XP, levels, and progression
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <span class="text-red-400">•</span>
+                            Achievement progress and unlocks
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <span class="text-red-400">•</span>
+                            Competitive rating and placement matches
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <span class="text-red-400">•</span>
+                            All event history (chat, GM sessions, base captures, etc.)
+                        </li>
+                    </ul>
+                    <p class="text-yellow-400 text-xs font-medium">
+                        ⚠️ Your account, team memberships, and profile settings will remain unchanged.
+                    </p>
+                </div>
+
+                <button
+                    type="button"
+                    onclick="showResetStatsModal()"
+                    class="px-4 py-2 bg-red-600/80 hover:bg-red-500 text-white rounded-xl transition text-sm font-medium border border-red-500/50">
+                    Reset All Statistics
+                </button>
+            </div>
+        </div>
+    </div>
+    @endif
+
+    {{-- Danger Zone: Delete Account --}}
+    <div class="glass-card p-6 border-2 border-red-600/50 bg-red-600/10">
+        <div class="flex items-start gap-4">
+            <div class="w-10 h-10 rounded-lg bg-red-600/30 flex items-center justify-center flex-shrink-0">
+                <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                </svg>
+            </div>
+            <div class="flex-1">
+                <h3 class="text-sm font-semibold text-red-400 uppercase tracking-wider mb-1">Delete Account</h3>
+                <p class="text-gray-400 text-xs mb-4">
+                    Permanently delete your account and all associated data. This action is irreversible.
+                </p>
+
+                <div class="bg-red-900/30 border border-red-500/40 rounded-xl p-4 mb-4">
+                    <h4 class="text-white font-semibold text-sm mb-2 flex items-center gap-2">
+                        <svg class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                        </svg>
+                        What will be deleted
+                    </h4>
+                    <ul class="space-y-1.5 text-xs text-gray-400 mb-4">
+                        <li class="flex items-center gap-2">
+                            <span class="text-red-400">✗</span>
+                            Your account and login access
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <span class="text-red-400">✗</span>
+                            All game statistics and event history
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <span class="text-red-400">✗</span>
+                            Team memberships and applications
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <span class="text-red-400">✗</span>
+                            Tournament registrations and match history
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <span class="text-red-400">✗</span>
+                            Achievements, ratings, and reputation
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <span class="text-red-400">✗</span>
+                            Video submissions and comments
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <span class="text-red-400">✗</span>
+                            All favorites and preferences
+                        </li>
+                    </ul>
+                    <div class="bg-red-950/50 border border-red-500/30 rounded-lg p-3">
+                        <p class="text-red-300 text-xs font-semibold mb-1">⚠️ CRITICAL WARNING</p>
+                        <p class="text-gray-300 text-xs">
+                            Once deleted, your account cannot be recovered. All your data will be permanently removed from our systems.
+                        </p>
+                    </div>
+                </div>
+
+                @if($user->isAdmin())
+                <div class="bg-yellow-900/20 border border-yellow-500/30 rounded-xl p-3 mb-4">
+                    <p class="text-yellow-400 text-xs">
+                        <strong>Note:</strong> As an administrator, you cannot delete your own account from this page. Please contact another administrator if you wish to delete your account.
+                    </p>
+                </div>
+                @else
+                <button
+                    type="button"
+                    onclick="showDeleteAccountModal()"
+                    class="px-4 py-2 bg-red-700 hover:bg-red-600 text-white rounded-xl transition text-sm font-medium border border-red-500/50">
+                    Delete My Account
+                </button>
+                @endif
+            </div>
+        </div>
+    </div>
 </div>
+
+{{-- Reset Statistics Confirmation Modal --}}
+<div x-data="{ open: false }"
+     x-show="open"
+     x-cloak
+     @reset-stats-modal.window="open = true"
+     class="fixed inset-0 z-50 overflow-y-auto"
+     style="display: none;">
+    <div class="flex items-center justify-center min-h-screen px-4">
+        {{-- Backdrop --}}
+        <div class="fixed inset-0 bg-black/80 transition-opacity" @click="open = false"></div>
+
+        {{-- Modal --}}
+        <div class="relative bg-gray-900 rounded-2xl max-w-lg w-full p-6 shadow-2xl border-2 border-red-500/50">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-12 h-12 rounded-full bg-red-500/20 flex items-center justify-center">
+                    <svg class="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold text-white">Confirm Statistics Reset</h3>
+                    <p class="text-xs text-red-400 mt-0.5">This action is PERMANENT and IRREVERSIBLE</p>
+                </div>
+            </div>
+
+            <div class="bg-red-900/20 border border-red-500/30 rounded-xl p-4 mb-5">
+                <p class="text-sm text-gray-300 mb-3">
+                    You are about to <strong class="text-red-400">permanently delete</strong> all your game statistics, including:
+                </p>
+                <ul class="space-y-1.5 text-xs text-gray-400 mb-3">
+                    <li>✗ Combat records (kills, deaths, weapons, hit zones)</li>
+                    <li>✗ Progress tracking (XP, levels, playtime, distance)</li>
+                    <li>✗ Achievements and unlocks</li>
+                    <li>✗ Competitive rating and match history</li>
+                    <li>✗ All event logs and session data</li>
+                </ul>
+                <p class="text-xs text-yellow-400 font-medium">
+                    Your account and profile settings will NOT be deleted.
+                </p>
+            </div>
+
+            <form action="{{ route('profile.reset-statistics') }}" method="POST">
+                @csrf
+                <div class="mb-5">
+                    <label class="block text-sm font-medium text-gray-300 mb-2">
+                        Type <code class="px-2 py-0.5 bg-red-500/20 text-red-400 rounded font-mono text-xs">RESET MY STATS</code> to confirm:
+                    </label>
+                    <input
+                        type="text"
+                        name="confirmation"
+                        required
+                        placeholder="RESET MY STATS"
+                        autocomplete="off"
+                        class="w-full bg-gray-800 border border-red-500/30 text-white rounded-xl px-4 py-2.5 focus:outline-none focus:border-red-500 text-sm font-mono"
+                    >
+                    @error('confirmation')
+                    <p class="mt-1.5 text-xs text-red-400">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div class="flex gap-3">
+                    <button
+                        type="submit"
+                        class="flex-1 px-4 py-2.5 bg-red-600 hover:bg-red-500 text-white font-semibold rounded-xl transition text-sm">
+                        Yes, Reset Everything
+                    </button>
+                    <button
+                        type="button"
+                        @click="open = false"
+                        class="px-4 py-2.5 bg-white/5 hover:bg-white/10 text-white rounded-xl transition text-sm">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{{-- Delete Account Confirmation Modal --}}
+<div x-data="{ open: false }"
+     x-show="open"
+     x-cloak
+     @delete-account-modal.window="open = true"
+     class="fixed inset-0 z-50 overflow-y-auto"
+     style="display: none;">
+    <div class="flex items-center justify-center min-h-screen px-4">
+        {{-- Backdrop --}}
+        <div class="fixed inset-0 bg-black/90 transition-opacity" @click="open = false"></div>
+
+        {{-- Modal --}}
+        <div class="relative bg-gray-900 rounded-2xl max-w-lg w-full p-6 shadow-2xl border-2 border-red-600/60">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-12 h-12 rounded-full bg-red-600/30 flex items-center justify-center animate-pulse">
+                    <svg class="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold text-red-400">Delete Account Forever</h3>
+                    <p class="text-xs text-red-300 mt-0.5 font-medium">THIS CANNOT BE UNDONE</p>
+                </div>
+            </div>
+
+            <div class="bg-red-950/50 border-2 border-red-500/50 rounded-xl p-4 mb-5">
+                <p class="text-sm text-gray-200 mb-3 font-medium">
+                    You are about to <strong class="text-red-400">permanently delete</strong> your account. This will:
+                </p>
+                <ul class="space-y-2 text-xs text-gray-300 mb-4">
+                    <li class="flex items-start gap-2">
+                        <span class="text-red-400 font-bold mt-0.5">✗</span>
+                        <span>Remove your account and all login access immediately</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-red-400 font-bold mt-0.5">✗</span>
+                        <span>Delete all your game statistics, achievements, and ratings</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-red-400 font-bold mt-0.5">✗</span>
+                        <span>Remove you from all teams, tournaments, and matches</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-red-400 font-bold mt-0.5">✗</span>
+                        <span>Erase all your videos, comments, and contributions</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-red-400 font-bold mt-0.5">✗</span>
+                        <span>Delete all favorites, preferences, and settings</span>
+                    </li>
+                </ul>
+                <div class="bg-red-900/50 rounded-lg p-3 border border-red-500/40">
+                    <p class="text-red-200 text-xs font-bold mb-1">
+                        ⚠️ FINAL WARNING
+                    </p>
+                    <p class="text-gray-200 text-xs">
+                        This is your last chance. Once you confirm, your account and all data will be <strong>permanently erased</strong>. There is no way to recover it.
+                    </p>
+                </div>
+            </div>
+
+            <form action="{{ route('profile.delete-account') }}" method="POST">
+                @csrf
+                <div class="mb-5">
+                    <label class="block text-sm font-medium text-gray-300 mb-2">
+                        Type <code class="px-2 py-0.5 bg-red-600/30 text-red-300 rounded font-mono text-xs border border-red-500/30">DELETE MY ACCOUNT</code> to confirm:
+                    </label>
+                    <input
+                        type="text"
+                        name="confirmation"
+                        required
+                        placeholder="DELETE MY ACCOUNT"
+                        autocomplete="off"
+                        class="w-full bg-gray-800 border-2 border-red-500/50 text-white rounded-xl px-4 py-2.5 focus:outline-none focus:border-red-500 text-sm font-mono"
+                    >
+                    @error('confirmation')
+                    <p class="mt-1.5 text-xs text-red-400">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div class="flex gap-3">
+                    <button
+                        type="submit"
+                        class="flex-1 px-4 py-2.5 bg-red-700 hover:bg-red-600 text-white font-bold rounded-xl transition text-sm border border-red-500/50">
+                        Delete Everything Forever
+                    </button>
+                    <button
+                        type="button"
+                        @click="open = false"
+                        class="px-4 py-2.5 bg-green-600 hover:bg-green-500 text-white font-semibold rounded-xl transition text-sm">
+                        Keep My Account
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@push('scripts')
+<script>
+function showResetStatsModal() {
+    window.dispatchEvent(new CustomEvent('reset-stats-modal'));
+}
+
+function showDeleteAccountModal() {
+    window.dispatchEvent(new CustomEvent('delete-account-modal'));
+}
+</script>
+@endpush
+
 @endsection
