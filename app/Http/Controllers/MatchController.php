@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\TournamentMatch;
+use App\Notifications\MatchScheduledNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -61,6 +62,32 @@ class MatchController extends Controller
             'check_in_opens_at' => \Carbon\Carbon::parse($validated['scheduled_at'])->subMinutes(30),
             'check_in_closes_at' => \Carbon\Carbon::parse($validated['scheduled_at'])->addMinutes(15),
         ]);
+
+        // Notify all team members about the scheduled match
+        $recipients = collect();
+
+        // Add team 1 members
+        if ($match->team1) {
+            foreach ($match->team1->activeMembers as $member) {
+                if ($member->user) {
+                    $recipients->push($member->user);
+                }
+            }
+        }
+
+        // Add team 2 members
+        if ($match->team2) {
+            foreach ($match->team2->activeMembers as $member) {
+                if ($member->user) {
+                    $recipients->push($member->user);
+                }
+            }
+        }
+
+        // Send notification to all unique team members
+        $recipients->unique('id')->each(function ($user) use ($match) {
+            $user->notify(new MatchScheduledNotification($match));
+        });
 
         return back()->with('success', 'Match scheduled! Check-in opens 30 minutes before the match.');
     }

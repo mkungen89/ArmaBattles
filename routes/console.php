@@ -83,3 +83,9 @@ Schedule::command('ratings:decay')
     ->daily()
     ->withoutOverlapping()
     ->name('decay:ratings');
+
+// Send match reminders (24h and 1h before matches)
+Schedule::command('matches:send-reminders')
+    ->everyTenMinutes()
+    ->withoutOverlapping()
+    ->name('send:match-reminders');

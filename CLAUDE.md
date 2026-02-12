@@ -435,6 +435,7 @@ Production uses PostgreSQL. Tests use in-memory SQLite. Uses database-backed cac
 - Old audit logs cleanup — monthly (>1 year, configurable via `audit_log_retention_days` setting)
 - `achievements:check` — hourly
 - Scheduled restart processor — every minute (dispatches `ExecuteScheduledRestart` jobs for due restarts)
+- `matches:send-reminders` — every 10 minutes (sends email reminders 24h and 1h before scheduled matches)
 - `leaderboards:warm-cache` — every 4 minutes (pre-warms 30 cache variants before 5min TTL expires)
 - `metrics:collect` — every 5 minutes (collects queue size, CPU, memory, disk, API percentiles into `system_metrics`)
 - Old analytics events cleanup — daily (configurable via `analytics_retention_days` setting, default 90 days)
@@ -540,12 +541,27 @@ All emails respect `notification_preferences` on User model. Markdown templates 
 
 ### Notification System
 
-Laravel database notifications with Alpine.js dropdown in the navbar. Categories: team, match, achievement, general. Features:
-- Category-based filtering with icons (team=blue, match=orange, achievement=yellow)
+Laravel database notifications with Alpine.js dropdown in the navbar. Categories: team, match, achievement, video, general. Features:
+- Category-based filtering with icons (team=blue, match=orange, achievement=yellow, video=purple)
 - Desktop notifications via browser Notification API (auto-prompts permission)
 - Mark all as read, individual mark-as-read on click
 - Real-time via WebSocket (NewNotification event on private channel), fallback polling every 60s
 - Controller: `NotificationController` with category filtering support
+
+**All notification classes (11 total):**
+1. `TeamInvitationNotification` — Sent when user is invited to a team (triggered in `TeamController::inviteUser()`)
+2. `TeamApplicationNotification` — Sent to team leaders when someone applies (triggered in `TeamController::applyToTeam()`)
+3. `ApplicationResultNotification` — Sent when application is accepted/rejected (triggered in `TeamController`)
+4. `VideoSubmittedNotification` — Sent when user submits a highlight clip (triggered in `HighlightClipController::store()`)
+5. `VideoApprovedNotification` — Sent when admin approves a clip (triggered in `HighlightClipAdminController::approve()`)
+6. `VideoRejectedNotification` — Sent when admin rejects a clip (triggered in `HighlightClipAdminController::reject()`)
+7. `LinkArmaIdNotification` — Nudge to link Arma player UUID (triggered after Steam/Google login if not linked)
+8. `AchievementEarnedNotification` — Sent when achievement is unlocked (triggered in `CheckAchievements` command)
+9. `LevelUpNotification` — Sent when player levels up (triggered in `StatsController::updatePlayerXp()`)
+10. `RankUpNotification` — Sent when competitive rank changes (triggered in `StatsController`)
+11. `MatchScheduledNotification` — Sent to all team members when match is scheduled (triggered in `MatchController::proposeSchedule()`)
+
+All notifications use the `database` channel and are queued via `ShouldQueue` interface.
 
 ### Real-Time Broadcasting (Laravel Reverb)
 
