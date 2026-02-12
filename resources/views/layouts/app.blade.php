@@ -25,7 +25,7 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js" defer></script>
     <script>
-        // Simple sidebar toggle without Alpine store
+        // Simple sidebar toggle with localStorage persistence
         function setSidebarOpen(isOpen, options = {}) {
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('sidebar-overlay');
@@ -68,6 +68,14 @@
                 hamburger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
             }
 
+            // Save to localStorage (only when user manually toggles, not on resize)
+            if (!silent) {
+                try {
+                    localStorage.setItem('sidebar-open', isOpen ? 'true' : 'false');
+                } catch (e) {
+                    console.warn('Failed to save sidebar state:', e);
+                }
+            }
         }
 
         function toggleSidebar() {
@@ -90,6 +98,15 @@
             sidebar.classList.remove('translate-x-0', 'translate-x-full');
             sidebar.classList.add(isOpen ? 'translate-x-0' : 'translate-x-full');
             sidebar.classList.toggle('hidden', !isOpen);
+
+            // Save to localStorage (only when user manually toggles, not on resize)
+            if (!silent) {
+                try {
+                    localStorage.setItem('right-sidebar-open', isOpen ? 'true' : 'false');
+                } catch (e) {
+                    console.warn('Failed to save right sidebar state:', e);
+                }
+            }
 
             if (overlay) {
                 if (silent || isWide) {
@@ -123,31 +140,80 @@
 
         // Initialize sidebar state on page load
         document.addEventListener('DOMContentLoaded', function() {
-            setSidebarOpen(window.innerWidth >= 1024, { silent: true });
-            setRightSidebarOpen(window.innerWidth >= 1280, { silent: true });
+            const isDesktop = window.innerWidth >= 1024;
+            const isWide = window.innerWidth >= 1280;
+
+            // Read left sidebar state from localStorage, fallback to screen size
+            let leftSidebarOpen = isDesktop; // Default for desktop
+            try {
+                const saved = localStorage.getItem('sidebar-open');
+                if (saved !== null) {
+                    leftSidebarOpen = saved === 'true';
+                    // On mobile, always start closed regardless of saved state
+                    if (!isDesktop) {
+                        leftSidebarOpen = false;
+                    }
+                }
+            } catch (e) {
+                console.warn('Failed to read sidebar state:', e);
+            }
+            setSidebarOpen(leftSidebarOpen, { silent: true });
+
+            // Read right sidebar state from localStorage, fallback to screen size
+            let rightSidebarOpen = isWide; // Default for wide screens
+            try {
+                const saved = localStorage.getItem('right-sidebar-open');
+                if (saved !== null) {
+                    rightSidebarOpen = saved === 'true';
+                    // On narrow screens, always start closed regardless of saved state
+                    if (!isWide) {
+                        rightSidebarOpen = false;
+                    }
+                }
+            } catch (e) {
+                console.warn('Failed to read right sidebar state:', e);
+            }
+            setRightSidebarOpen(rightSidebarOpen, { silent: true });
         });
 
-        // Keep overlay state sane on resize
+        // Keep overlay state sane on resize - respect user preferences
         window.addEventListener('resize', function() {
             const isDesktop = window.innerWidth >= 1024;
             const sidebar = document.getElementById('sidebar');
-            if (!sidebar) return;
-            if (isDesktop) {
-                setSidebarOpen(true, { silent: true });
-            } else {
-                setSidebarOpen(false, { silent: true });
+
+            if (sidebar) {
+                if (isDesktop) {
+                    // On desktop, restore saved preference or default to open
+                    try {
+                        const saved = localStorage.getItem('sidebar-open');
+                        const shouldBeOpen = saved !== null ? saved === 'true' : true;
+                        setSidebarOpen(shouldBeOpen, { silent: true });
+                    } catch (e) {
+                        setSidebarOpen(true, { silent: true });
+                    }
+                } else {
+                    // On mobile, always close
+                    setSidebarOpen(false, { silent: true });
+                }
             }
 
             const rightSidebar = document.getElementById('right-sidebar');
-            if (!rightSidebar) return;
-            const isWide = window.innerWidth >= 1280;
-            if (isWide) {
-                const wasOpen = rightSidebar.dataset.open === 'true';
-                setRightSidebarOpen(wasOpen, { silent: true });
-            } else {
-                setRightSidebarOpen(false, { silent: true });
+            if (rightSidebar) {
+                const isWide = window.innerWidth >= 1280;
+                if (isWide) {
+                    // On wide screens, restore saved preference or default to open
+                    try {
+                        const saved = localStorage.getItem('right-sidebar-open');
+                        const shouldBeOpen = saved !== null ? saved === 'true' : true;
+                        setRightSidebarOpen(shouldBeOpen, { silent: true });
+                    } catch (e) {
+                        setRightSidebarOpen(true, { silent: true });
+                    }
+                } else {
+                    // On narrow screens, always close
+                    setRightSidebarOpen(false, { silent: true });
+                }
             }
-
         });
     </script>
     @if(site_setting('analytics_code'))
