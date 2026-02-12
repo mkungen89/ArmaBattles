@@ -44,6 +44,12 @@ return [
         ],
     ],
 
+    'google' => [
+        'client_id' => env('GOOGLE_CLIENT_ID'),
+        'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+        'redirect' => env('GOOGLE_REDIRECT_URI', env('APP_URL').'/auth/google/callback'),
+    ],
+
     'battlemetrics' => [
         'token' => env('BATTLEMETRICS_API_TOKEN'),
         'server_id' => env('BATTLEMETRICS_SERVER_ID', '0'),

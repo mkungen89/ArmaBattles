@@ -235,6 +235,7 @@ When displaying scenario names, always use `$server->scenario_display_name` (not
 - `/two-factor-challenge` — 2FA login challenge (guest with session)
 - `/profile/two-factor/*` — 2FA setup, confirm, disable, recovery codes (auth)
 - `/auth/steam/*` — Steam OAuth flow
+- `/auth/google/*` — Google OAuth flow
 - `/tournaments/*` — Public tournament views, brackets, match details
 - `/teams/*` — Platoon profiles, management, applications
 - `/matches/*` — Match check-in and scheduling
@@ -276,6 +277,42 @@ draft → registration_open → registration_closed → in_progress → complete
                                                       ↓
                                                   cancelled
 ```
+
+### OAuth Authentication
+
+Users can authenticate with Steam or Google via Laravel Socialite.
+
+**Steam OAuth:**
+- **`SteamController`** (`app/Http/Controllers/Auth/SteamController.php`) — Handles Steam OpenID authentication
+- Routes: `/auth/steam`, `/auth/steam/callback`
+- Config: `config/services.php` → `steam` array
+- User fields: `steam_id` (unique), `avatar`, `avatar_full`, `profile_url`
+- Env: `STEAM_CLIENT_SECRET`
+
+**Google OAuth:**
+- **`GoogleController`** (`app/Http/Controllers/Auth/GoogleController.php`) — Handles Google OAuth 2.0 authentication
+- Routes: `/auth/google`, `/auth/google/callback`
+- Config: `config/services.php` → `google` array
+- User fields: `google_id` (unique), `google_email`, `email`, `avatar`
+- Env: `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI`
+- Google users have `email_verified_at` set automatically
+
+**Account Linking:**
+- If a user logs in with Google and has the same email as an existing Steam user, the accounts are automatically linked
+- Users can have both `steam_id` and `google_id` on the same account
+- If `custom_avatar` is set, it takes precedence over OAuth provider avatars
+
+**Site Settings:**
+- `allow_steam_login` (boolean) — Enable/disable Steam authentication
+- `allow_google_login` (boolean) — Enable/disable Google authentication
+
+**Flow:**
+1. OAuth provider authenticates → callback receives user data
+2. Check if banned → reject
+3. Check if 2FA enabled → redirect to challenge
+4. `Auth::login()` → update `last_login_at`
+5. Notify if `player_uuid` not linked (once per 7 days)
+6. Redirect to profile with welcome message
 
 ### Two-Factor Authentication
 
@@ -368,6 +405,9 @@ Required for full functionality:
 BATTLEMETRICS_API_TOKEN    # BattleMetrics API key
 BATTLEMETRICS_SERVER_ID    # Default server to track
 STEAM_CLIENT_SECRET        # Steam OAuth secret
+GOOGLE_CLIENT_ID           # Google OAuth client ID
+GOOGLE_CLIENT_SECRET       # Google OAuth client secret
+GOOGLE_REDIRECT_URI        # Google OAuth callback URL
 GAMESERVER_URL             # Node.js server manager API URL (services.gameserver.url)
 GAMESERVER_KEY             # Server manager API bearer token (services.gameserver.key)
 REVERB_APP_ID              # Reverb application ID (e.g. armabattles)

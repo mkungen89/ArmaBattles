@@ -25,12 +25,13 @@ class SiteSettingsSeeder extends Seeder
             ['key' => 'robots_meta', 'value' => 'index, follow', 'group' => 'SEO', 'type' => 'string', 'label' => 'Robots Meta', 'description' => 'Controls search engine indexing behavior', 'options' => json_encode(['index, follow', 'noindex, follow', 'index, nofollow', 'noindex, nofollow']), 'sort_order' => 5],
             ['key' => 'custom_head_html', 'value' => null, 'group' => 'SEO', 'type' => 'text', 'label' => 'Custom Head HTML', 'description' => 'Custom HTML injected before </head> (use with care)', 'sort_order' => 6],
 
-            // Security (5)
+            // Security (6)
             ['key' => 'allow_registration', 'value' => '1', 'group' => 'Security', 'type' => 'boolean', 'label' => 'Allow Registration', 'description' => 'Allow new users to register with email/password', 'sort_order' => 1],
             ['key' => 'allow_steam_login', 'value' => '1', 'group' => 'Security', 'type' => 'boolean', 'label' => 'Allow Steam Login', 'description' => 'Allow users to log in via Steam', 'sort_order' => 2],
-            ['key' => 'force_2fa_staff', 'value' => '0', 'group' => 'Security', 'type' => 'boolean', 'label' => 'Force 2FA for Staff', 'description' => 'Require two-factor authentication for admins and moderators', 'sort_order' => 3],
-            ['key' => 'login_rate_limit', 'value' => '5', 'group' => 'Security', 'type' => 'integer', 'label' => 'Login Rate Limit', 'description' => 'Maximum login attempts per minute', 'sort_order' => 4],
-            ['key' => 'session_lifetime', 'value' => '120', 'group' => 'Security', 'type' => 'integer', 'label' => 'Session Lifetime (minutes)', 'description' => 'How long user sessions last in minutes', 'sort_order' => 5],
+            ['key' => 'allow_google_login', 'value' => '1', 'group' => 'Security', 'type' => 'boolean', 'label' => 'Allow Google Login', 'description' => 'Allow users to log in via Google', 'sort_order' => 3],
+            ['key' => 'force_2fa_staff', 'value' => '0', 'group' => 'Security', 'type' => 'boolean', 'label' => 'Force 2FA for Staff', 'description' => 'Require two-factor authentication for admins and moderators', 'sort_order' => 4],
+            ['key' => 'login_rate_limit', 'value' => '5', 'group' => 'Security', 'type' => 'integer', 'label' => 'Login Rate Limit', 'description' => 'Maximum login attempts per minute', 'sort_order' => 5],
+            ['key' => 'session_lifetime', 'value' => '120', 'group' => 'Security', 'type' => 'integer', 'label' => 'Session Lifetime (minutes)', 'description' => 'How long user sessions last in minutes', 'sort_order' => 6],
 
             // Server Tracking (6)
             ['key' => 'bm_cache_ttl_live', 'value' => '60', 'group' => 'Server Tracking', 'type' => 'integer', 'label' => 'BM Live Cache TTL (seconds)', 'description' => 'Cache duration for live server/player data from BattleMetrics', 'sort_order' => 1],

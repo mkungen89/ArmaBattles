@@ -213,6 +213,11 @@ Route::prefix('auth/steam')->middleware('throttle:auth')->group(function () {
     Route::get('/callback', [SteamController::class, 'callback'])->name('auth.steam.callback');
 });
 
+Route::prefix('auth/google')->middleware('throttle:auth')->group(function () {
+    Route::get('/', [\App\Http\Controllers\Auth\GoogleController::class, 'redirect'])->name('auth.google');
+    Route::get('/callback', [\App\Http\Controllers\Auth\GoogleController::class, 'callback'])->name('auth.google.callback');
+});
+
 Route::post('/logout', [SteamController::class, 'logout'])->name('logout')->middleware('auth');
 
 // Two-Factor Authentication Challenge (guest with session)

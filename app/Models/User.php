@@ -26,6 +26,8 @@ class User extends Authenticatable
         'email',
         'password',
         'steam_id',
+        'google_id',
+        'google_email',
         'avatar',
         'avatar_full',
         'custom_avatar',
