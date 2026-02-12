@@ -298,7 +298,12 @@ Users can authenticate with Steam or Google via Laravel Socialite.
 - Google users have `email_verified_at` set automatically
 
 **Account Linking:**
-- If a user logs in with Google and has the same email as an existing Steam user, the accounts are automatically linked
+- **Automatic:** If a user logs in with Google and has the same email as an existing Steam user, the accounts are automatically linked
+- **Manual:** Users can link/unlink Steam and Google accounts from profile settings (`/profile/settings`)
+- Link routes: `/auth/steam/link`, `/auth/google/link` (requires auth, sets session flag)
+- Unlink routes: `DELETE /profile/unlink-steam`, `DELETE /profile/unlink-google` (requires auth)
+- Users must have at least one login method (cannot unlink if it's their only account)
+- Prevents linking an account already linked to another user
 - Users can have both `steam_id` and `google_id` on the same account
 - If `custom_avatar` is set, it takes precedence over OAuth provider avatars
 

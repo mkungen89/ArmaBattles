@@ -21,6 +21,11 @@ class SteamController extends Controller
 
     public function callback()
     {
+        // If user is linking account, redirect to linkCallback
+        if (session('linking_steam') && Auth::check()) {
+            return $this->linkCallback();
+        }
+
         $steamUser = Socialite::driver('steam')->user();
 
         $user = User::updateOrCreate(
@@ -71,5 +76,76 @@ class SteamController extends Controller
         request()->session()->regenerateToken();
 
         return redirect()->route('home');
+    }
+
+    public function linkRedirect()
+    {
+        if (! Auth::check()) {
+            return redirect()->route('login')->with('error', 'You must be logged in to link accounts.');
+        }
+
+        if (! site_setting('allow_steam_login', true)) {
+            return redirect()->route('profile.settings')->with('error', 'Steam login is currently disabled.');
+        }
+
+        // Store intent in session
+        session(['linking_steam' => true]);
+
+        return Socialite::driver('steam')->redirect();
+    }
+
+    public function linkCallback()
+    {
+        if (! Auth::check()) {
+            return redirect()->route('login')->with('error', 'You must be logged in to link accounts.');
+        }
+
+        if (! session('linking_steam')) {
+            return redirect()->route('profile.settings')->with('error', 'Invalid linking request.');
+        }
+
+        session()->forget('linking_steam');
+
+        try {
+            $steamUser = Socialite::driver('steam')->user();
+        } catch (\Exception $e) {
+            return redirect()->route('profile.settings')->with('error', 'Failed to authenticate with Steam. Please try again.');
+        }
+
+        $steamId = $steamUser->getId();
+
+        // Check if Steam ID is already linked to another account
+        $existingUser = User::where('steam_id', $steamId)->where('id', '!=', Auth::id())->first();
+        if ($existingUser) {
+            return redirect()->route('profile.settings')->with('error', 'This Steam account is already linked to another user.');
+        }
+
+        // Link Steam account to current user
+        Auth::user()->update([
+            'steam_id' => $steamId,
+            'avatar' => Auth::user()->custom_avatar ?? $steamUser->getAvatar(),
+            'avatar_full' => $steamUser->user['avatarfull'] ?? null,
+            'profile_url' => $steamUser->user['profileurl'] ?? null,
+        ]);
+
+        return redirect()->route('profile.settings')->with('success', 'Steam account linked successfully!');
+    }
+
+    public function unlink()
+    {
+        $user = Auth::user();
+
+        // Check if user has another login method
+        if (! $user->google_id) {
+            return redirect()->route('profile.settings')->with('error', 'You cannot unlink your only login method. Please link another account first.');
+        }
+
+        $user->update([
+            'steam_id' => null,
+            'avatar_full' => null,
+            'profile_url' => null,
+        ]);
+
+        return redirect()->route('profile.settings')->with('success', 'Steam account unlinked successfully.');
     }
 }

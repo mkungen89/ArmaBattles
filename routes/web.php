@@ -211,14 +211,22 @@ Route::middleware(['guest', 'throttle:auth'])->group(function () {
 Route::prefix('auth/steam')->middleware('throttle:auth')->group(function () {
     Route::get('/', [SteamController::class, 'redirect'])->name('auth.steam');
     Route::get('/callback', [SteamController::class, 'callback'])->name('auth.steam.callback');
+    Route::get('/link', [SteamController::class, 'linkRedirect'])->name('auth.steam.link')->middleware('auth');
 });
 
 Route::prefix('auth/google')->middleware('throttle:auth')->group(function () {
     Route::get('/', [\App\Http\Controllers\Auth\GoogleController::class, 'redirect'])->name('auth.google');
     Route::get('/callback', [\App\Http\Controllers\Auth\GoogleController::class, 'callback'])->name('auth.google.callback');
+    Route::get('/link', [\App\Http\Controllers\Auth\GoogleController::class, 'linkRedirect'])->name('auth.google.link')->middleware('auth');
 });
 
 Route::post('/logout', [SteamController::class, 'logout'])->name('logout')->middleware('auth');
+
+// Account unlinking routes
+Route::middleware('auth')->group(function () {
+    Route::delete('/profile/unlink-steam', [SteamController::class, 'unlink'])->name('profile.unlink-steam');
+    Route::delete('/profile/unlink-google', [\App\Http\Controllers\Auth\GoogleController::class, 'unlink'])->name('profile.unlink-google');
+});
 
 // Two-Factor Authentication Challenge (guest with session)
 Route::middleware('throttle:auth')->group(function () {
