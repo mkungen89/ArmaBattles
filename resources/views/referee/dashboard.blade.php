@@ -112,7 +112,7 @@
                                             View Match
                                         </a>
                                         @if($match->status === 'in_progress' || $match->status === 'scheduled')
-                                            <a href="{{ route('referee.match.report', $match->id) }}"
+                                            <a href="{{ route('referee.match.report', $match) }}"
                                                class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm rounded-xl transition flex items-center gap-2">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
@@ -161,7 +161,7 @@
                                             • Reported: {{ $report->reported_at->diffForHumans() }}
                                         </p>
                                     </div>
-                                    <a href="{{ route('referee.report.view', $report->id) }}"
+                                    <a href="{{ route('referee.report.view', $report) }}"
                                        class="px-4 py-2 bg-white/5 hover:bg-white/10 text-white text-sm rounded-xl transition">
                                         View Report
                                     </a>
@@ -205,7 +205,7 @@
                                             View Match
                                         </a>
                                         @if($match->reports->first())
-                                            <a href="{{ route('referee.report.view', $match->reports->first()->id) }}"
+                                            <a href="{{ route('referee.report.view', $match->reports->first()) }}"
                                                class="px-4 py-2 bg-red-600 hover:bg-red-500 text-white text-sm rounded-xl transition">
                                                 View Report
                                             </a>

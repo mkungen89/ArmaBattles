@@ -50,14 +50,14 @@
                 <label for="vehicle_type" class="block text-sm font-medium text-gray-400 mb-2">Vehicle Type</label>
                 <select name="vehicle_type" id="vehicle_type" class="w-full bg-white/5 border-white/10 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
                     <option value="">Select type...</option>
-                    <option value="Car" {{ old('vehicle_type', $vehicle->vehicle_type) === 'Car' ? 'selected' : '' }}>Car</option>
-                    <option value="Truck" {{ old('vehicle_type', $vehicle->vehicle_type) === 'Truck' ? 'selected' : '' }}>Truck</option>
-                    <option value="APC" {{ old('vehicle_type', $vehicle->vehicle_type) === 'APC' ? 'selected' : '' }}>APC</option>
-                    <option value="IFV" {{ old('vehicle_type', $vehicle->vehicle_type) === 'IFV' ? 'selected' : '' }}>IFV</option>
-                    <option value="Tank" {{ old('vehicle_type', $vehicle->vehicle_type) === 'Tank' ? 'selected' : '' }}>Tank</option>
-                    <option value="Helicopter" {{ old('vehicle_type', $vehicle->vehicle_type) === 'Helicopter' ? 'selected' : '' }}>Helicopter</option>
-                    <option value="Boat" {{ old('vehicle_type', $vehicle->vehicle_type) === 'Boat' ? 'selected' : '' }}>Boat</option>
-                    <option value="Other" {{ old('vehicle_type', $vehicle->vehicle_type) === 'Other' ? 'selected' : '' }}>Other</option>
+                    <option value="car" {{ old('vehicle_type', $vehicle->vehicle_type) === 'car' ? 'selected' : '' }}>Car</option>
+                    <option value="truck" {{ old('vehicle_type', $vehicle->vehicle_type) === 'truck' ? 'selected' : '' }}>Truck</option>
+                    <option value="apc" {{ old('vehicle_type', $vehicle->vehicle_type) === 'apc' ? 'selected' : '' }}>APC</option>
+                    <option value="ifv" {{ old('vehicle_type', $vehicle->vehicle_type) === 'ifv' ? 'selected' : '' }}>IFV</option>
+                    <option value="tank" {{ old('vehicle_type', $vehicle->vehicle_type) === 'tank' ? 'selected' : '' }}>Tank</option>
+                    <option value="helicopter" {{ old('vehicle_type', $vehicle->vehicle_type) === 'helicopter' ? 'selected' : '' }}>Helicopter</option>
+                    <option value="boat" {{ old('vehicle_type', $vehicle->vehicle_type) === 'boat' ? 'selected' : '' }}>Boat</option>
+                    <option value="other" {{ old('vehicle_type', $vehicle->vehicle_type) === 'other' ? 'selected' : '' }}>Other</option>
                 </select>
             </div>
 

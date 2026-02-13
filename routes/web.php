@@ -68,7 +68,7 @@ Route::get('/', function () {
 })->name('home');
 
 Route::get('/rules', function () {
-    return view('rules');
+    return view('pages.rules');
 })->name('rules');
 
 Route::get('/api/docs', fn () => view('api.docs'))->name('api.docs');

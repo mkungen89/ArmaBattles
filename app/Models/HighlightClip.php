@@ -16,6 +16,7 @@ class HighlightClip extends Model
         'author',
         'description',
         'thumbnail_url',
+        'duration_seconds',
         'votes',
         'status',
         'is_featured',
@@ -162,6 +163,40 @@ class HighlightClip extends Model
         $downvotes = $this->clipVotes()->where('vote_type', 'downvote')->count();
         $this->votes = $upvotes - $downvotes;
         $this->save();
+
+        // Check for auto-approval if still pending
+        $this->checkAutoApproval();
+    }
+
+    /**
+     * Check if clip should be auto-approved based on vote threshold
+     */
+    public function checkAutoApproval(): void
+    {
+        // Only auto-approve pending clips
+        if ($this->status !== 'pending') {
+            return;
+        }
+
+        $threshold = (int) site_setting('clip_approval_threshold', 0);
+
+        // If threshold is 0, auto-approval is disabled
+        if ($threshold === 0) {
+            return;
+        }
+
+        // Auto-approve if votes meet or exceed threshold
+        if ($this->votes >= $threshold) {
+            $this->update(['status' => 'approved']);
+
+            // Notify the user
+            if ($this->user) {
+                $this->user->notify(new \App\Notifications\VideoApprovedNotification($this));
+            }
+
+            // Invalidate clip of the week cache
+            \Cache::forget('clip_of_the_week');
+        }
     }
 
     /**

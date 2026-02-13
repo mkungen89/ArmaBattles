@@ -89,7 +89,7 @@ class User extends Authenticatable
             return Storage::url($this->custom_avatar);
         }
 
-        return $this->avatar_full ?? $this->avatar ?? '';
+        return $this->avatar_full ?? $this->avatar ?? asset('images/avatar.png');
     }
 
     public function hasTwoFactorEnabled(): bool
@@ -227,23 +227,35 @@ class User extends Authenticatable
 
     public function toggleFavorite($model): bool
     {
-        $existing = $this->favorites()
-            ->where('favoritable_type', get_class($model))
-            ->where('favoritable_id', $model->getKey())
-            ->first();
+        return \DB::transaction(function () use ($model) {
+            $existing = $this->favorites()
+                ->where('favoritable_type', get_class($model))
+                ->where('favoritable_id', $model->getKey())
+                ->lockForUpdate()
+                ->first();
 
-        if ($existing) {
-            $existing->delete();
+            if ($existing) {
+                $existing->delete();
 
-            return false;
-        }
+                return false;
+            }
 
-        $this->favorites()->create([
-            'favoritable_type' => get_class($model),
-            'favoritable_id' => $model->getKey(),
-        ]);
+            try {
+                $this->favorites()->create([
+                    'favoritable_type' => get_class($model),
+                    'favoritable_id' => $model->getKey(),
+                ]);
 
-        return true;
+                return true;
+            } catch (\Illuminate\Database\QueryException $e) {
+                // Handle race condition - if unique constraint fails, the favorite was just added
+                // by another concurrent request, so we treat this as already favorited
+                if ($e->getCode() === '23505' || str_contains($e->getMessage(), 'unique')) {
+                    return true;
+                }
+                throw $e;
+            }
+        });
     }
 
     /**

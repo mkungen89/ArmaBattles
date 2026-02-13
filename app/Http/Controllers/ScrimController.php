@@ -182,7 +182,7 @@ class ScrimController extends Controller
      */
     public function show(ScrimMatch $scrim)
     {
-        $scrim->load(['team1.activeMembers.user', 'team2.activeMembers.user', 'creator', 'winner', 'server', 'invitation']);
+        $scrim->load(['team1.activeMembers', 'team2.activeMembers', 'creator', 'winner', 'server', 'invitation']);
 
         $user = auth()->user();
         $userTeam = $user->activeTeam;

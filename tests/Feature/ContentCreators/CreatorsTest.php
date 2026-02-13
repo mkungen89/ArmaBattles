@@ -13,6 +13,11 @@ class CreatorsTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+    }
+
     // === Content Creators ===
 
     public function test_creators_directory_page_loads(): void
@@ -299,5 +304,127 @@ class CreatorsTest extends TestCase
         $response->assertOk();
         $response->assertSee('Video of the Week');
         $response->assertSee('Best Clip Ever');
+    }
+
+    public function test_cannot_register_duplicate_channel_url(): void
+    {
+        $user1 = User::factory()->create();
+        $user2 = User::factory()->create();
+
+        ContentCreator::create([
+            'user_id' => $user1->id,
+            'platform' => 'twitch',
+            'channel_url' => 'https://twitch.tv/samechannel',
+            'channel_name' => 'SameChannel',
+        ]);
+
+        $response = $this->actingAs($user2)->post('/creators/register', [
+            'platform' => 'twitch',
+            'channel_url' => 'https://twitch.tv/samechannel',
+            'channel_name' => 'DifferentName',
+        ]);
+
+        $response->assertSessionHasErrors('channel_url');
+        $this->assertEquals(1, ContentCreator::where('channel_url', 'https://twitch.tv/samechannel')->count());
+    }
+
+    public function test_clip_auto_approves_when_threshold_reached(): void
+    {
+        // Set auto-approval threshold to 3 votes
+        \App\Models\SiteSetting::updateOrCreate(
+            ['key' => 'clip_approval_threshold'],
+            [
+                'value' => '3',
+                'group' => 'Content Creators',
+                'type' => 'integer',
+                'label' => 'Test Setting',
+                'description' => 'Test',
+                'sort_order' => 1
+            ]
+        );
+
+        $submitter = User::factory()->create();
+        $clip = HighlightClip::create([
+            'user_id' => $submitter->id,
+            'title' => 'Pending Clip',
+            'url' => 'https://youtube.com/watch?v=test',
+            'platform' => 'youtube',
+            'status' => 'pending',
+        ]);
+
+        // Add 3 upvotes
+        $voters = User::factory()->count(3)->create();
+        foreach ($voters as $voter) {
+            ClipVote::create([
+                'user_id' => $voter->id,
+                'clip_id' => $clip->id,
+                'vote_type' => 'upvote',
+            ]);
+        }
+
+        // Recalculate votes (triggers auto-approval check)
+        $clip->recalculateVotes();
+
+        // Clip should now be approved
+        $this->assertEquals('approved', $clip->fresh()->status);
+    }
+
+    public function test_duration_validation_rejects_long_videos(): void
+    {
+        // Set max duration to 60 seconds
+        \App\Models\SiteSetting::updateOrCreate(
+            ['key' => 'clip_max_duration_seconds'],
+            [
+                'value' => '60',
+                'group' => 'Content Creators',
+                'type' => 'integer',
+                'label' => 'Test Setting',
+                'description' => 'Test',
+                'sort_order' => 1
+            ]
+        );
+
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->post('/clips', [
+            'title' => 'Too Long Video',
+            'url' => 'https://youtube.com/watch?v=test',
+            'platform' => 'youtube',
+            'duration_seconds' => 120, // Exceeds 60 second limit
+        ]);
+
+        $response->assertSessionHasErrors('duration_seconds');
+    }
+
+    public function test_duration_validation_accepts_valid_videos(): void
+    {
+        // Set max duration to 120 seconds
+        \App\Models\SiteSetting::updateOrCreate(
+            ['key' => 'clip_max_duration_seconds'],
+            [
+                'value' => '120',
+                'group' => 'Content Creators',
+                'type' => 'integer',
+                'label' => 'Test Setting',
+                'description' => 'Test',
+                'sort_order' => 1
+            ]
+        );
+
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->post('/clips', [
+            'title' => 'Valid Duration Video',
+            'url' => 'https://youtube.com/watch?v=test',
+            'platform' => 'youtube',
+            'duration_seconds' => 90, // Within 120 second limit
+        ]);
+
+        $response->assertRedirect();
+        $this->assertDatabaseHas('highlight_clips', [
+            'user_id' => $user->id,
+            'title' => 'Valid Duration Video',
+            'duration_seconds' => 90,
+        ]);
     }
 }

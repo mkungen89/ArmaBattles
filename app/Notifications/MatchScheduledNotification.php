@@ -23,6 +23,7 @@ class MatchScheduledNotification extends Notification
     {
         return [
             'type' => 'match_scheduled',
+            'category' => 'match',
             'match_id' => $this->match->id,
             'tournament_id' => $this->match->tournament_id,
             'tournament_name' => $this->match->tournament->name,
@@ -30,6 +31,7 @@ class MatchScheduledNotification extends Notification
             'team2_name' => $this->match->team2?->name,
             'scheduled_at' => $this->match->scheduled_at?->toISOString(),
             'message' => "Match scheduled: {$this->match->team1?->name} vs {$this->match->team2?->name}",
+            'url' => route('tournaments.match', $this->match),
         ];
     }
 }

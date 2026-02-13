@@ -258,6 +258,124 @@
                             Link Arma ID
                         </button>
                     </form>
+
+                    {{-- How to find your ID guide --}}
+                    <div class="mt-6 pt-6 border-t border-white/10" x-data="{ platform: 'pc' }">
+                        <h4 class="text-xs font-semibold text-white uppercase tracking-wider mb-4">How to find your Arma Reforger ID</h4>
+                        {{-- Platform Tabs --}}
+                        <div class="flex gap-2 mb-5">
+                            <button @click="platform = 'pc'"
+                                    :class="platform === 'pc' ? 'bg-green-500/15 text-green-400 border-green-500/30' : 'bg-white/3 text-gray-400 border-white/6 hover:text-white'"
+                                    class="flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-medium transition">
+                                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M20 18c1.1 0 1.99-.9 1.99-2L22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2H0v2h24v-2h-4zM4 6h16v10H4V6z"/></svg>
+                                PC
+                            </button>
+                            <button @click="platform = 'xbox'"
+                                    :class="platform === 'xbox' ? 'bg-green-500/15 text-green-400 border-green-500/30' : 'bg-white/3 text-gray-400 border-white/6 hover:text-white'"
+                                    class="flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-medium transition">
+                                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M4.102 21.033C6.211 22.881 8.977 24 12 24c3.026 0 5.789-1.119 7.902-2.967 1.877-1.912-4.316-8.709-7.902-11.417-3.582 2.708-9.779 9.505-7.898 11.417zm11.16-14.406c2.5 2.961 7.484 10.313 6.076 12.912C23.012 17.36 24 14.812 24 12c0-3.389-1.393-6.449-3.645-8.645a12.012 12.012 0 00-.844-.614A11.94 11.94 0 0012.001 0c2.079 1.344 4.353 4.93 3.261 6.627zM8.738 6.627C7.646 4.93 9.92 1.344 11.999 0A11.94 11.94 0 005.387 2.741a12.012 12.012 0 00-.844.614C2.393 5.551 0 8.611 0 12c0 2.812.988 5.36 2.662 7.539 1.408-2.599 3.576-9.951 6.076-12.912z"/></svg>
+                                Xbox
+                            </button>
+                            <button @click="platform = 'ps'"
+                                    :class="platform === 'ps' ? 'bg-green-500/15 text-green-400 border-green-500/30' : 'bg-white/3 text-gray-400 border-white/6 hover:text-white'"
+                                    class="flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-medium transition">
+                                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8.985 2.596v17.548l3.915 1.261V6.688c0-.69.304-1.151.794-.991.636.181.76.814.76 1.505v5.876c2.441 1.193 4.362-.002 4.362-3.153 0-3.237-1.126-4.675-4.438-5.827-1.307-.448-3.728-1.186-5.391-1.502h-.002z"/></svg>
+                                PlayStation
+                            </button>
+                        </div>
+                        {{-- PC Guide --}}
+                        <div x-show="platform === 'pc'" x-transition>
+                            <div class="space-y-3 text-xs text-gray-400">
+                                <div class="flex gap-3">
+                                    <span class="flex-shrink-0 w-5 h-5 bg-green-500/15 text-green-400 rounded-full flex items-center justify-center text-[10px] font-bold">1</span>
+                                    <p>Open Arma Reforger and go to the <strong class="text-white">Main Menu</strong>.</p>
+                                </div>
+                                <div class="flex gap-3">
+                                    <span class="flex-shrink-0 w-5 h-5 bg-green-500/15 text-green-400 rounded-full flex items-center justify-center text-[10px] font-bold">2</span>
+                                    <p>Click on your <strong class="text-white">Profile</strong> (your player name in the top-right corner).</p>
+                                </div>
+                                <div class="flex gap-3">
+                                    <span class="flex-shrink-0 w-5 h-5 bg-green-500/15 text-green-400 rounded-full flex items-center justify-center text-[10px] font-bold">3</span>
+                                    <p>Your <strong class="text-white">Identity ID</strong> is displayed as a UUID: <code class="bg-white/5 px-1.5 py-0.5 rounded font-mono text-[10px]">xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx</code></p>
+                                </div>
+                                <div class="flex gap-3">
+                                    <span class="flex-shrink-0 w-5 h-5 bg-green-500/15 text-green-400 rounded-full flex items-center justify-center text-[10px] font-bold">4</span>
+                                    <p>Click the <strong class="text-white">copy icon</strong> next to the ID, then paste it into the field above.</p>
+                                </div>
+                            </div>
+                            <div class="mt-3 p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl">
+                                <p class="text-blue-400 text-xs">
+                                    <strong>Tip:</strong> You can also find your ID in the console log files at <code class="bg-white/5 px-1 rounded text-[10px]">%localappdata%\ArmaReforger\profile</code>.
+                                </p>
+                            </div>
+                        </div>
+                        {{-- Xbox Guide --}}
+                        <div x-show="platform === 'xbox'" x-transition>
+                            <div class="space-y-3 text-xs text-gray-400">
+                                <div class="flex gap-3">
+                                    <span class="flex-shrink-0 w-5 h-5 bg-green-500/15 text-green-400 rounded-full flex items-center justify-center text-[10px] font-bold">1</span>
+                                    <p>Launch Arma Reforger on your Xbox and navigate to the <strong class="text-white">Main Menu</strong>.</p>
+                                </div>
+                                <div class="flex gap-3">
+                                    <span class="flex-shrink-0 w-5 h-5 bg-green-500/15 text-green-400 rounded-full flex items-center justify-center text-[10px] font-bold">2</span>
+                                    <p>Open the <strong class="text-white">Profile</strong> section from the menu.</p>
+                                </div>
+                                <div class="flex gap-3">
+                                    <span class="flex-shrink-0 w-5 h-5 bg-green-500/15 text-green-400 rounded-full flex items-center justify-center text-[10px] font-bold">3</span>
+                                    <p>Your <strong class="text-white">Identity ID</strong> (UUID) will be displayed on the profile screen.</p>
+                                </div>
+                                <div class="flex gap-3">
+                                    <span class="flex-shrink-0 w-5 h-5 bg-green-500/15 text-green-400 rounded-full flex items-center justify-center text-[10px] font-bold">4</span>
+                                    <p>Use the <strong class="text-white">Xbox App</strong> on your phone: take a screenshot (<strong class="text-white">Xbox button > Y</strong>), then type the ID here.</p>
+                                </div>
+                            </div>
+                            <div class="mt-3 p-3 bg-green-500/10 border border-green-500/20 rounded-xl">
+                                <p class="text-green-400 text-xs">
+                                    <strong>Tip:</strong> You can also ask a server admin to look up your UUID from the server logs.
+                                </p>
+                            </div>
+                        </div>
+                        {{-- PlayStation Guide --}}
+                        <div x-show="platform === 'ps'" x-transition>
+                            <div class="space-y-3 text-xs text-gray-400">
+                                <div class="flex gap-3">
+                                    <span class="flex-shrink-0 w-5 h-5 bg-green-500/15 text-green-400 rounded-full flex items-center justify-center text-[10px] font-bold">1</span>
+                                    <p>Launch Arma Reforger on your PlayStation and go to the <strong class="text-white">Main Menu</strong>.</p>
+                                </div>
+                                <div class="flex gap-3">
+                                    <span class="flex-shrink-0 w-5 h-5 bg-green-500/15 text-green-400 rounded-full flex items-center justify-center text-[10px] font-bold">2</span>
+                                    <p>Open the <strong class="text-white">Profile</strong> section from the menu.</p>
+                                </div>
+                                <div class="flex gap-3">
+                                    <span class="flex-shrink-0 w-5 h-5 bg-green-500/15 text-green-400 rounded-full flex items-center justify-center text-[10px] font-bold">3</span>
+                                    <p>Your <strong class="text-white">Identity ID</strong> (UUID) will be displayed on the profile screen.</p>
+                                </div>
+                                <div class="flex gap-3">
+                                    <span class="flex-shrink-0 w-5 h-5 bg-green-500/15 text-green-400 rounded-full flex items-center justify-center text-[10px] font-bold">4</span>
+                                    <p>Take a screenshot (<strong class="text-white">Share button</strong>), use the <strong class="text-white">PlayStation App</strong> to view it and type the ID here.</p>
+                                </div>
+                            </div>
+                            <div class="mt-3 p-3 bg-green-500/10 border border-green-500/20 rounded-xl">
+                                <p class="text-green-400 text-xs">
+                                    <strong>Tip:</strong> You can also ask a server admin to look up your UUID from the server logs.
+                                </p>
+                            </div>
+                        </div>
+                        {{-- What is a UUID --}}
+                        <div class="mt-5 p-4 bg-white/3 rounded-xl">
+                            <h4 class="text-xs font-semibold text-white mb-1.5">What is a UUID?</h4>
+                            <p class="text-xs text-gray-500">
+                                Your UUID (Universally Unique Identifier) is a unique code assigned to your Arma Reforger profile.
+                                It looks like: <code class="bg-white/5 px-1.5 py-0.5 rounded font-mono text-[10px] text-green-400">a1b2c3d4-e5f6-7890-abcd-ef1234567890</code>.
+                                It's how we match your in-game activity to your website profile.
+                            </p>
+                        </div>
+                        <div class="mt-3 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-xl">
+                            <p class="text-yellow-400 text-xs">
+                                <strong>Note:</strong> Make sure to enter your own ID. Entering someone else's ID will show their statistics instead of yours.
+                            </p>
+                        </div>
+                    </div>
                 @endif
             </div>
         </div>
@@ -468,124 +586,6 @@
                     </button>
                 </form>
             </div>
-        </div>
-    </div>
-
-    {{-- How to find your ID --}}
-    <div class="glass-card p-6" x-data="{ platform: 'pc' }">
-        <h3 class="text-sm font-semibold text-white uppercase tracking-wider mb-4">How to find your Arma Reforger ID</h3>
-        {{-- Platform Tabs --}}
-        <div class="flex gap-2 mb-5">
-            <button @click="platform = 'pc'"
-                    :class="platform === 'pc' ? 'bg-green-500/15 text-green-400 border-green-500/30' : 'bg-white/3 text-gray-400 border-white/6 hover:text-white'"
-                    class="flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-medium transition">
-                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M20 18c1.1 0 1.99-.9 1.99-2L22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2H0v2h24v-2h-4zM4 6h16v10H4V6z"/></svg>
-                PC
-            </button>
-            <button @click="platform = 'xbox'"
-                    :class="platform === 'xbox' ? 'bg-green-500/15 text-green-400 border-green-500/30' : 'bg-white/3 text-gray-400 border-white/6 hover:text-white'"
-                    class="flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-medium transition">
-                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M4.102 21.033C6.211 22.881 8.977 24 12 24c3.026 0 5.789-1.119 7.902-2.967 1.877-1.912-4.316-8.709-7.902-11.417-3.582 2.708-9.779 9.505-7.898 11.417zm11.16-14.406c2.5 2.961 7.484 10.313 6.076 12.912C23.012 17.36 24 14.812 24 12c0-3.389-1.393-6.449-3.645-8.645a12.012 12.012 0 00-.844-.614A11.94 11.94 0 0012.001 0c2.079 1.344 4.353 4.93 3.261 6.627zM8.738 6.627C7.646 4.93 9.92 1.344 11.999 0A11.94 11.94 0 005.387 2.741a12.012 12.012 0 00-.844.614C2.393 5.551 0 8.611 0 12c0 2.812.988 5.36 2.662 7.539 1.408-2.599 3.576-9.951 6.076-12.912z"/></svg>
-                Xbox
-            </button>
-            <button @click="platform = 'ps'"
-                    :class="platform === 'ps' ? 'bg-green-500/15 text-green-400 border-green-500/30' : 'bg-white/3 text-gray-400 border-white/6 hover:text-white'"
-                    class="flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-medium transition">
-                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8.985 2.596v17.548l3.915 1.261V6.688c0-.69.304-1.151.794-.991.636.181.76.814.76 1.505v5.876c2.441 1.193 4.362-.002 4.362-3.153 0-3.237-1.126-4.675-4.438-5.827-1.307-.448-3.728-1.186-5.391-1.502h-.002z"/></svg>
-                PlayStation
-            </button>
-        </div>
-        {{-- PC Guide --}}
-        <div x-show="platform === 'pc'" x-transition>
-            <div class="space-y-3 text-xs text-gray-400">
-                <div class="flex gap-3">
-                    <span class="flex-shrink-0 w-5 h-5 bg-green-500/15 text-green-400 rounded-full flex items-center justify-center text-[10px] font-bold">1</span>
-                    <p>Open Arma Reforger and go to the <strong class="text-white">Main Menu</strong>.</p>
-                </div>
-                <div class="flex gap-3">
-                    <span class="flex-shrink-0 w-5 h-5 bg-green-500/15 text-green-400 rounded-full flex items-center justify-center text-[10px] font-bold">2</span>
-                    <p>Click on your <strong class="text-white">Profile</strong> (your player name in the top-right corner).</p>
-                </div>
-                <div class="flex gap-3">
-                    <span class="flex-shrink-0 w-5 h-5 bg-green-500/15 text-green-400 rounded-full flex items-center justify-center text-[10px] font-bold">3</span>
-                    <p>Your <strong class="text-white">Identity ID</strong> is displayed as a UUID: <code class="bg-white/5 px-1.5 py-0.5 rounded font-mono text-[10px]">xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx</code></p>
-                </div>
-                <div class="flex gap-3">
-                    <span class="flex-shrink-0 w-5 h-5 bg-green-500/15 text-green-400 rounded-full flex items-center justify-center text-[10px] font-bold">4</span>
-                    <p>Click the <strong class="text-white">copy icon</strong> next to the ID, then paste it into the field above.</p>
-                </div>
-            </div>
-            <div class="mt-3 p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl">
-                <p class="text-blue-400 text-xs">
-                    <strong>Tip:</strong> You can also find your ID in the console log files at <code class="bg-white/5 px-1 rounded text-[10px]">%localappdata%\ArmaReforger\profile</code>.
-                </p>
-            </div>
-        </div>
-        {{-- Xbox Guide --}}
-        <div x-show="platform === 'xbox'" x-transition>
-            <div class="space-y-3 text-xs text-gray-400">
-                <div class="flex gap-3">
-                    <span class="flex-shrink-0 w-5 h-5 bg-green-500/15 text-green-400 rounded-full flex items-center justify-center text-[10px] font-bold">1</span>
-                    <p>Launch Arma Reforger on your Xbox and navigate to the <strong class="text-white">Main Menu</strong>.</p>
-                </div>
-                <div class="flex gap-3">
-                    <span class="flex-shrink-0 w-5 h-5 bg-green-500/15 text-green-400 rounded-full flex items-center justify-center text-[10px] font-bold">2</span>
-                    <p>Open the <strong class="text-white">Profile</strong> section from the menu.</p>
-                </div>
-                <div class="flex gap-3">
-                    <span class="flex-shrink-0 w-5 h-5 bg-green-500/15 text-green-400 rounded-full flex items-center justify-center text-[10px] font-bold">3</span>
-                    <p>Your <strong class="text-white">Identity ID</strong> (UUID) will be displayed on the profile screen.</p>
-                </div>
-                <div class="flex gap-3">
-                    <span class="flex-shrink-0 w-5 h-5 bg-green-500/15 text-green-400 rounded-full flex items-center justify-center text-[10px] font-bold">4</span>
-                    <p>Use the <strong class="text-white">Xbox App</strong> on your phone: take a screenshot (<strong class="text-white">Xbox button > Y</strong>), then type the ID here.</p>
-                </div>
-            </div>
-            <div class="mt-3 p-3 bg-green-500/10 border border-green-500/20 rounded-xl">
-                <p class="text-green-400 text-xs">
-                    <strong>Tip:</strong> You can also ask a server admin to look up your UUID from the server logs.
-                </p>
-            </div>
-        </div>
-        {{-- PlayStation Guide --}}
-        <div x-show="platform === 'ps'" x-transition>
-            <div class="space-y-3 text-xs text-gray-400">
-                <div class="flex gap-3">
-                    <span class="flex-shrink-0 w-5 h-5 bg-green-500/15 text-green-400 rounded-full flex items-center justify-center text-[10px] font-bold">1</span>
-                    <p>Launch Arma Reforger on your PlayStation and go to the <strong class="text-white">Main Menu</strong>.</p>
-                </div>
-                <div class="flex gap-3">
-                    <span class="flex-shrink-0 w-5 h-5 bg-green-500/15 text-green-400 rounded-full flex items-center justify-center text-[10px] font-bold">2</span>
-                    <p>Open the <strong class="text-white">Profile</strong> section from the menu.</p>
-                </div>
-                <div class="flex gap-3">
-                    <span class="flex-shrink-0 w-5 h-5 bg-green-500/15 text-green-400 rounded-full flex items-center justify-center text-[10px] font-bold">3</span>
-                    <p>Your <strong class="text-white">Identity ID</strong> (UUID) will be displayed on the profile screen.</p>
-                </div>
-                <div class="flex gap-3">
-                    <span class="flex-shrink-0 w-5 h-5 bg-green-500/15 text-green-400 rounded-full flex items-center justify-center text-[10px] font-bold">4</span>
-                    <p>Take a screenshot (<strong class="text-white">Share button</strong>), use the <strong class="text-white">PlayStation App</strong> to view it and type the ID here.</p>
-                </div>
-            </div>
-            <div class="mt-3 p-3 bg-green-500/10 border border-green-500/20 rounded-xl">
-                <p class="text-green-400 text-xs">
-                    <strong>Tip:</strong> You can also ask a server admin to look up your UUID from the server logs.
-                </p>
-            </div>
-        </div>
-        {{-- What is a UUID --}}
-        <div class="mt-5 p-4 bg-white/3 rounded-xl">
-            <h4 class="text-xs font-semibold text-white mb-1.5">What is a UUID?</h4>
-            <p class="text-xs text-gray-500">
-                Your UUID (Universally Unique Identifier) is a unique code assigned to your Arma Reforger profile.
-                It looks like: <code class="bg-white/5 px-1.5 py-0.5 rounded font-mono text-[10px] text-green-400">a1b2c3d4-e5f6-7890-abcd-ef1234567890</code>.
-                It's how we match your in-game activity to your website profile.
-            </p>
-        </div>
-        <div class="mt-3 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-xl">
-            <p class="text-yellow-400 text-xs">
-                <strong>Note:</strong> Make sure to enter your own ID. Entering someone else's ID will show their statistics instead of yours.
-            </p>
         </div>
     </div>
 

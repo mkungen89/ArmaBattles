@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Storage;
 
 class RankLogoController extends Controller
 {
+    use \App\Traits\LogsAdminActions;
+
     /**
      * Display all ranks grouped by era
      */
@@ -58,14 +60,20 @@ class RankLogoController extends Controller
         if ($request->hasFile('logo')) {
             // Delete old logo if exists
             if ($rank->logo_path) {
-                Storage::disk('public')->delete($rank->logo_path);
+                Storage::disk('s3')->delete($rank->logo_path);
             }
 
-            $path = $request->file('logo')->store('rank_logos', 'public');
+            $path = $request->file('logo')->store('rank_logos', 's3');
             $rank->logo_path = $path;
         }
 
         $rank->save();
+
+        $this->logAction('rank.updated', 'RankLogo', $rank->id, [
+            'name' => $rank->name,
+            'color' => $rank->color,
+            'era' => $rank->era,
+        ]);
 
         return redirect()->route('admin.ranks.index')->with('success', 'Rank updated successfully!');
     }
@@ -76,9 +84,13 @@ class RankLogoController extends Controller
     public function deleteLogo(RankLogo $rank)
     {
         if ($rank->logo_path) {
-            Storage::disk('public')->delete($rank->logo_path);
+            Storage::disk('s3')->delete($rank->logo_path);
             $rank->logo_path = null;
             $rank->save();
+
+            $this->logAction('rank.logo-deleted', 'RankLogo', $rank->id, [
+                'name' => $rank->name,
+            ]);
         }
 
         return back()->with('success', 'Rank logo deleted successfully!');

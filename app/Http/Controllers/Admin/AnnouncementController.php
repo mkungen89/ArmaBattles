@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Cache;
 
 class AnnouncementController extends Controller
 {
+    use \App\Traits\LogsAdminActions;
+
     public function index()
     {
         $announcements = Announcement::orderByDesc('created_at')->paginate(20);
@@ -34,10 +36,15 @@ class AnnouncementController extends Controller
 
         $validated['is_active'] = $request->boolean('is_active');
 
-        Announcement::create($validated);
+        $announcement = Announcement::create($validated);
 
         // Clear cache
         Cache::forget('active_announcements');
+
+        $this->logAction('announcement.created', 'Announcement', $announcement->id, [
+            'type' => $announcement->type,
+            'message' => $announcement->message,
+        ]);
 
         return redirect()->route('admin.announcements.index')
             ->with('success', 'Announcement created successfully!');
@@ -66,16 +73,28 @@ class AnnouncementController extends Controller
         // Clear cache
         Cache::forget('active_announcements');
 
+        $this->logAction('announcement.updated', 'Announcement', $announcement->id, [
+            'type' => $announcement->type,
+            'message' => $announcement->message,
+        ]);
+
         return redirect()->route('admin.announcements.index')
             ->with('success', 'Announcement updated successfully!');
     }
 
     public function destroy(Announcement $announcement)
     {
+        $announcementId = $announcement->id;
+        $announcementMessage = $announcement->message;
+
         $announcement->delete();
 
         // Clear cache
         Cache::forget('active_announcements');
+
+        $this->logAction('announcement.deleted', 'Announcement', $announcementId, [
+            'message' => $announcementMessage,
+        ]);
 
         return back()->with('success', 'Announcement deleted successfully!');
     }
@@ -86,6 +105,11 @@ class AnnouncementController extends Controller
 
         // Clear cache
         Cache::forget('active_announcements');
+
+        $this->logAction('announcement.toggled', 'Announcement', $announcement->id, [
+            'is_active' => $announcement->is_active,
+            'message' => $announcement->message,
+        ]);
 
         return back()->with('success', 'Announcement ' . ($announcement->is_active ? 'activated' : 'deactivated') . ' successfully!');
     }

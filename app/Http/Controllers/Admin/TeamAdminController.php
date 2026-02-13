@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 
 class TeamAdminController extends Controller
 {
+    use \App\Traits\LogsAdminActions;
+
     public function index(Request $request)
     {
         $query = Team::with('captain')
@@ -47,10 +49,10 @@ class TeamAdminController extends Controller
     {
         $team->load([
             'captain',
-            'activeMembers.user',  // Fixed: Load User models with members to avoid N+1
+            'activeMembers',  // activeMembers IS a BelongsToMany to User, no nested .user needed
             'registrations.tournament',
             'invitations' => fn ($q) => $q->with('user', 'inviter')->latest(),
-            'applications' => fn ($q) => $q->with('user')->latest(),  // Added: Applications with user data
+            'applications' => fn ($q) => $q->with('user')->latest(),
         ]);
 
         return view('admin.teams.show', compact('team'));
@@ -60,12 +62,22 @@ class TeamAdminController extends Controller
     {
         $team->update(['is_verified' => true]);
 
+        $this->logAction('team.verified', 'Team', $team->id, [
+            'name' => $team->name,
+            'tag' => $team->tag,
+        ]);
+
         return back()->with('success', 'Platoon has been verified.');
     }
 
     public function unverify(Team $team)
     {
         $team->update(['is_verified' => false]);
+
+        $this->logAction('team.unverified', 'Team', $team->id, [
+            'name' => $team->name,
+            'tag' => $team->tag,
+        ]);
 
         return back()->with('success', 'Verification removed.');
     }
@@ -101,6 +113,11 @@ class TeamAdminController extends Controller
                 'left_at' => now(),
             ]);
 
+        $this->logAction('team.disbanded', 'Team', $team->id, [
+            'name' => $team->name,
+            'tag' => $team->tag,
+        ]);
+
         return back()->with('success', 'Platoon has been disbanded by admin.');
     }
 
@@ -113,6 +130,11 @@ class TeamAdminController extends Controller
         $team->update([
             'is_active' => true,
             'disbanded_at' => null,
+        ]);
+
+        $this->logAction('team.restored', 'Team', $team->id, [
+            'name' => $team->name,
+            'tag' => $team->tag,
         ]);
 
         return back()->with('success', 'Platoon has been restored.');
@@ -138,7 +160,15 @@ class TeamAdminController extends Controller
             \Storage::disk('s3')->delete($team->header_image);
         }
 
+        $teamName = $team->name;
+        $teamId = $team->id;
+
         $team->delete();
+
+        $this->logAction('team.deleted', 'Team', $teamId, [
+            'name' => $teamName,
+            'tag' => $team->tag,
+        ]);
 
         return redirect()->route('admin.teams.index')->with('success', 'Platoon has been permanently deleted.');
     }

@@ -137,17 +137,14 @@ class PlayerProfileController extends Controller
         }
 
         // Reputation
-        $reputation = $user->reputation()->firstOrCreate(
-            ['user_id' => $user->id],
-            [
-                'total_score' => 0,
-                'positive_votes' => 0,
-                'negative_votes' => 0,
-                'teamwork_count' => 0,
-                'leadership_count' => 0,
-                'sportsmanship_count' => 0,
-            ]
-        );
+        $reputation = $user->reputation ?: $user->reputation()->create([
+            'total_score' => 0,
+            'positive_votes' => 0,
+            'negative_votes' => 0,
+            'teamwork_count' => 0,
+            'leadership_count' => 0,
+            'sportsmanship_count' => 0,
+        ]);
 
         // Competitive rating
         $playerRating = $user->playerRating;

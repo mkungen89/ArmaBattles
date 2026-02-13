@@ -18,6 +18,11 @@ Schedule::call(function () {
         ->update(['status' => 'expired']);
 })->daily()->name('cleanup:expired-invitations');
 
+// Clean up orphaned favorites (pointing to deleted models)
+Schedule::command('favorites:cleanup')
+    ->daily()
+    ->name('cleanup:orphaned-favorites');
+
 // Clean up old read notifications (older than 90 days)
 Schedule::call(function () {
     \Illuminate\Support\Facades\DB::table('notifications')

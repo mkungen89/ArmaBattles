@@ -12,9 +12,14 @@ class ReputationTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+    }
+
     public function test_reputation_leaderboard_page_loads(): void
     {
-        $response = $this->get('/reputation');
+        $response = $this->get(route('reputation.index'));
 
         $response->assertOk();
     }
@@ -24,7 +29,7 @@ class ReputationTest extends TestCase
         $voter = User::factory()->create();
         $target = User::factory()->create();
 
-        $response = $this->actingAs($voter)->post('/reputation/vote', [
+        $response = $this->actingAs($voter)->post(route('reputation.vote-by-id'), [
             'target_user_id' => $target->id,
             'vote_type' => 'positive',
             'category' => 'teamwork',
@@ -44,7 +49,7 @@ class ReputationTest extends TestCase
         $voter = User::factory()->create();
         $target = User::factory()->create();
 
-        $response = $this->actingAs($voter)->post('/reputation/vote', [
+        $response = $this->actingAs($voter)->post(route('reputation.vote-by-id'), [
             'target_user_id' => $target->id,
             'vote_type' => 'negative',
             'category' => 'sportsmanship',
@@ -63,7 +68,7 @@ class ReputationTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->actingAs($user)->post('/reputation/vote', [
+        $response = $this->actingAs($user)->post(route('reputation.vote-by-id'), [
             'target_user_id' => $user->id,
             'vote_type' => 'positive',
             'category' => 'teamwork',
@@ -72,7 +77,7 @@ class ReputationTest extends TestCase
         $response->assertSessionHasErrors();
     }
 
-    public function test_user_cannot_vote_same_target_twice_in_24h(): void
+    public function test_user_can_update_vote_within_24h_via_vote_endpoint(): void
     {
         $voter = User::factory()->create();
         $target = User::factory()->create();
@@ -86,15 +91,24 @@ class ReputationTest extends TestCase
             'created_at' => now(),
         ]);
 
-        // Second vote within 24h
-        $response = $this->actingAs($voter)->post('/reputation/vote', [
+        // Second vote within 24h should UPDATE the existing vote
+        $response = $this->actingAs($voter)->post(route('reputation.vote-by-id'), [
             'target_user_id' => $target->id,
-            'vote_type' => 'positive',
+            'vote_type' => 'negative',
             'category' => 'leadership',
         ]);
 
         $response->assertRedirect();
-        $response->assertSessionHas('error');
+        $response->assertSessionHas('success');
+
+        // Vote should be updated, not duplicated
+        $this->assertEquals(1, ReputationVote::where('voter_id', $voter->id)->where('target_id', $target->id)->count());
+        $this->assertDatabaseHas('reputation_votes', [
+            'voter_id' => $voter->id,
+            'target_id' => $target->id,
+            'vote_type' => 'negative',
+            'category' => 'leadership',
+        ]);
     }
 
     public function test_user_can_change_vote_within_24h(): void
@@ -110,7 +124,7 @@ class ReputationTest extends TestCase
             'created_at' => now()->subHour(),
         ]);
 
-        $response = $this->actingAs($voter)->put("/reputation/votes/{$vote->id}", [
+        $response = $this->actingAs($voter)->put(route('reputation.update-vote', $vote), [
             'vote_type' => 'negative',
             'category' => 'teamwork',
             'comment' => 'Changed my mind',
@@ -136,7 +150,7 @@ class ReputationTest extends TestCase
             'created_at' => now()->subDays(2),
         ]);
 
-        $response = $this->actingAs($voter)->put("/reputation/votes/{$vote->id}", [
+        $response = $this->actingAs($voter)->put(route('reputation.update-vote', $vote), [
             'vote_type' => 'negative',
         ]);
 
@@ -203,7 +217,7 @@ class ReputationTest extends TestCase
 
     public function test_guest_can_view_reputation_but_not_vote(): void
     {
-        $response = $this->get('/reputation');
+        $response = $this->get(route('reputation.index'));
 
         $response->assertOk();
         $response->assertDontSee('Vote');

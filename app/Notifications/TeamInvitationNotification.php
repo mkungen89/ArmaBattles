@@ -25,12 +25,14 @@ class TeamInvitationNotification extends Notification
     {
         return [
             'type' => 'team_invitation',
+            'category' => 'team',
             'team_id' => $this->team->id,
             'team_name' => $this->team->name,
             'team_tag' => $this->team->tag,
             'inviter_id' => $this->inviter->id,
             'inviter_name' => $this->inviter->name,
             'message' => "You've been invited to join {$this->team->name}",
+            'url' => route('teams.show', $this->team),
         ];
     }
 }

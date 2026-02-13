@@ -30,6 +30,7 @@ class VideoSubmittedNotification extends Notification implements ShouldQueue
     {
         return [
             'type' => 'video_submitted',
+            'category' => 'video',
             'video_id' => $this->clip->id,
             'video_title' => $this->clip->title,
             'platform' => $this->clip->platform,

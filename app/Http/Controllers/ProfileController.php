@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Storage;
 
 class ProfileController extends Controller
 {
+    use \App\Traits\LogsAdminActions;
     public function show()
     {
         $user = Auth::user();
@@ -149,17 +150,14 @@ class ProfileController extends Controller
         }
 
         // Reputation
-        $reputation = $user->reputation()->firstOrCreate(
-            ['user_id' => $user->id],
-            [
-                'total_score' => 0,
-                'positive_votes' => 0,
-                'negative_votes' => 0,
-                'teamwork_count' => 0,
-                'leadership_count' => 0,
-                'sportsmanship_count' => 0,
-            ]
-        );
+        $reputation = $user->reputation ?: $user->reputation()->create([
+            'total_score' => 0,
+            'positive_votes' => 0,
+            'negative_votes' => 0,
+            'teamwork_count' => 0,
+            'leadership_count' => 0,
+            'sportsmanship_count' => 0,
+        ]);
 
         // Competitive rating
         $playerRating = $user->playerRating;
@@ -268,6 +266,10 @@ class ProfileController extends Controller
         $user = Auth::user();
         $user->update(['player_uuid' => strtolower($validated['player_uuid'])]);
 
+        $this->logAction('profile.arma-id-linked', 'User', $user->id, [
+            'player_uuid' => strtolower($validated['player_uuid']),
+        ]);
+
         return back()->with('success', 'Your Arma Reforger ID has been linked successfully!');
     }
 
@@ -277,7 +279,12 @@ class ProfileController extends Controller
     public function unlinkArmaId()
     {
         $user = Auth::user();
+        $oldUuid = $user->player_uuid;
         $user->update(['player_uuid' => null]);
+
+        $this->logAction('profile.arma-id-unlinked', 'User', $user->id, [
+            'previous_uuid' => $oldUuid,
+        ]);
 
         return back()->with('success', 'Your Arma Reforger ID has been unlinked.');
     }
@@ -314,6 +321,11 @@ class ProfileController extends Controller
             'discord_id' => $validated['discord_id'] ?? null,
         ]);
 
+        $this->logAction('profile.discord-linked', 'User', $user->id, [
+            'discord_username' => strtolower($validated['discord_username']),
+            'discord_id' => $validated['discord_id'] ?? null,
+        ]);
+
         return back()->with('success', 'Your Discord has been linked successfully!');
     }
 
@@ -327,6 +339,8 @@ class ProfileController extends Controller
             'discord_username' => null,
             'discord_id' => null,
         ]);
+
+        $this->logAction('profile.discord-unlinked', 'User', $user->id);
 
         return back()->with('success', 'Your Discord has been unlinked.');
     }
@@ -380,6 +394,10 @@ class ProfileController extends Controller
         $path = $request->file('avatar')->store('avatars', 's3');
         $user->update(['custom_avatar' => $path]);
 
+        $this->logAction('profile.avatar-uploaded', 'User', $user->id, [
+            'avatar_path' => $path,
+        ]);
+
         return back()->with('success', 'Avatar uploaded successfully!');
     }
 
@@ -395,6 +413,8 @@ class ProfileController extends Controller
         }
 
         $user->update(['custom_avatar' => null]);
+
+        $this->logAction('profile.avatar-removed', 'User', $user->id);
 
         return back()->with('success', 'Custom avatar removed. Your Steam avatar will be used.');
     }

@@ -13,6 +13,11 @@ class FavoriteTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+    }
+
     public function test_favorites_page_loads(): void
     {
         $user = User::factory()->create();
@@ -181,5 +186,23 @@ class FavoriteTest extends TestCase
         ]);
 
         $response->assertRedirect('/login');
+    }
+
+    public function test_user_cannot_favorite_themselves(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->post('/favorites/toggle', [
+            'type' => 'player',
+            'id' => $user->id,
+        ]);
+
+        $response->assertRedirect();
+        $response->assertSessionHas('error', 'You cannot favorite yourself.');
+        $this->assertDatabaseMissing('favorites', [
+            'user_id' => $user->id,
+            'favoritable_type' => User::class,
+            'favoritable_id' => $user->id,
+        ]);
     }
 }

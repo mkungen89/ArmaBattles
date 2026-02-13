@@ -37,10 +37,12 @@ class LevelUpNotification extends Notification
     {
         return [
             'type' => 'level_up',
+            'category' => 'achievement',
             'level' => $this->newLevel,
             'tier' => $this->tier['label'],
             'tier_color' => $this->tier['color'],
             'message' => "Congratulations! You've reached Level {$this->newLevel} - {$this->tier['label']}!",
+            'url' => route('profile'),
         ];
     }
 }

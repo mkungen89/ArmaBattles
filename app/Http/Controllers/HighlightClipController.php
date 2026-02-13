@@ -38,12 +38,14 @@ class HighlightClipController extends Controller
 
         $clips = $query->paginate(12);
 
-        // Get clip of the week (most votes in last 7 days, approved only)
-        $clipOfTheWeek = HighlightClip::with('user')
-            ->where('status', 'approved')
-            ->where('created_at', '>=', now()->subDays(7))
-            ->orderByDesc('votes')
-            ->first();
+        // Get clip of the week (most votes in last 7 days, approved only) - cached for 1 hour
+        $clipOfTheWeek = \Cache::remember('clip_of_the_week', 3600, function () {
+            return HighlightClip::with('user')
+                ->where('status', 'approved')
+                ->where('created_at', '>=', now()->subDays(7))
+                ->orderByDesc('votes')
+                ->first();
+        });
 
         $stats = [
             'total' => HighlightClip::where('status', 'approved')->count(),
@@ -91,6 +93,8 @@ class HighlightClipController extends Controller
      */
     public function store(Request $request)
     {
+        $maxDuration = (int) site_setting('clip_max_duration_seconds', 120);
+
         $validated = $request->validate([
             'url' => 'required|url|max:255',
             'title' => 'nullable|string|max:255',
@@ -98,6 +102,9 @@ class HighlightClipController extends Controller
             'platform' => 'nullable|in:youtube,twitch,tiktok,kick',
             'author' => 'nullable|string|max:255',
             'thumbnail_url' => 'nullable|url|max:500',
+            'duration_seconds' => "nullable|integer|max:{$maxDuration}",
+        ], [
+            'duration_seconds.max' => "Video must be no longer than {$maxDuration} seconds (" . gmdate('i:s', $maxDuration) . ").",
         ]);
 
         // If metadata not provided, try to fetch it
@@ -127,6 +134,7 @@ class HighlightClipController extends Controller
             'author' => $validated['author'] ?? null,
             'description' => $validated['description'] ?? null,
             'thumbnail_url' => $validated['thumbnail_url'] ?? null,
+            'duration_seconds' => $validated['duration_seconds'] ?? null,
         ]);
 
         // Send notification to user
@@ -165,6 +173,9 @@ class HighlightClipController extends Controller
         ]);
 
         DB::transaction(function () use ($clip, $user, $validated) {
+            // Lock the clip row to prevent race conditions
+            $clip = HighlightClip::where('id', $clip->id)->lockForUpdate()->first();
+
             // Update or create vote
             ClipVote::updateOrCreate(
                 [
@@ -178,6 +189,9 @@ class HighlightClipController extends Controller
 
             $clip->recalculateVotes();
         });
+
+        // Invalidate clip of the week cache
+        \Cache::forget('clip_of_the_week');
 
         return back()->with('success', 'Vote recorded!');
     }
@@ -199,8 +213,12 @@ class HighlightClipController extends Controller
 
         DB::transaction(function () use ($vote, $clip) {
             $vote->delete();
-            $clip->decrementVotes();
+            // Recalculate votes properly (handles both upvote and downvote removal)
+            $clip->recalculateVotes();
         });
+
+        // Invalidate clip of the week cache
+        \Cache::forget('clip_of_the_week');
 
         return back()->with('success', 'Vote removed.');
     }

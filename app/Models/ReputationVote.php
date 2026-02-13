@@ -33,10 +33,11 @@ class ReputationVote extends Model
     }
 
     /**
-     * Check if vote can be changed (within 24 hours)
+     * Check if vote can be changed (within configured cooldown period)
      */
     public function canBeChanged(): bool
     {
-        return $this->created_at->diffInHours(now()) < 24;
+        $cooldownHours = (int) site_setting('reputation_vote_cooldown_hours', 24);
+        return $this->created_at->diffInHours(now()) < $cooldownHours;
     }
 }

@@ -351,31 +351,37 @@ class Server extends Model
             $platforms = ['pc'];
         }
 
-        $server = self::updateOrCreate(
+        // Find or create the server
+        $server = self::firstOrCreate(
             ['battlemetrics_id' => $data['id']],
             [
                 'name' => $attributes['name'] ?? 'Unknown',
-                'ip' => $attributes['ip'] ?? null,
-                'port' => $attributes['port'] ?? null,
-                'query_port' => $attributes['portQuery'] ?? null,
-                'map' => $details['map'] ?? null,
-                'scenario' => $reforger['scenarioName'] ?? $details['scenario'] ?? $details['map'] ?? null,
                 'players' => $attributes['players'] ?? 0,
                 'max_players' => $attributes['maxPlayers'] ?? 128,
-                'status' => $attributes['status'] ?? 'offline',
-                'country' => $attributes['country'] ?? null,
-                'country_code' => $attributes['country'] ?? null,
-                'game_version' => $details['version'] ?? null,
-                'game_build' => $details['build'] ?? $details['gameBuild'] ?? null,
-                'is_official' => $details['official'] ?? false,
-                'battleye_enabled' => $reforger['battlEye'] ?? $details['battleye'] ?? $details['battlEye'] ?? true,
-                'crossplay_enabled' => count($platforms) > 1,
-                'supported_platforms' => $platforms,
-                'direct_join_code' => $details['joinCode'] ?? null,
-                'rank' => $attributes['rank'] ?? null,
-                'last_updated_at' => now(),
             ]
         );
+
+        // Update all fields except players/max_players (those are managed by server:track)
+        $server->update([
+            'name' => $attributes['name'] ?? 'Unknown',
+            'ip' => $attributes['ip'] ?? null,
+            'port' => $attributes['port'] ?? null,
+            'query_port' => $attributes['portQuery'] ?? null,
+            'map' => $details['map'] ?? null,
+            'scenario' => $reforger['scenarioName'] ?? $details['scenario'] ?? $details['map'] ?? null,
+            'status' => $attributes['status'] ?? 'offline',
+            'country' => $attributes['country'] ?? null,
+            'country_code' => $attributes['country'] ?? null,
+            'game_version' => $details['version'] ?? null,
+            'game_build' => $details['build'] ?? $details['gameBuild'] ?? null,
+            'is_official' => $details['official'] ?? false,
+            'battleye_enabled' => $reforger['battlEye'] ?? $details['battleye'] ?? $details['battlEye'] ?? true,
+            'crossplay_enabled' => count($platforms) > 1,
+            'supported_platforms' => $platforms,
+            'direct_join_code' => $details['joinCode'] ?? null,
+            'rank' => $attributes['rank'] ?? null,
+            'last_updated_at' => now(),
+        ]);
 
         return $server;
     }

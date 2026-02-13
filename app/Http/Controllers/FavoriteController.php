@@ -15,6 +15,7 @@ class FavoriteController extends Controller
         $user = $request->user();
 
         $favorites = Favorite::where('user_id', $user->id)
+            ->with('favoritable')
             ->orderByDesc('created_at')
             ->get()
             ->groupBy('favoritable_type');
@@ -24,18 +25,20 @@ class FavoriteController extends Controller
         $servers = collect();
 
         if ($favorites->has(User::class)) {
-            $playerIds = $favorites[User::class]->pluck('favoritable_id');
-            $players = User::whereIn('id', $playerIds)->get();
+            $players = $favorites[User::class]->pluck('favoritable')->filter();
         }
 
         if ($favorites->has(Team::class)) {
-            $teamIds = $favorites[Team::class]->pluck('favoritable_id');
-            $teams = Team::whereIn('id', $teamIds)->with('captain')->get();
+            $teams = $favorites[Team::class]->pluck('favoritable')->filter();
+            // Load captain relationship for teams
+            $teamIds = $teams->pluck('id')->toArray();
+            if (!empty($teamIds)) {
+                $teams = Team::whereIn('id', $teamIds)->with('captain')->get();
+            }
         }
 
         if ($favorites->has(Server::class)) {
-            $serverIds = $favorites[Server::class]->pluck('favoritable_id');
-            $servers = Server::whereIn('id', $serverIds)->get();
+            $servers = $favorites[Server::class]->pluck('favoritable')->filter();
         }
 
         return view('favorites.index', compact('players', 'teams', 'servers'));
@@ -53,6 +56,15 @@ class FavoriteController extends Controller
             'team' => Team::findOrFail($request->id),
             'server' => Server::findOrFail($request->id),
         };
+
+        // Prevent users from favoriting themselves
+        if ($request->type === 'player' && $request->user() && $model->id === $request->user()->id) {
+            if ($request->wantsJson()) {
+                return response()->json(['error' => 'You cannot favorite yourself.'], 422);
+            }
+
+            return back()->with('error', 'You cannot favorite yourself.');
+        }
 
         $added = $request->user()->toggleFavorite($model);
 

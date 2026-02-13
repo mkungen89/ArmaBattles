@@ -29,11 +29,13 @@ class ApplicationResultNotification extends Notification
 
         return [
             'type' => 'application_result',
+            'category' => 'team',
             'team_id' => $this->team->id,
             'team_name' => $this->team->name,
             'result' => $this->result,
             'reason' => $this->reason,
             'message' => $message,
+            'url' => $this->result === 'accepted' ? route('teams.show', $this->team) : route('teams.index'),
         ];
     }
 }

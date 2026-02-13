@@ -11,6 +11,11 @@ class RankedSystemTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+    }
+
     public function test_ranked_leaderboard_page_loads(): void
     {
         $response = $this->get('/ranked');

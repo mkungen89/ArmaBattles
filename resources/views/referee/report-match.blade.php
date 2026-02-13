@@ -46,7 +46,7 @@
                 </div>
             </div>
             {{-- Report Form --}}
-            <form action="{{ route('referee.match.submit-report', $match->id) }}" method="POST">
+            <form action="{{ route('referee.match.submit-report', $match) }}" method="POST">
                 @csrf
                 <div class="glass-card rounded-xl p-6 space-y-6">
                     {{-- Winner Selection --}}

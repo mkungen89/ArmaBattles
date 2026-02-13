@@ -108,7 +108,7 @@
                 <div class="glass-card rounded-xl p-6 mb-6">
                     <h2 class="text-xl font-bold text-white mb-4">Admin Actions</h2>
                     <div class="flex gap-3">
-                        <form action="{{ route('referee.report.approve', $report->id) }}" method="POST">
+                        <form action="{{ route('referee.report.approve', $report) }}" method="POST">
                             @csrf
                             <button type="submit"
                                     class="px-6 py-2 bg-green-600 hover:bg-green-500 text-white rounded-xl transition flex items-center gap-2">
@@ -127,7 +127,7 @@
                             Dispute Report
                         </button>
                     </div>
-                    <form id="dispute-form" action="{{ route('referee.report.dispute', $report->id) }}" method="POST" class="mt-4 hidden">
+                    <form id="dispute-form" action="{{ route('referee.report.dispute', $report) }}" method="POST" class="mt-4 hidden">
                         @csrf
                         <label class="block text-sm font-medium text-gray-300 mb-2">Dispute Reason *</label>
                         <textarea name="dispute_reason"

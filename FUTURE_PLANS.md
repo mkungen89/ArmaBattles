@@ -803,3 +803,204 @@ If metrics are poor → reconsider if in-house chat is necessary.
 **Last Updated:** 2026-02-11
 **Status:** Planning Phase
 **Owner:** ArmaBattles Development Team
+
+---
+
+# Content Creators System - Future Features
+
+## Overview
+
+The Content Creators system allows streamers and content creators to register their channels and submit highlight clips for community voting. Two additional features are planned for future implementation to enhance creator visibility and streamline verification.
+
+## Implemented Features (2026-02-13)
+
+✅ **Auto-Approval System** - Clips automatically approve when reaching vote threshold (`clip_approval_threshold` site setting, default 10 votes)
+✅ **Duration Validation** - Video submissions enforce max duration limit (`clip_max_duration_seconds` site setting, default 120 seconds)
+
+## Planned Features
+
+### 1. Automatic Creator Verification Based on Follower Count
+
+**Goal:** Streamline the creator verification process by automatically granting verified status to creators who meet follower thresholds.
+
+**Site Setting:**
+- `creator_verification_followers` (integer, default: 1000) - Minimum follower count required for auto-verification
+
+**Implementation Requirements:**
+
+1. **API Integration** - Fetch real-time follower counts from each platform:
+   - **Twitch:** Use Twitch API v5/Helix endpoint `GET /users` → `followers` field (requires OAuth app credentials)
+   - **YouTube:** Use YouTube Data API v3 endpoint `GET /channels` → `statistics.subscriberCount` (requires API key)
+   - **TikTok:** Use TikTok API `GET /user/info` → `follower_count` (requires Business account)
+   - **Kick:** No official API - may require web scraping or manual verification
+
+2. **Service Layer:**
+   ```php
+   // app/Services/CreatorVerificationService.php
+   class CreatorVerificationService {
+       public function checkVerificationEligibility(ContentCreator $creator): bool
+       {
+           $threshold = (int) site_setting('creator_verification_followers', 1000);
+           $followerCount = $this->fetchFollowerCount($creator);
+
+           if ($followerCount >= $threshold) {
+               $creator->update(['is_verified' => true, 'verified_at' => now()]);
+               return true;
+           }
+
+           return false;
+       }
+
+       private function fetchFollowerCount(ContentCreator $creator): int
+       {
+           return match($creator->platform) {
+               'twitch' => $this->getTwitchFollowers($creator->channel_url),
+               'youtube' => $this->getYouTubeSubscribers($creator->channel_url),
+               'tiktok' => $this->getTikTokFollowers($creator->channel_url),
+               'kick' => 0, // Manual verification required
+           };
+       }
+   }
+   ```
+
+3. **Scheduled Task:**
+   - Add command `creators:check-verification` to run daily
+   - Re-verify existing creators periodically (e.g., weekly)
+   - Send notification when creator is auto-verified
+
+4. **Environment Variables:**
+   ```
+   TWITCH_CLIENT_ID=
+   TWITCH_CLIENT_SECRET=
+   YOUTUBE_API_KEY=
+   TIKTOK_ACCESS_TOKEN=
+   ```
+
+**Estimated Development Time:** 8-12 hours (API integration + testing)
+
+**Challenges:**
+- Rate limits on platform APIs (especially YouTube: 10,000 quota/day)
+- TikTok API access restricted to Business accounts
+- Kick has no official API (web scraping unreliable)
+- Follower counts may fluctuate, causing verification revocation issues
+
+---
+
+### 2. Featured Creator Slots on Homepage
+
+**Goal:** Showcase top verified creators prominently on the homepage to drive traffic to their channels and encourage new creator registrations.
+
+**Site Setting:**
+- `creator_featured_slots` (integer, default: 6) - Number of creators to feature on homepage
+
+**Implementation Requirements:**
+
+1. **Featured Creator Selection Logic:**
+   - Option A: Manual admin selection via flag (`is_homepage_featured` boolean)
+   - Option B: Automatic rotation based on criteria (most followers, most recent clips, most active)
+   - Option C: Hybrid - admin can manually feature, otherwise auto-select from verified creators
+
+2. **Homepage Controller Update:**
+   ```php
+   // app/Http/Controllers/HomeController.php
+   public function index()
+   {
+       $featuredCreators = ContentCreator::query()
+           ->where('is_verified', true)
+           ->where('is_homepage_featured', true) // Manual selection
+           ->orWhere(function($query) {
+               // Auto-fill remaining slots if manual < creator_featured_slots
+               $query->where('is_verified', true)
+                     ->orderByDesc('follower_count') // Assumes follower_count column added
+                     ->limit(site_setting('creator_featured_slots', 6));
+           })
+           ->with('user')
+           ->get();
+
+       return view('home', compact('featuredCreators'));
+   }
+   ```
+
+3. **Database Migration:**
+   ```php
+   Schema::table('content_creators', function (Blueprint $table) {
+       $table->boolean('is_homepage_featured')->default(false)->after('is_verified');
+       $table->integer('follower_count')->nullable()->after('channel_name'); // Cached from API
+       $table->index('follower_count');
+   });
+   ```
+
+4. **Admin Panel:**
+   - Add "Feature on Homepage" toggle to `/admin/creators/{id}/edit`
+   - Show preview of current featured creators
+   - Drag-and-drop ordering for manual selection
+
+5. **Homepage View:**
+   ```html
+   <!-- resources/views/home.blade.php -->
+   <section class="mb-16">
+       <h2 class="text-3xl font-bold mb-6">Featured Content Creators</h2>
+       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+           @foreach($featuredCreators as $creator)
+               <a href="/creators/{{ $creator->id }}" class="glass-card p-6 hover:border-green-500/30 transition">
+                   <div class="flex items-center gap-4 mb-4">
+                       <img src="{{ $creator->user->avatar }}" class="w-16 h-16 rounded-full">
+                       <div>
+                           <h3 class="font-semibold text-white flex items-center gap-2">
+                               {{ $creator->channel_name }}
+                               <svg class="w-5 h-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                                   <path d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+                               </svg>
+                           </h3>
+                           <p class="text-sm text-gray-400">{{ $creator->platform_name }}</p>
+                       </div>
+                   </div>
+                   <p class="text-sm text-gray-300 mb-4">{{ Str::limit($creator->bio, 100) }}</p>
+                   <div class="flex items-center justify-between text-sm">
+                       <span class="text-gray-400">{{ number_format($creator->follower_count) }} followers</span>
+                       <span class="text-green-400">View Channel →</span>
+                   </div>
+               </a>
+           @endforeach
+       </div>
+       <div class="text-center mt-8">
+           <a href="/creators" class="inline-flex items-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-500 rounded-xl transition">
+               View All Creators
+               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+               </svg>
+           </a>
+       </div>
+   </section>
+   ```
+
+**Estimated Development Time:** 4-6 hours (UI + admin controls)
+
+**Benefits:**
+- Increased visibility for top creators
+- Encourages new creator registrations
+- Drives traffic to creator channels
+- Professional appearance for homepage
+
+---
+
+## Priority & Timeline
+
+**Phase 1 (Completed):** ✅ Auto-approval and duration validation (2026-02-13)
+
+**Phase 2 (Q1 2026):** Featured Creator Slots
+- Lower complexity, immediate visual impact
+- No external API dependencies
+- Can be implemented independently
+
+**Phase 3 (Q2 2026):** Automatic Verification
+- Requires API credentials and quota management
+- Depends on platform API availability
+- Higher maintenance burden (API changes, rate limits)
+
+**Recommendation:** Implement Featured Slots first for quick wins, then tackle Auto-Verification once API infrastructure is established.
+
+---
+
+**Last Updated:** 2026-02-13
+**Status:** Features 1-2 Implemented, Features 3-4 Planned

@@ -4,10 +4,12 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\DiscordRichPresence;
+use App\Traits\LogsAdminActions;
 use Illuminate\Http\Request;
 
 class DiscordAdminController extends Controller
 {
+    use LogsAdminActions;
     public function index(Request $request)
     {
         $query = DiscordRichPresence::with('user');
@@ -43,12 +45,24 @@ class DiscordAdminController extends Controller
     {
         $presence->update(['enabled' => false]);
 
+        $this->logAction('discord-presence.disabled', 'DiscordRichPresence', $presence->id, [
+            'user_id' => $presence->user_id,
+            'discord_user_id' => $presence->discord_user_id,
+        ]);
+
         return back()->with('success', 'Discord presence disabled.');
     }
 
     public function destroy(DiscordRichPresence $presence)
     {
+        $presenceId = $presence->id;
+        $userId = $presence->user_id;
+
         $presence->delete();
+
+        $this->logAction('discord-presence.deleted', 'DiscordRichPresence', $presenceId, [
+            'user_id' => $userId,
+        ]);
 
         return redirect()->route('admin.discord.index')->with('success', 'Presence record deleted.');
     }

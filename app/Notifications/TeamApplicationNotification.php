@@ -25,11 +25,13 @@ class TeamApplicationNotification extends Notification
     {
         return [
             'type' => 'team_application',
+            'category' => 'team',
             'team_id' => $this->team->id,
             'team_name' => $this->team->name,
             'applicant_id' => $this->applicant->id,
             'applicant_name' => $this->applicant->name,
             'message' => "{$this->applicant->name} has applied to join {$this->team->name}",
+            'url' => route('teams.my'),
         ];
     }
 }

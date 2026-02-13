@@ -13,6 +13,11 @@ class AchievementTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+    }
+
     public function test_achievements_page_loads(): void
     {
         $response = $this->get('/achievements');

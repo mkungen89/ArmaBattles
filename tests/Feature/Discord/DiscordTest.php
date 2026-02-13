@@ -11,11 +11,16 @@ class DiscordTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+    }
+
     public function test_discord_settings_page_loads(): void
     {
         $user = User::factory()->create();
 
-        $response = $this->actingAs($user)->get('/discord/settings');
+        $response = $this->actingAs($user)->get(route('discord.settings'));
 
         $response->assertOk();
     }
@@ -24,7 +29,7 @@ class DiscordTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->actingAs($user)->post('/discord/enable', [
+        $response = $this->actingAs($user)->post(route('discord.enable'), [
             'current_activity' => 'playing',
         ]);
 
@@ -44,7 +49,7 @@ class DiscordTest extends TestCase
             'enabled' => true,
         ]);
 
-        $response = $this->actingAs($user)->post('/discord/disable');
+        $response = $this->actingAs($user)->post(route('discord.disable'));
 
         $response->assertRedirect();
         $this->assertDatabaseHas('discord_rich_presence', [
@@ -62,7 +67,7 @@ class DiscordTest extends TestCase
             'enabled' => true,
         ]);
 
-        $response = $this->actingAs($user)->post('/discord/update-activity', [
+        $response = $this->actingAs($user)->post(route('discord.update-activity'), [
             'activity_type' => 'browsing',
         ]);
 
@@ -83,7 +88,7 @@ class DiscordTest extends TestCase
             'enabled' => true,
         ]);
 
-        $response = $this->actingAs($user)->get('/api/discord/presence');
+        $response = $this->actingAs($user)->get(route('api.discord.presence'));
 
         $response->assertOk();
         $response->assertJsonStructure([

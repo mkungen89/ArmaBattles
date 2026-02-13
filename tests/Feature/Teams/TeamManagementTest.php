@@ -47,7 +47,7 @@ class TeamManagementTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->actingAs($user)->post('/teams', [
+        $response = $this->actingAs($user)->post(route('teams.store'), [
             'name' => 'Elite Warriors',
             'tag' => 'EW',
             'description' => 'A competitive team',
@@ -73,7 +73,7 @@ class TeamManagementTest extends TestCase
 
         $user = User::factory()->create();
 
-        $response = $this->actingAs($user)->post('/teams', [
+        $response = $this->actingAs($user)->post(route('teams.store'), [
             'name' => 'Existing Team',
             'tag' => 'ET',
         ]);
@@ -87,7 +87,7 @@ class TeamManagementTest extends TestCase
 
         $user = User::factory()->create();
 
-        $response = $this->actingAs($user)->post('/teams', [
+        $response = $this->actingAs($user)->post(route('teams.store'), [
             'name' => 'New Team',
             'tag' => 'TAKEN',
         ]);
@@ -102,7 +102,7 @@ class TeamManagementTest extends TestCase
         $invitee = User::factory()->create(['steam_id' => '76561198000000001']);
 
         $response = $this->actingAs($this->captain)
-            ->post("/teams/{$this->team->id}/invite", [
+            ->post(route('teams.invite', $this->team), [
                 'steam_id' => '76561198000000001',
             ]);
 
@@ -121,7 +121,7 @@ class TeamManagementTest extends TestCase
         User::factory()->create(['steam_id' => '76561198000000002']);
 
         $response = $this->actingAs($nonCaptain)
-            ->post("/teams/{$this->team->id}/invite", [
+            ->post(route('teams.invite', $this->team), [
                 'steam_id' => '76561198000000002',
             ]);
 
@@ -138,7 +138,7 @@ class TeamManagementTest extends TestCase
         ]);
 
         $response = $this->actingAs($this->member)
-            ->post("/invitations/{$invitation->id}/accept");
+            ->post(route('teams.invitations.accept', $invitation));
 
         $response->assertRedirect();
 
@@ -163,7 +163,7 @@ class TeamManagementTest extends TestCase
         ]);
 
         $response = $this->actingAs($this->member)
-            ->post("/invitations/{$invitation->id}/decline");
+            ->post(route('teams.invitations.decline', $invitation));
 
         $response->assertRedirect();
 
@@ -189,7 +189,7 @@ class TeamManagementTest extends TestCase
         ]);
 
         $response = $this->actingAs($this->member)
-            ->post("/invitations/{$invitation->id}/accept");
+            ->post(route('teams.invitations.accept', $invitation));
 
         // isValid() returns false for expired invitations → abort(403)
         $response->assertStatus(403);
@@ -205,7 +205,7 @@ class TeamManagementTest extends TestCase
         ]);
 
         $response = $this->actingAs($this->captain)
-            ->post("/teams/{$this->team->id}/invite", [
+            ->post(route('teams.invite', $this->team), [
                 'steam_id' => '76561198000000003',
             ]);
 
@@ -221,7 +221,7 @@ class TeamManagementTest extends TestCase
         $this->team->update(['is_recruiting' => true]);
 
         $response = $this->actingAs($this->applicant)
-            ->post("/teams/{$this->team->id}/apply", [
+            ->post(route('teams.apply', $this->team), [
                 'message' => 'I would like to join your team!',
             ]);
 
@@ -239,7 +239,7 @@ class TeamManagementTest extends TestCase
         $this->team->update(['is_recruiting' => false]);
 
         $response = $this->actingAs($this->applicant)
-            ->post("/teams/{$this->team->id}/apply", [
+            ->post(route('teams.apply', $this->team), [
                 'message' => 'I would like to join!',
             ]);
 
@@ -257,7 +257,7 @@ class TeamManagementTest extends TestCase
         ]);
 
         $response = $this->actingAs($this->captain)
-            ->post("/teams/{$this->team->id}/applications/{$application->id}/accept");
+            ->post(route('teams.applications.accept', [$this->team, $application]));
 
         $response->assertRedirect();
 
@@ -281,7 +281,7 @@ class TeamManagementTest extends TestCase
         ]);
 
         $response = $this->actingAs($this->captain)
-            ->post("/teams/{$this->team->id}/applications/{$application->id}/reject");
+            ->post(route('teams.applications.reject', [$this->team, $application]));
 
         $response->assertRedirect();
 
@@ -307,7 +307,7 @@ class TeamManagementTest extends TestCase
         $nonCaptain = User::factory()->create();
 
         $response = $this->actingAs($nonCaptain)
-            ->post("/teams/{$this->team->id}/applications/{$application->id}/accept");
+            ->post(route('teams.applications.accept', [$this->team, $application]));
 
         $response->assertStatus(403);
     }
@@ -325,7 +325,7 @@ class TeamManagementTest extends TestCase
 
         // Second application - returns back()->with('error', ...) due to hasPendingApplicationTo
         $response = $this->actingAs($this->applicant)
-            ->post("/teams/{$this->team->id}/apply", [
+            ->post(route('teams.apply', $this->team), [
                 'message' => 'Applying again!',
             ]);
 
@@ -344,7 +344,7 @@ class TeamManagementTest extends TestCase
         ]);
 
         $response = $this->actingAs($this->captain)
-            ->post("/teams/{$this->team->id}/members/{$this->member->id}/kick");
+            ->post(route('teams.members.kick', [$this->team, $this->member]));
 
         $response->assertRedirect();
 
@@ -359,7 +359,7 @@ class TeamManagementTest extends TestCase
     public function test_captain_cannot_kick_themselves(): void
     {
         $response = $this->actingAs($this->captain)
-            ->post("/teams/{$this->team->id}/members/{$this->captain->id}/kick");
+            ->post(route('teams.members.kick', [$this->team, $this->captain]));
 
         // Controller returns back()->with('error', 'You cannot kick yourself.')
         $response->assertRedirect();
@@ -375,7 +375,7 @@ class TeamManagementTest extends TestCase
         ]);
 
         $response = $this->actingAs($this->member)
-            ->post("/teams/{$this->team->id}/leave");
+            ->post(route('teams.leave', $this->team));
 
         $response->assertRedirect();
 
@@ -396,7 +396,7 @@ class TeamManagementTest extends TestCase
         ]);
 
         $response = $this->actingAs($this->captain)
-            ->post("/teams/{$this->team->id}/leave");
+            ->post(route('teams.leave', $this->team));
 
         // Controller returns back()->with('error', 'Captains must transfer leadership...')
         $response->assertRedirect();
@@ -408,7 +408,7 @@ class TeamManagementTest extends TestCase
     public function test_captain_can_update_team(): void
     {
         $response = $this->actingAs($this->captain)
-            ->put("/teams/{$this->team->id}", [
+            ->put(route('teams.update', $this->team), [
                 'name' => $this->team->name,
                 'tag' => $this->team->tag,
                 'description' => 'Updated description',
@@ -427,7 +427,7 @@ class TeamManagementTest extends TestCase
         $nonCaptain = User::factory()->create();
 
         $response = $this->actingAs($nonCaptain)
-            ->put("/teams/{$this->team->id}", [
+            ->put(route('teams.update', $this->team), [
                 'description' => 'Hacked!',
             ]);
 
@@ -439,7 +439,7 @@ class TeamManagementTest extends TestCase
     public function test_captain_can_disband_team(): void
     {
         $response = $this->actingAs($this->captain)
-            ->post("/teams/{$this->team->id}/disband");
+            ->post(route('teams.disband', $this->team));
 
         $response->assertRedirect();
 
@@ -452,7 +452,7 @@ class TeamManagementTest extends TestCase
         $nonCaptain = User::factory()->create();
 
         $response = $this->actingAs($nonCaptain)
-            ->post("/teams/{$this->team->id}/disband");
+            ->post(route('teams.disband', $this->team));
 
         $response->assertStatus(403);
     }
@@ -473,7 +473,7 @@ class TeamManagementTest extends TestCase
         $team2 = Team::factory()->create(['is_recruiting' => true]);
 
         $response = $this->actingAs($this->member)
-            ->post("/teams/{$team2->id}/apply", [
+            ->post(route('teams.apply', $team2), [
                 'message' => 'I want to join!',
             ]);
 
@@ -500,7 +500,7 @@ class TeamManagementTest extends TestCase
         ]);
 
         $response = $this->actingAs($this->member)
-            ->post("/invitations/{$invitation->id}/accept");
+            ->post(route('teams.invitations.accept', $invitation));
 
         // hasTeam() returns true, so controller returns back()->with('error', ...)
         $response->assertRedirect();

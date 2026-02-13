@@ -52,8 +52,8 @@ class WeaponAdminController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:weapons,name',
             'display_name' => 'nullable|string|max:255',
-            'weapon_type' => 'nullable|string|max:100',
-            'category' => 'nullable|string|max:100',
+            'weapon_type' => 'nullable|in:rifle,pistol,sniper,shotgun,lmg,explosive,melee,vehicle,launcher',
+            'category' => 'nullable|in:primary,secondary,equipment,special',
             'image' => 'nullable|image|mimes:png,jpg,jpeg,gif,webp|max:2048',
         ]);
 
@@ -91,8 +91,8 @@ class WeaponAdminController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:weapons,name,'.$weapon->id,
             'display_name' => 'nullable|string|max:255',
-            'weapon_type' => 'nullable|string|max:100',
-            'category' => 'nullable|string|max:100',
+            'weapon_type' => 'nullable|in:rifle,pistol,sniper,shotgun,lmg,explosive,melee,vehicle,launcher',
+            'category' => 'nullable|in:primary,secondary,equipment,special',
             'image' => 'nullable|image|mimes:png,jpg,jpeg,gif,webp|max:2048',
         ]);
 
@@ -137,10 +137,10 @@ class WeaponAdminController extends Controller
 
         // Delete old image if exists
         if ($weapon->image_path) {
-            Storage::disk('public')->delete($weapon->image_path);
+            Storage::disk('s3')->delete($weapon->image_path);
         }
 
-        $path = $request->file('image')->store('weapons', 'public');
+        $path = $request->file('image')->store('weapons', 's3');
         $weapon->image_path = $path;
         $weapon->save();
 
@@ -151,7 +151,7 @@ class WeaponAdminController extends Controller
     public function deleteImage(Weapon $weapon)
     {
         if ($weapon->image_path) {
-            Storage::disk('public')->delete($weapon->image_path);
+            Storage::disk('s3')->delete($weapon->image_path);
             $weapon->image_path = null;
             $weapon->save();
         }

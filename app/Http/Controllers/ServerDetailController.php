@@ -239,23 +239,23 @@ class ServerDetailController extends Controller
      */
     public function status(string $serverId): JsonResponse
     {
-        $server = $this->battleMetrics->getServer($serverId);
+        // Use local database data (updated by server:track command via A2S query)
+        // This is more accurate and real-time than BattleMetrics API
+        $server = Server::where('battlemetrics_id', $serverId)->first();
 
         if (! $server) {
             return response()->json(['error' => 'Server not found'], 404);
         }
 
-        $attributes = $server['attributes'] ?? [];
-
         return response()->json([
-            'name' => $attributes['name'] ?? 'Unknown',
-            'players' => $attributes['players'] ?? 0,
-            'maxPlayers' => $attributes['maxPlayers'] ?? 128,
-            'status' => $attributes['status'] ?? 'offline',
-            'map' => $attributes['details']['map'] ?? null,
-            'ip' => $attributes['ip'] ?? null,
-            'port' => $attributes['port'] ?? null,
-            'updated_at' => now()->toIso8601String(),
+            'name' => $server->name,
+            'players' => $server->players ?? 0,
+            'maxPlayers' => $server->max_players ?? 128,
+            'status' => $server->status ?? 'offline',
+            'map' => $server->map,
+            'ip' => $server->ip,
+            'port' => $server->port,
+            'updated_at' => $server->last_updated_at?->toIso8601String() ?? now()->toIso8601String(),
         ]);
     }
 

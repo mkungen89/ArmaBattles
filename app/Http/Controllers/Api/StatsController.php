@@ -78,11 +78,13 @@ class StatsController extends Controller
             'is_roadkill' => 'nullable|boolean',
             'event_type' => 'nullable|string|max:50',
             'timestamp' => 'nullable|string',
-            'killer_position' => 'nullable|array',
-            'killer_position.*' => 'numeric',
-            'victim_position' => 'nullable|array',
-            'victim_position.*' => 'numeric',
+            'killer_position' => 'nullable', // Can be array or string
+            'victim_position' => 'nullable', // Can be array or string
         ]);
+
+        // Parse positions (can be string "[x,y,z]" or array [x,y,z])
+        $killerPos = $this->parsePosition($validated['killer_position'] ?? null);
+        $victimPos = $this->parsePosition($validated['victim_position'] ?? null);
 
         $id = DB::table('player_kills')->insertGetId([
             'server_id' => $validated['server_id'],
@@ -100,8 +102,8 @@ class StatsController extends Controller
             'is_roadkill' => $validated['is_roadkill'] ?? false,
             'event_type' => $validated['event_type'] ?? 'KILL',
             'killed_at' => $validated['timestamp'] ?? now(),
-            'killer_position' => isset($validated['killer_position']) ? json_encode($validated['killer_position']) : null,
-            'victim_position' => isset($validated['victim_position']) ? json_encode($validated['victim_position']) : null,
+            'killer_position' => $killerPos ? json_encode($killerPos) : null,
+            'victim_position' => $victimPos ? json_encode($victimPos) : null,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -1247,8 +1249,9 @@ class StatsController extends Controller
         $points = [];
 
         foreach ($kills as $kill) {
-            $killerPos = json_decode($kill->killer_position, true);
-            $victimPos = json_decode($kill->victim_position, true);
+            // Parse positions (handles both JSON array and string "[x,y,z]" format)
+            $killerPos = $this->parsePositionFromDb($kill->killer_position);
+            $victimPos = $this->parsePositionFromDb($kill->victim_position);
 
             if ($type !== 'deaths' && $killerPos && count($killerPos) >= 2) {
                 $points[] = [
@@ -1434,9 +1437,10 @@ class StatsController extends Controller
             $serverId = $data['server_id'] ?? 1;
             $this->getOrCreatePlayerStat($data['player_uuid'], $data['player_name'], $serverId);
 
-            // Get old rank before update
+            // Get old level and rank before update
             $stats = \App\Models\PlayerStat::where('player_uuid', $data['player_uuid'])->first();
             $levelService = app(\App\Services\PlayerLevelService::class);
+            $oldLevel = $stats ? $stats->level : 1;
             $oldRank = $stats ? $levelService->getRankForLevel($stats->level) : 1;
 
             DB::table('player_stats')->where('player_uuid', $data['player_uuid'])->increment('xp_total', $data['xp_amount']);
@@ -1446,11 +1450,15 @@ class StatsController extends Controller
             if ($stats) {
                 $newLevel = $levelService->updatePlayerLevel($stats);
 
-                // If level up occurred, check for rank up
-                if ($newLevel) {
+                // If level up occurred
+                if ($newLevel && $newLevel > $oldLevel) {
                     $newRank = $levelService->getRankForLevel($newLevel);
+                    $tier = $levelService->getTierForLevel($newLevel);
 
-                    // Send rank up notification if rank changed
+                    // Send level up notification for every level change
+                    $this->sendLevelUpNotification($data['player_uuid'], $newLevel, $tier);
+
+                    // Additionally send rank up notification if rank changed
                     if ($newRank > $oldRank) {
                         $rankInfo = \App\Models\RankLogo::forRank($newRank);
                         if ($rankInfo) {
@@ -1646,5 +1654,59 @@ class StatsController extends Controller
         return Cache::remember('registered_player_uuids', 300, function () {
             return \App\Models\User::whereNotNull('player_uuid')->pluck('player_uuid')->toArray();
         });
+    }
+
+    /**
+     * Parse position data from API request (handles both array and string format)
+     * Game server sends: "[x, y, z]" as string
+     * We need: [x, y, z] as array
+     */
+    private function parsePosition($position): ?array
+    {
+        if (! $position) {
+            return null;
+        }
+
+        // Already an array
+        if (is_array($position)) {
+            return $position;
+        }
+
+        // String format: "[x, y, z]" or "[x,y,z]"
+        if (is_string($position)) {
+            // Remove brackets and whitespace
+            $clean = trim($position, '[] ');
+            // Split by comma
+            $parts = array_map('floatval', explode(',', $clean));
+
+            return count($parts) >= 2 ? $parts : null;
+        }
+
+        return null;
+    }
+
+    /**
+     * Parse position data from database (handles both JSON array and string format)
+     * Database may have:
+     * - "[x,y,z]" as string (from game server)
+     * - [x,y,z] as JSON array (after our parsing)
+     */
+    private function parsePositionFromDb(?string $position): ?array
+    {
+        if (! $position) {
+            return null;
+        }
+
+        // Try JSON decode first (proper format)
+        $decoded = json_decode($position, true);
+        if (is_array($decoded) && count($decoded) >= 2) {
+            return $decoded;
+        }
+
+        // Fallback: parse string format "[x,y,z]"
+        $clean = trim($position, '[] ');
+        $parts = array_map('floatval', explode(',', $clean));
+
+        return count($parts) >= 2 ? $parts : null;
     }
 }

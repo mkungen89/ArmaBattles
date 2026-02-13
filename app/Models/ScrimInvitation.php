@@ -11,12 +11,15 @@ class ScrimInvitation extends Model
         'scrim_match_id',
         'inviting_team_id',
         'invited_team_id',
+        'proposed_time',
+        'message',
         'status',
         'responded_at',
         'expires_at',
     ];
 
     protected $casts = [
+        'proposed_time' => 'datetime',
         'responded_at' => 'datetime',
         'expires_at' => 'datetime',
     ];

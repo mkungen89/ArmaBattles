@@ -4,12 +4,14 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Vehicle;
+use App\Traits\LogsAdminActions;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class VehicleAdminController extends Controller
 {
+    use LogsAdminActions;
     public function index(Request $request)
     {
         $query = Vehicle::query();
@@ -49,7 +51,7 @@ class VehicleAdminController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:vehicles,name',
             'display_name' => 'nullable|string|max:255',
-            'vehicle_type' => 'nullable|string|max:100',
+            'vehicle_type' => 'nullable|in:car,truck,apc,ifv,tank,helicopter,boat,other',
             'image' => 'nullable|image|mimes:png,jpg,jpeg,gif,webp|max:2048',
         ]);
 
@@ -65,6 +67,11 @@ class VehicleAdminController extends Controller
 
         $vehicle->save();
 
+        $this->logAction('vehicle.created', 'Vehicle', $vehicle->id, [
+            'name' => $vehicle->name,
+            'vehicle_type' => $vehicle->vehicle_type,
+        ]);
+
         return redirect()->route('admin.vehicles.index')
             ->with('success', 'Vehicle created successfully.');
     }
@@ -79,7 +86,7 @@ class VehicleAdminController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:vehicles,name,'.$vehicle->id,
             'display_name' => 'nullable|string|max:255',
-            'vehicle_type' => 'nullable|string|max:100',
+            'vehicle_type' => 'nullable|in:car,truck,apc,ifv,tank,helicopter,boat,other',
             'image' => 'nullable|image|mimes:png,jpg,jpeg,gif,webp|max:2048',
         ]);
 
@@ -97,17 +104,29 @@ class VehicleAdminController extends Controller
 
         $vehicle->save();
 
+        $this->logAction('vehicle.updated', 'Vehicle', $vehicle->id, [
+            'name' => $vehicle->name,
+            'vehicle_type' => $vehicle->vehicle_type,
+        ]);
+
         return redirect()->route('admin.vehicles.index')
             ->with('success', 'Vehicle updated successfully.');
     }
 
     public function destroy(Vehicle $vehicle)
     {
+        $vehicleName = $vehicle->name;
+        $vehicleId = $vehicle->id;
+
         if ($vehicle->image_path) {
             Storage::disk('s3')->delete($vehicle->image_path);
         }
 
         $vehicle->delete();
+
+        $this->logAction('vehicle.deleted', 'Vehicle', $vehicleId, [
+            'name' => $vehicleName,
+        ]);
 
         return redirect()->route('admin.vehicles.index')
             ->with('success', 'Vehicle deleted successfully.');
@@ -119,6 +138,10 @@ class VehicleAdminController extends Controller
             Storage::disk('s3')->delete($vehicle->image_path);
             $vehicle->image_path = null;
             $vehicle->save();
+
+            $this->logAction('vehicle.image-deleted', 'Vehicle', $vehicle->id, [
+                'name' => $vehicle->name,
+            ]);
         }
 
         return redirect()->route('admin.vehicles.edit', $vehicle)
@@ -162,6 +185,11 @@ class VehicleAdminController extends Controller
                 $created++;
             }
         }
+
+        $this->logAction('vehicle.synced', null, null, [
+            'vehicles_created' => $created,
+            'total_unique' => $uniqueNames->count(),
+        ]);
 
         return redirect()->route('admin.vehicles.index')
             ->with('success', "Synced vehicles from distance data. Created {$created} new vehicles.");

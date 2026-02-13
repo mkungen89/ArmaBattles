@@ -27,4 +27,23 @@ class Vehicle extends Model
     {
         return $this->display_name ?? $this->name;
     }
+
+    /**
+     * Find vehicle by name
+     */
+    public static function findByName(string $name): ?self
+    {
+        return static::where('name', $name)->first();
+    }
+
+    /**
+     * Get or create vehicle by name
+     */
+    public static function findOrCreateByName(string $name): self
+    {
+        return static::firstOrCreate(
+            ['name' => $name],
+            ['display_name' => $name]
+        );
+    }
 }

@@ -60,7 +60,7 @@
                                 {{ ucfirst($article->status) }}
                             </span>
                         </td>
-                        <td class="px-4 py-3 text-gray-400">{{ $article->author->name }}</td>
+                        <td class="px-4 py-3 text-gray-400">{{ $article->author?->name ?? ($article->isOfficial() ? 'Arma Platform' : 'N/A') }}</td>
                         <td class="px-4 py-3 text-gray-400">{{ $article->published_at?->format('M j, Y') ?? $article->created_at->format('M j, Y') }}</td>
                         <td class="px-4 py-3 text-center text-gray-400">{{ $article->comments_count }}</td>
                         <td class="px-4 py-3 text-center text-green-400">{{ $article->hoorahs_count }}</td>

@@ -45,14 +45,14 @@ class ScrimTest extends TestCase
 
     public function test_scrims_page_loads(): void
     {
-        $response = $this->actingAs($this->captain1)->get('/scrims');
+        $response = $this->actingAs($this->captain1)->get(route('scrims.index'));
 
         $response->assertOk();
     }
 
     public function test_captain_can_invite_team_to_scrim(): void
     {
-        $response = $this->actingAs($this->captain1)->post('/scrims/invite', [
+        $response = $this->actingAs($this->captain1)->post(route('scrims.invite'), [
             'invited_team_id' => $this->team2->id,
             'proposed_time' => now()->addDay()->toDateTimeString(),
             'message' => 'Want to scrim?',
@@ -75,7 +75,7 @@ class ScrimTest extends TestCase
             'joined_at' => now(),
         ]);
 
-        $response = $this->actingAs($member)->post('/scrims/invite', [
+        $response = $this->actingAs($member)->post(route('scrims.invite'), [
             'invited_team_id' => $this->team2->id,
             'proposed_time' => now()->addDay()->toDateTimeString(),
         ]);
@@ -94,7 +94,7 @@ class ScrimTest extends TestCase
         ]);
 
         $response = $this->actingAs($this->captain2)
-            ->post("/scrims/invitations/{$invitation->id}/accept");
+            ->post(route('scrims.invitations.accept', $invitation));
 
         $response->assertRedirect();
         $this->assertDatabaseHas('scrim_invitations', [
@@ -121,7 +121,7 @@ class ScrimTest extends TestCase
         ]);
 
         $response = $this->actingAs($this->captain2)
-            ->post("/scrims/invitations/{$invitation->id}/decline");
+            ->post(route('scrims.invitations.decline', $invitation));
 
         $response->assertRedirect();
         $this->assertDatabaseHas('scrim_invitations', [
@@ -141,7 +141,7 @@ class ScrimTest extends TestCase
         ]);
 
         $response = $this->actingAs($this->captain2)
-            ->post("/scrims/invitations/{$invitation->id}/accept");
+            ->post(route('scrims.invitations.accept', $invitation));
 
         $response->assertStatus(403);
     }
@@ -157,7 +157,7 @@ class ScrimTest extends TestCase
         ]);
 
         $response = $this->actingAs($this->captain1)
-            ->post("/scrims/{$scrim->id}/cancel");
+            ->post(route('scrims.cancel', $scrim));
 
         $response->assertRedirect();
         $this->assertDatabaseHas('scrim_matches', [
@@ -177,7 +177,7 @@ class ScrimTest extends TestCase
         ]);
 
         $response = $this->actingAs($this->captain1)
-            ->post("/scrims/{$scrim->id}/report", [
+            ->post(route('scrims.report', $scrim), [
                 'team1_score' => 10,
                 'team2_score' => 5,
                 'winner_id' => $this->team1->id,
@@ -203,7 +203,7 @@ class ScrimTest extends TestCase
 
         // Team 1 reports
         $this->actingAs($this->captain1)
-            ->post("/scrims/{$scrim->id}/report", [
+            ->post(route('scrims.report', $scrim), [
                 'team1_score' => 10,
                 'team2_score' => 5,
                 'winner_id' => $this->team1->id,
@@ -211,7 +211,7 @@ class ScrimTest extends TestCase
 
         // Team 2 disagrees
         $response = $this->actingAs($this->captain2)
-            ->post("/scrims/{$scrim->id}/report", [
+            ->post(route('scrims.report', $scrim), [
                 'team1_score' => 5,
                 'team2_score' => 10,
                 'winner_id' => $this->team2->id,

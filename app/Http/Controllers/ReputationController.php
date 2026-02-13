@@ -50,14 +50,15 @@ class ReputationController extends Controller
             return back()->with('error', 'You cannot vote for yourself.');
         }
 
-        // Check if user already voted (within 24 hours)
+        // Check if user already voted
         $existingVote = ReputationVote::where('voter_id', auth()->id())
             ->where('target_id', $user->id)
             ->first();
 
         if ($existingVote) {
             if (! $existingVote->canBeChanged()) {
-                return back()->with('error', 'You can only vote once per 24 hours per player.');
+                $cooldownHours = (int) site_setting('reputation_vote_cooldown_hours', 24);
+                return back()->with('error', "You can only change your vote within {$cooldownHours} hours.");
             }
 
             // Update existing vote
@@ -71,6 +72,18 @@ class ReputationController extends Controller
             });
 
             return back()->with('success', 'Your vote has been updated!');
+        }
+
+        // Check daily vote limit (only for new votes)
+        $maxVotesPerDay = (int) site_setting('reputation_max_votes_per_day', 0);
+        if ($maxVotesPerDay > 0) {
+            $votesToday = ReputationVote::where('voter_id', auth()->id())
+                ->where('created_at', '>=', now()->startOfDay())
+                ->count();
+
+            if ($votesToday >= $maxVotesPerDay) {
+                return back()->with('error', "You have reached your daily voting limit ({$maxVotesPerDay} votes per day).");
+            }
         }
 
         // Create new vote
@@ -108,13 +121,45 @@ class ReputationController extends Controller
 
         $targetUser = User::findOrFail($validated['target_user_id']);
 
-        // Check if user already voted (within 24 hours)
+        // Check if user already voted
         $existingVote = ReputationVote::where('voter_id', auth()->id())
             ->where('target_id', $targetUser->id)
             ->first();
 
         if ($existingVote) {
-            return back()->with('error', 'You have already voted for this player within 24 hours.');
+            if (! $existingVote->canBeChanged()) {
+                $cooldownHours = (int) site_setting('reputation_vote_cooldown_hours', 24);
+                return back()->with('error', "You can only change your vote within {$cooldownHours} hours.");
+            }
+
+            // Update existing vote
+            DB::transaction(function () use ($existingVote, $validated, $targetUser) {
+                // Revert old vote
+                $this->updateReputationScore($targetUser, $existingVote->vote_type, $existingVote->category, -1);
+
+                // Apply new vote
+                $existingVote->update([
+                    'vote_type' => $validated['vote_type'],
+                    'category' => $validated['category'],
+                    'comment' => $validated['comment'] ?? $existingVote->comment,
+                ]);
+
+                $this->updateReputationScore($targetUser, $validated['vote_type'], $validated['category'], 1);
+            });
+
+            return back()->with('success', 'Your vote has been updated!');
+        }
+
+        // Check daily vote limit (only for new votes)
+        $maxVotesPerDay = (int) site_setting('reputation_max_votes_per_day', 0);
+        if ($maxVotesPerDay > 0) {
+            $votesToday = ReputationVote::where('voter_id', auth()->id())
+                ->where('created_at', '>=', now()->startOfDay())
+                ->count();
+
+            if ($votesToday >= $maxVotesPerDay) {
+                return back()->with('error', "You have reached your daily voting limit ({$maxVotesPerDay} votes per day).");
+            }
         }
 
         // Create new vote

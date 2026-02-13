@@ -72,6 +72,11 @@ class TournamentAdminController extends Controller
             'is_featured' => $request->boolean('is_featured', false),
         ]);
 
+        $this->logAction('tournament.created', 'Tournament', $tournament->id, [
+            'name' => $tournament->name,
+            'format' => $tournament->format,
+        ]);
+
         return redirect()->route('admin.tournaments.show', $tournament)
             ->with('success', 'Tournament created!');
     }
@@ -131,6 +136,10 @@ class TournamentAdminController extends Controller
             'is_featured' => $request->boolean('is_featured', false),
         ]);
 
+        $this->logAction('tournament.updated', 'Tournament', $tournament->id, [
+            'name' => $tournament->name,
+        ]);
+
         return back()->with('success', 'Tournament updated!');
     }
 
@@ -154,7 +163,14 @@ class TournamentAdminController extends Controller
             return back()->with('error', 'Invalid status transition.');
         }
 
+        $oldStatus = $tournament->status;
         $tournament->update($validated);
+
+        $this->logAction('tournament.status-updated', 'Tournament', $tournament->id, [
+            'name' => $tournament->name,
+            'old_status' => $oldStatus,
+            'new_status' => $tournament->status,
+        ]);
 
         return back()->with('success', 'Status updated to '.$tournament->status_text.'!');
     }
@@ -188,6 +204,11 @@ class TournamentAdminController extends Controller
             'approved_at' => now(),
         ]);
 
+        $this->logAction('tournament.registration-approved', 'TournamentRegistration', $registration->id, [
+            'tournament_id' => $tournament->id,
+            'team_id' => $registration->team_id,
+        ]);
+
         return back()->with('success', 'Registration approved!');
     }
 
@@ -206,6 +227,12 @@ class TournamentAdminController extends Controller
             'rejection_reason' => $validated['rejection_reason'],
         ]);
 
+        $this->logAction('tournament.registration-rejected', 'TournamentRegistration', $registration->id, [
+            'tournament_id' => $registration->tournament_id,
+            'team_id' => $registration->team_id,
+            'reason' => $validated['rejection_reason'],
+        ]);
+
         return back()->with('success', 'Registration rejected.');
     }
 
@@ -221,6 +248,11 @@ class TournamentAdminController extends Controller
                 ->where('tournament_id', $tournament->id)
                 ->update(['seed' => $seed + 1]);
         }
+
+        $this->logAction('tournament.seeding-updated', 'Tournament', $tournament->id, [
+            'name' => $tournament->name,
+            'seeds_count' => count($validated['seeds']),
+        ]);
 
         return back()->with('success', 'Seeding updated!');
     }
@@ -241,6 +273,12 @@ class TournamentAdminController extends Controller
             $tournament->update(['status' => 'in_progress']);
         }
 
+        $this->logAction('tournament.bracket-generated', 'Tournament', $tournament->id, [
+            'name' => $tournament->name,
+            'format' => $tournament->format,
+            'teams_count' => $tournament->approvedTeams()->count(),
+        ]);
+
         return back()->with('success', 'Bracket generated! Tournament is now in progress.');
     }
 
@@ -252,6 +290,10 @@ class TournamentAdminController extends Controller
 
         $tournament->matches()->delete();
         $tournament->update(['winner_team_id' => null]);
+
+        $this->logAction('tournament.bracket-reset', 'Tournament', $tournament->id, [
+            'name' => $tournament->name,
+        ]);
 
         return back()->with('success', 'Bracket reset. You can now generate a new bracket.');
     }
@@ -323,6 +365,12 @@ class TournamentAdminController extends Controller
             $this->bracketService->checkTournamentComplete($match->tournament);
         }
 
+        $this->logAction('tournament.match-updated', 'TournamentMatch', $match->id, [
+            'tournament_id' => $match->tournament_id,
+            'status' => $validated['status'],
+            'winner_id' => $validated['winner_id'] ?? null,
+        ]);
+
         return back()->with('success', 'Match updated!');
     }
 
@@ -343,10 +391,17 @@ class TournamentAdminController extends Controller
 
     public function destroy(Tournament $tournament)
     {
+        $tournamentName = $tournament->name;
+        $tournamentId = $tournament->id;
+
         // Delete in order to avoid FK constraints
         $tournament->matches()->delete();
         $tournament->registrations()->delete();
         $tournament->delete();
+
+        $this->logAction('tournament.deleted', 'Tournament', $tournamentId, [
+            'name' => $tournamentName,
+        ]);
 
         return redirect()->route('admin.tournaments.index')
             ->with('success', 'Tournament deleted.');

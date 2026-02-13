@@ -37,6 +37,7 @@ class VideoRejectedNotification extends Notification implements ShouldQueue
 
         return [
             'type' => 'video_rejected',
+            'category' => 'video',
             'video_id' => $this->clip->id,
             'video_title' => $this->clip->title,
             'platform' => $this->clip->platform,

@@ -7,7 +7,9 @@ use App\Models\PlayerAchievement;
 use App\Models\PlayerStat;
 use App\Models\User;
 use App\Notifications\AchievementEarnedNotification;
+use App\Notifications\LevelUpNotification;
 use App\Services\AchievementProgressService;
+use App\Services\PlayerLevelService;
 use Illuminate\Console\Command;
 
 class CheckAchievements extends Command
@@ -19,6 +21,7 @@ class CheckAchievements extends Command
     public function handle(): int
     {
         $progressService = app(AchievementProgressService::class);
+        $levelService = app(PlayerLevelService::class);
 
         $achievements = Achievement::whereNotNull('stat_field')
             ->whereNotNull('threshold')
@@ -35,7 +38,7 @@ class CheckAchievements extends Command
         $awarded = 0;
         $progressUpdated = 0;
 
-        PlayerStat::query()->chunk(200, function ($players) use ($achievements, $progressService, &$awarded, &$progressUpdated) {
+        PlayerStat::query()->chunk(200, function ($players) use ($achievements, $progressService, $levelService, &$awarded, &$progressUpdated) {
             foreach ($players as $player) {
                 foreach ($achievements as $achievement) {
                     $statValue = $player->{$achievement->stat_field} ?? 0;
@@ -53,9 +56,20 @@ class CheckAchievements extends Command
 
                         if ($created->wasRecentlyCreated) {
                             $awarded++;
+
+                            // Award achievement points and check for level-up
+                            $player->refresh(); // Ensure fresh data
+                            $newLevel = $levelService->addAchievementPoints($player, $achievement->points);
+
                             $user = User::where('player_uuid', $player->player_uuid)->first();
                             if ($user) {
                                 $user->notify(new AchievementEarnedNotification($achievement));
+
+                                // If player leveled up, send level-up notification
+                                if ($newLevel) {
+                                    $tier = $levelService->getTierForLevel($newLevel);
+                                    $user->notify(new LevelUpNotification($newLevel, $tier));
+                                }
                             }
 
                             // Clean up progress tracking for this earned achievement

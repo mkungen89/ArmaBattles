@@ -33,10 +33,14 @@ class WarmLeaderboardCache extends Command
         $minKillsValues = [5, 10, 20, 50];
         $warmed = 0;
 
+        // Get registered player UUIDs (same as API methods)
+        $registeredUuids = \App\Models\User::whereNotNull('player_uuid')->pluck('player_uuid')->toArray();
+
         foreach ($commonLimits as $limit) {
             // Kills leaderboard
-            $this->warmCache("leaderboard:kills:limit_{$limit}", function () use ($limit) {
+            $this->warmCache("leaderboard:kills:limit_{$limit}", function () use ($limit, $registeredUuids) {
                 return DB::table('player_stats')
+                    ->whereIn('player_uuid', $registeredUuids)
                     ->orderByDesc('kills')
                     ->limit($limit)
                     ->get(['player_uuid', 'player_name', 'kills', 'deaths', 'playtime_seconds']);
@@ -44,8 +48,9 @@ class WarmLeaderboardCache extends Command
             $warmed++;
 
             // Deaths leaderboard
-            $this->warmCache("leaderboard:deaths:limit_{$limit}", function () use ($limit) {
+            $this->warmCache("leaderboard:deaths:limit_{$limit}", function () use ($limit, $registeredUuids) {
                 return DB::table('player_stats')
+                    ->whereIn('player_uuid', $registeredUuids)
                     ->orderByDesc('deaths')
                     ->limit($limit)
                     ->get(['player_uuid', 'player_name', 'kills', 'deaths', 'playtime_seconds']);
@@ -54,8 +59,9 @@ class WarmLeaderboardCache extends Command
 
             // K/D leaderboards with different min_kills
             foreach ($minKillsValues as $minKills) {
-                $this->warmCache("leaderboard:kd:limit_{$limit}:min_{$minKills}", function () use ($limit, $minKills) {
+                $this->warmCache("leaderboard:kd:limit_{$limit}:min_{$minKills}", function () use ($limit, $minKills, $registeredUuids) {
                     return DB::table('player_stats')
+                        ->whereIn('player_uuid', $registeredUuids)
                         ->where('player_kills_count', '>=', $minKills)
                         ->selectRaw('player_uuid, player_name, kills, player_kills_count, deaths, playtime_seconds, CASE WHEN deaths > 0 THEN ROUND(player_kills_count::numeric / deaths, 2) ELSE player_kills_count END as kd_ratio')
                         ->orderByDesc('kd_ratio')
@@ -66,8 +72,9 @@ class WarmLeaderboardCache extends Command
             }
 
             // Playtime leaderboard
-            $this->warmCache("leaderboard:playtime:limit_{$limit}", function () use ($limit) {
+            $this->warmCache("leaderboard:playtime:limit_{$limit}", function () use ($limit, $registeredUuids) {
                 return DB::table('player_stats')
+                    ->whereIn('player_uuid', $registeredUuids)
                     ->orderByDesc('playtime_seconds')
                     ->limit($limit)
                     ->get(['player_uuid', 'player_name', 'playtime_seconds', 'kills', 'deaths']);
@@ -75,8 +82,9 @@ class WarmLeaderboardCache extends Command
             $warmed++;
 
             // XP leaderboard
-            $this->warmCache("leaderboard:xp:limit_{$limit}", function () use ($limit) {
+            $this->warmCache("leaderboard:xp:limit_{$limit}", function () use ($limit, $registeredUuids) {
                 return DB::table('player_stats')
+                    ->whereIn('player_uuid', $registeredUuids)
                     ->orderByDesc('xp_total')
                     ->limit($limit)
                     ->get(['player_uuid', 'player_name', 'xp_total', 'kills', 'deaths']);
@@ -84,8 +92,9 @@ class WarmLeaderboardCache extends Command
             $warmed++;
 
             // Distance leaderboard
-            $this->warmCache("leaderboard:distance:limit_{$limit}", function () use ($limit) {
+            $this->warmCache("leaderboard:distance:limit_{$limit}", function () use ($limit, $registeredUuids) {
                 return DB::table('player_stats')
+                    ->whereIn('player_uuid', $registeredUuids)
                     ->orderByDesc('total_distance')
                     ->limit($limit)
                     ->get(['player_uuid', 'player_name', 'total_distance', 'playtime_seconds']);
@@ -93,8 +102,9 @@ class WarmLeaderboardCache extends Command
             $warmed++;
 
             // Roadkills leaderboard
-            $this->warmCache("leaderboard:roadkills:limit_{$limit}", function () use ($limit) {
+            $this->warmCache("leaderboard:roadkills:limit_{$limit}", function () use ($limit, $registeredUuids) {
                 return DB::table('player_stats')
+                    ->whereIn('player_uuid', $registeredUuids)
                     ->where('total_roadkills', '>', 0)
                     ->orderByDesc('total_roadkills')
                     ->limit($limit)

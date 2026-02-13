@@ -10,6 +10,11 @@ class ProfileTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+    }
+
     public function test_user_can_view_own_profile(): void
     {
         $user = User::factory()->create();

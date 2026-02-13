@@ -10,6 +10,8 @@ use Illuminate\Support\Str;
 
 class AchievementAdminController extends Controller
 {
+    use \App\Traits\LogsAdminActions;
+
     public function index(Request $request)
     {
         $query = Achievement::withCount('players');
@@ -68,12 +70,18 @@ class AchievementAdminController extends Controller
         $validated['slug'] = $validated['slug'] ?: Str::slug($validated['name']);
 
         if ($request->hasFile('badge')) {
-            $validated['badge_path'] = $request->file('badge')->store('achievements', 'public');
+            $validated['badge_path'] = $request->file('badge')->store('achievements', 's3');
         }
 
         unset($validated['badge']);
 
-        Achievement::create($validated);
+        $achievement = Achievement::create($validated);
+
+        $this->logAction('achievement.created', 'Achievement', $achievement->id, [
+            'name' => $achievement->name,
+            'category' => $achievement->category,
+            'points' => $achievement->points,
+        ]);
 
         return redirect()->route('admin.achievements.index')->with('success', 'Achievement created.');
     }
@@ -109,14 +117,20 @@ class AchievementAdminController extends Controller
 
         if ($request->hasFile('badge')) {
             if ($achievement->badge_path) {
-                Storage::disk('public')->delete($achievement->badge_path);
+                Storage::disk('s3')->delete($achievement->badge_path);
             }
-            $validated['badge_path'] = $request->file('badge')->store('achievements', 'public');
+            $validated['badge_path'] = $request->file('badge')->store('achievements', 's3');
         }
 
         unset($validated['badge']);
 
         $achievement->update($validated);
+
+        $this->logAction('achievement.updated', 'Achievement', $achievement->id, [
+            'name' => $achievement->name,
+            'category' => $achievement->category,
+            'points' => $achievement->points,
+        ]);
 
         return redirect()->route('admin.achievements.index')->with('success', 'Achievement updated.');
     }
@@ -124,8 +138,12 @@ class AchievementAdminController extends Controller
     public function deleteBadge(Achievement $achievement)
     {
         if ($achievement->badge_path) {
-            Storage::disk('public')->delete($achievement->badge_path);
+            Storage::disk('s3')->delete($achievement->badge_path);
             $achievement->update(['badge_path' => null]);
+
+            $this->logAction('achievement.badge-deleted', 'Achievement', $achievement->id, [
+                'name' => $achievement->name,
+            ]);
         }
 
         return redirect()->route('admin.achievements.edit', $achievement)->with('success', 'Badge image removed.');
@@ -134,10 +152,18 @@ class AchievementAdminController extends Controller
     public function destroy(Achievement $achievement)
     {
         if ($achievement->badge_path) {
-            Storage::disk('public')->delete($achievement->badge_path);
+            Storage::disk('s3')->delete($achievement->badge_path);
         }
 
+        $achievementName = $achievement->name;
+        $achievementId = $achievement->id;
+
         $achievement->delete();
+
+        $this->logAction('achievement.deleted', 'Achievement', $achievementId, [
+            'name' => $achievementName,
+            'category' => $achievement->category,
+        ]);
 
         return redirect()->route('admin.achievements.index')->with('success', 'Achievement deleted.');
     }

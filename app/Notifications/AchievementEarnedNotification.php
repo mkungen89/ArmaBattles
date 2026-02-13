@@ -21,11 +21,13 @@ class AchievementEarnedNotification extends Notification
     {
         return [
             'type' => 'achievement_earned',
+            'category' => 'achievement',
             'message' => "You earned the \"{$this->achievement->name}\" achievement!",
             'achievement_id' => $this->achievement->id,
             'achievement_name' => $this->achievement->name,
             'achievement_icon' => $this->achievement->icon,
             'achievement_color' => $this->achievement->color,
+            'url' => route('achievements.index'),
         ];
     }
 }

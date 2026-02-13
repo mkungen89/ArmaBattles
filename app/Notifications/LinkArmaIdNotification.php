@@ -18,8 +18,9 @@ class LinkArmaIdNotification extends Notification
     {
         return [
             'type' => 'link_arma_id',
+            'category' => 'general',
             'message' => 'Link your Arma Reforger ID in Profile Settings to track your kills, stats, and more!',
-            'action_url' => route('profile.settings'),
+            'url' => route('profile.settings'),
         ];
     }
 }

@@ -4,10 +4,12 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\ScrimMatch;
+use App\Traits\LogsAdminActions;
 use Illuminate\Http\Request;
 
 class ScrimAdminController extends Controller
 {
+    use LogsAdminActions;
     public function index(Request $request)
     {
         $query = ScrimMatch::with(['team1', 'team2', 'creator']);
@@ -44,12 +46,27 @@ class ScrimAdminController extends Controller
 
         $scrim->update(['status' => 'cancelled']);
 
+        $this->logAction('scrim.cancelled', 'ScrimMatch', $scrim->id, [
+            'team1_id' => $scrim->team1_id,
+            'team2_id' => $scrim->team2_id,
+            'old_status' => $scrim->getOriginal('status'),
+        ]);
+
         return back()->with('success', 'Scrim has been cancelled.');
     }
 
     public function destroy(ScrimMatch $scrim)
     {
+        $scrimId = $scrim->id;
+        $team1Id = $scrim->team1_id;
+        $team2Id = $scrim->team2_id;
+
         $scrim->delete();
+
+        $this->logAction('scrim.deleted', 'ScrimMatch', $scrimId, [
+            'team1_id' => $team1Id,
+            'team2_id' => $team2Id,
+        ]);
 
         return redirect()->route('admin.scrims.index')->with('success', 'Scrim deleted.');
     }

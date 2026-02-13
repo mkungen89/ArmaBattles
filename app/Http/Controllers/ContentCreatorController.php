@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ContentCreator;
+use App\Models\HighlightClip;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -72,18 +73,26 @@ class ContentCreatorController extends Controller
 
         $validated = $request->validate([
             'platform' => 'required|in:twitch,youtube,tiktok,kick',
-            'channel_url' => 'required|url|max:255',
+            'channel_url' => 'required|url|max:255|unique:content_creators,channel_url',
             'channel_name' => 'nullable|string|max:255',
             'bio' => 'nullable|string|max:1000',
         ]);
 
-        ContentCreator::create([
-            'user_id' => $user->id,
-            'platform' => $validated['platform'],
-            'channel_url' => $validated['channel_url'],
-            'channel_name' => $validated['channel_name'] ?? null,
-            'bio' => $validated['bio'] ?? null,
-        ]);
+        try {
+            ContentCreator::create([
+                'user_id' => $user->id,
+                'platform' => $validated['platform'],
+                'channel_url' => $validated['channel_url'],
+                'channel_name' => $validated['channel_name'] ?? null,
+                'bio' => $validated['bio'] ?? null,
+            ]);
+        } catch (\Illuminate\Database\QueryException $e) {
+            // Handle race condition - unique constraint on user_id
+            if ($e->getCode() === '23505' || str_contains($e->getMessage(), 'unique')) {
+                return back()->with('error', 'You are already registered as a content creator.');
+            }
+            throw $e;
+        }
 
         return redirect()->route('content-creators.index')
             ->with('success', 'Content creator profile created! An admin will review your application for verification.');
@@ -94,9 +103,11 @@ class ContentCreatorController extends Controller
      */
     public function show(ContentCreator $contentCreator)
     {
-        $contentCreator->load('user', 'user.highlightClips');
+        $contentCreator->load('user');
 
-        $clips = $contentCreator->user->highlightClips()
+        // Fetch top clips separately (no wasted eager loading)
+        $clips = HighlightClip::where('user_id', $contentCreator->user_id)
+            ->where('status', 'approved')
             ->orderByDesc('votes')
             ->orderByDesc('created_at')
             ->limit(6)
@@ -131,7 +142,7 @@ class ContentCreatorController extends Controller
         }
 
         $validated = $request->validate([
-            'channel_url' => 'required|url|max:255',
+            'channel_url' => 'required|url|max:255|unique:content_creators,channel_url,' . $contentCreator->id,
             'channel_name' => 'nullable|string|max:255',
             'bio' => 'nullable|string|max:1000',
         ]);

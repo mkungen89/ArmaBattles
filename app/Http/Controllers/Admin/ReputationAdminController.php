@@ -4,10 +4,12 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\PlayerReputation;
+use App\Traits\LogsAdminActions;
 use Illuminate\Http\Request;
 
 class ReputationAdminController extends Controller
 {
+    use LogsAdminActions;
     public function index(Request $request)
     {
         $query = PlayerReputation::with('user');
@@ -43,6 +45,9 @@ class ReputationAdminController extends Controller
 
     public function resetReputation(PlayerReputation $reputation)
     {
+        $oldScore = $reputation->total_score;
+        $votesCount = $reputation->votes()->count();
+
         $reputation->votes()->delete();
 
         $reputation->update([
@@ -54,13 +59,27 @@ class ReputationAdminController extends Controller
             'sportsmanship_count' => 0,
         ]);
 
+        $this->logAction('reputation.reset', 'PlayerReputation', $reputation->id, [
+            'user_id' => $reputation->user_id,
+            'old_score' => $oldScore,
+            'votes_deleted' => $votesCount,
+        ]);
+
         return back()->with('success', 'Reputation reset to zero.');
     }
 
     public function destroy(PlayerReputation $reputation)
     {
+        $userId = $reputation->user_id;
+        $totalScore = $reputation->total_score;
+
         $reputation->votes()->delete();
         $reputation->delete();
+
+        $this->logAction('reputation.deleted', 'PlayerReputation', $reputation->id, [
+            'user_id' => $userId,
+            'total_score' => $totalScore,
+        ]);
 
         return redirect()->route('admin.reputation.index')->with('success', 'Reputation record deleted.');
     }

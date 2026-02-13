@@ -15,7 +15,8 @@ class NotificationController extends Controller
             $typeMap = [
                 'team' => ['team_invitation', 'team_application', 'application_result'],
                 'match' => ['match_scheduled', 'match_reminder'],
-                'achievement' => ['achievement_unlocked', 'achievement'],
+                'achievement' => ['achievement_unlocked', 'achievement', 'achievement_earned', 'level_up', 'rank_up'],
+                'video' => ['video_submitted', 'video_approved', 'video_rejected'],
             ];
 
             if (isset($typeMap[$category])) {

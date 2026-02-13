@@ -50,18 +50,15 @@
                 <label for="weapon_type" class="block text-sm font-medium text-gray-400 mb-2">Weapon Type</label>
                 <select name="weapon_type" id="weapon_type" class="w-full bg-white/5 border-white/10 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
                     <option value="">Select type...</option>
-                    <option value="Assault Rifle" {{ old('weapon_type', $weapon->weapon_type) === 'Assault Rifle' ? 'selected' : '' }}>Assault Rifle</option>
-                    <option value="Sniper Rifle" {{ old('weapon_type', $weapon->weapon_type) === 'Sniper Rifle' ? 'selected' : '' }}>Sniper Rifle</option>
-                    <option value="Machine Gun" {{ old('weapon_type', $weapon->weapon_type) === 'Machine Gun' ? 'selected' : '' }}>Machine Gun</option>
-                    <option value="Submachine Gun" {{ old('weapon_type', $weapon->weapon_type) === 'Submachine Gun' ? 'selected' : '' }}>Submachine Gun</option>
-                    <option value="Pistol" {{ old('weapon_type', $weapon->weapon_type) === 'Pistol' ? 'selected' : '' }}>Pistol</option>
-                    <option value="Shotgun" {{ old('weapon_type', $weapon->weapon_type) === 'Shotgun' ? 'selected' : '' }}>Shotgun</option>
-                    <option value="Launcher" {{ old('weapon_type', $weapon->weapon_type) === 'Launcher' ? 'selected' : '' }}>Launcher</option>
-                    <option value="Grenade" {{ old('weapon_type', $weapon->weapon_type) === 'Grenade' ? 'selected' : '' }}>Grenade</option>
-                    <option value="Explosive" {{ old('weapon_type', $weapon->weapon_type) === 'Explosive' ? 'selected' : '' }}>Explosive</option>
-                    <option value="Melee" {{ old('weapon_type', $weapon->weapon_type) === 'Melee' ? 'selected' : '' }}>Melee</option>
-                    <option value="Vehicle" {{ old('weapon_type', $weapon->weapon_type) === 'Vehicle' ? 'selected' : '' }}>Vehicle Weapon</option>
-                    <option value="Other" {{ old('weapon_type', $weapon->weapon_type) === 'Other' ? 'selected' : '' }}>Other</option>
+                    <option value="rifle" {{ old('weapon_type', $weapon->weapon_type) === 'rifle' ? 'selected' : '' }}>Rifle</option>
+                    <option value="pistol" {{ old('weapon_type', $weapon->weapon_type) === 'pistol' ? 'selected' : '' }}>Pistol</option>
+                    <option value="sniper" {{ old('weapon_type', $weapon->weapon_type) === 'sniper' ? 'selected' : '' }}>Sniper</option>
+                    <option value="shotgun" {{ old('weapon_type', $weapon->weapon_type) === 'shotgun' ? 'selected' : '' }}>Shotgun</option>
+                    <option value="lmg" {{ old('weapon_type', $weapon->weapon_type) === 'lmg' ? 'selected' : '' }}>LMG</option>
+                    <option value="explosive" {{ old('weapon_type', $weapon->weapon_type) === 'explosive' ? 'selected' : '' }}>Explosive</option>
+                    <option value="melee" {{ old('weapon_type', $weapon->weapon_type) === 'melee' ? 'selected' : '' }}>Melee</option>
+                    <option value="vehicle" {{ old('weapon_type', $weapon->weapon_type) === 'vehicle' ? 'selected' : '' }}>Vehicle Weapon</option>
+                    <option value="launcher" {{ old('weapon_type', $weapon->weapon_type) === 'launcher' ? 'selected' : '' }}>Launcher</option>
                 </select>
             </div>
 
@@ -69,10 +66,10 @@
                 <label for="category" class="block text-sm font-medium text-gray-400 mb-2">Category</label>
                 <select name="category" id="category" class="w-full bg-white/5 border-white/10 text-white rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500">
                     <option value="">Select category...</option>
-                    <option value="Primary" {{ old('category', $weapon->category) === 'Primary' ? 'selected' : '' }}>Primary</option>
-                    <option value="Secondary" {{ old('category', $weapon->category) === 'Secondary' ? 'selected' : '' }}>Secondary</option>
-                    <option value="Equipment" {{ old('category', $weapon->category) === 'Equipment' ? 'selected' : '' }}>Equipment</option>
-                    <option value="Vehicle" {{ old('category', $weapon->category) === 'Vehicle' ? 'selected' : '' }}>Vehicle</option>
+                    <option value="primary" {{ old('category', $weapon->category) === 'primary' ? 'selected' : '' }}>Primary</option>
+                    <option value="secondary" {{ old('category', $weapon->category) === 'secondary' ? 'selected' : '' }}>Secondary</option>
+                    <option value="equipment" {{ old('category', $weapon->category) === 'equipment' ? 'selected' : '' }}>Equipment</option>
+                    <option value="special" {{ old('category', $weapon->category) === 'special' ? 'selected' : '' }}>Special</option>
                 </select>
             </div>
 

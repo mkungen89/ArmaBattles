@@ -12,9 +12,14 @@ class NewsTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+    }
+
     public function test_news_index_page_loads(): void
     {
-        $response = $this->get('/news');
+        $response = $this->get(route('news.index'));
 
         $response->assertOk();
     }
@@ -31,7 +36,7 @@ class NewsTest extends TestCase
             'published_at' => now(),
         ]);
 
-        $response = $this->get("/news/{$article->slug}");
+        $response = $this->get(route('news.show', $article));
 
         $response->assertOk();
         $response->assertSee('Test News Article');
@@ -49,7 +54,7 @@ class NewsTest extends TestCase
             'status' => 'draft',
         ]);
 
-        $response = $this->get("/news/{$article->slug}");
+        $response = $this->get(route('news.show', $article));
 
         $response->assertStatus(404);
     }
@@ -67,7 +72,7 @@ class NewsTest extends TestCase
             'published_at' => now(),
         ]);
 
-        $response = $this->actingAs($user)->post("/news/{$article->slug}/comment", [
+        $response = $this->actingAs($user)->post(route('news.comment', $article), [
             'body' => 'Great article!',
         ]);
 
@@ -91,7 +96,7 @@ class NewsTest extends TestCase
             'published_at' => now(),
         ]);
 
-        $response = $this->post("/news/{$article->slug}/comment", [
+        $response = $this->post(route('news.comment', $article), [
             'body' => 'Comment',
         ]);
 
@@ -118,7 +123,7 @@ class NewsTest extends TestCase
         ]);
 
         $response = $this->actingAs($user)
-            ->delete("/news/comments/{$comment->id}");
+            ->delete(route('news.comment.destroy', $comment));
 
         $response->assertRedirect();
         $this->assertDatabaseMissing('news_comments', ['id' => $comment->id]);
@@ -145,7 +150,7 @@ class NewsTest extends TestCase
         ]);
 
         $response = $this->actingAs($user2)
-            ->delete("/news/comments/{$comment->id}");
+            ->delete(route('news.comment.destroy', $comment));
 
         $response->assertStatus(403);
     }
@@ -164,7 +169,7 @@ class NewsTest extends TestCase
         ]);
 
         $response = $this->actingAs($user)
-            ->post("/news/{$article->slug}/hoorah");
+            ->post(route('news.hoorah', $article));
 
         $response->assertRedirect();
         $this->assertDatabaseHas('news_hoorahs', [
@@ -187,11 +192,11 @@ class NewsTest extends TestCase
         ]);
 
         // First hoorah
-        $this->actingAs($user)->post("/news/{$article->slug}/hoorah");
+        $this->actingAs($user)->post(route('news.hoorah', $article));
 
         // Second hoorah (toggle off)
         $response = $this->actingAs($user)
-            ->post("/news/{$article->slug}/hoorah");
+            ->post(route('news.hoorah', $article));
 
         $response->assertRedirect();
         $this->assertDatabaseMissing('news_hoorahs', [
@@ -204,7 +209,7 @@ class NewsTest extends TestCase
     {
         $admin = User::factory()->create(['role' => 'admin']);
 
-        $response = $this->actingAs($admin)->post('/admin/news', [
+        $response = $this->actingAs($admin)->post(route('admin.news.store'), [
             'title' => 'New Article',
             'content' => 'Article content',
             'status' => 'published',
@@ -221,9 +226,10 @@ class NewsTest extends TestCase
     {
         $user = User::factory()->create(['role' => 'user']);
 
-        $response = $this->actingAs($user)->post('/admin/news', [
+        $response = $this->actingAs($user)->post(route('admin.news.store'), [
             'title' => 'New Article',
             'content' => 'Article content',
+            'status' => 'published',
         ]);
 
         $response->assertStatus(403);

@@ -87,7 +87,7 @@ class RefereeTest extends TestCase
     public function test_referee_can_submit_match_report(): void
     {
         $response = $this->actingAs($this->referee)
-            ->post("/referee/match/{$this->match->id}/report", [
+            ->post(route('referee.match.submit-report', $this->match), [
                 'team1_score' => 10,
                 'team2_score' => 5,
                 'winning_team_id' => $this->match->team1_id,
@@ -105,7 +105,7 @@ class RefereeTest extends TestCase
     public function test_match_report_updates_match_status(): void
     {
         $this->actingAs($this->referee)
-            ->post("/referee/match/{$this->match->id}/report", [
+            ->post(route('referee.match.submit-report', $this->match), [
                 'team1_score' => 10,
                 'team2_score' => 5,
                 'winning_team_id' => $this->match->team1_id,
@@ -132,7 +132,7 @@ class RefereeTest extends TestCase
 
         // Now dispute it
         $response = $this->actingAs($this->referee)
-            ->post("/referee/report/{$report->id}/dispute", [
+            ->post(route('referee.report.dispute', $report), [
                 'dispute_reason' => 'Teams disagree on score',
             ]);
 
@@ -156,7 +156,7 @@ class RefereeTest extends TestCase
         ]);
 
         $response = $this->actingAs($this->referee)
-            ->put("/referee/reports/{$report->id}", [
+            ->put(route('referee.reports.update', $report), [
                 'notes' => 'Changed my mind',
             ]);
 
@@ -176,7 +176,7 @@ class RefereeTest extends TestCase
         ]);
 
         $response = $this->actingAs($this->admin)
-            ->put("/admin/reports/{$report->id}/override", [
+            ->put(route('admin.reports.override', $report), [
                 'winning_team_id' => $this->match->team2_id,
                 'override_reason' => 'Video evidence shows team2 won',
             ]);
@@ -199,7 +199,7 @@ class RefereeTest extends TestCase
         $captain1 = Team::find($this->match->team1_id)->captain;
 
         $response = $this->actingAs($captain1)
-            ->post("/matches/{$this->match->id}/check-in");
+            ->post(route('matches.check-in', $this->match));
 
         $response->assertRedirect();
         $this->assertDatabaseHas('match_check_ins', [
@@ -220,14 +220,14 @@ class RefereeTest extends TestCase
         $captain2 = Team::find($this->match->team2_id)->captain;
 
         // Team 1 checks in
-        $this->actingAs($captain1)->post("/matches/{$this->match->id}/check-in");
+        $this->actingAs($captain1)->post(route('matches.check-in', $this->match));
 
         $this->match->refresh();
         $this->assertTrue($this->match->team1_checked_in);
         $this->assertFalse($this->match->team2_checked_in);
 
         // Team 2 checks in
-        $this->actingAs($captain2)->post("/matches/{$this->match->id}/check-in");
+        $this->actingAs($captain2)->post(route('matches.check-in', $this->match));
 
         $this->match->refresh();
         $this->assertTrue($this->match->bothTeamsCheckedIn());
@@ -238,13 +238,13 @@ class RefereeTest extends TestCase
         $captain1 = Team::find($this->match->team1_id)->captain;
 
         // Only team 1 checks in, team 2 is no-show
-        $this->actingAs($captain1)->post("/matches/{$this->match->id}/check-in");
+        $this->actingAs($captain1)->post(route('matches.check-in', $this->match));
 
         // Simulate check-in deadline passing (15 minutes)
         $this->match->update(['scheduled_at' => now()->subMinutes(20)]);
 
         $response = $this->actingAs($this->referee)
-            ->post("/referee/matches/{$this->match->id}/forfeit", [
+            ->post(route('referee.matches.forfeit', $this->match), [
                 'forfeiting_team_id' => $this->match->team2_id,
                 'reason' => 'No show',
             ]);

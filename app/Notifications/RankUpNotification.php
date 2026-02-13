@@ -38,12 +38,14 @@ class RankUpNotification extends Notification
     {
         return [
             'type' => 'rank_up',
+            'category' => 'achievement',
             'rank' => $this->newRank,
             'rank_name' => $this->rankInfo->name,
             'era' => $this->rankInfo->era,
             'color' => $this->rankInfo->color,
             'logo_url' => $this->rankInfo->logo_url,
             'message' => "Congratulations! You've been promoted to {$this->rankInfo->name} (Rank {$this->newRank})!",
+            'url' => route('ranked.index'),
         ];
     }
 }
