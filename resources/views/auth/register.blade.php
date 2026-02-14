@@ -28,10 +28,109 @@
                 @enderror
             </div>
 
-            <div>
+            <div x-data="{
+                password: '',
+                showRequirements: false,
+                get strength() {
+                    let score = 0;
+                    if (this.password.length >= 12) score += 20;
+                    if (this.password.length >= 16) score += 10;
+                    if (this.password.length >= 20) score += 10;
+                    if (/[a-z]/.test(this.password)) score += 10;
+                    if (/[A-Z]/.test(this.password)) score += 10;
+                    if (/[0-9]/.test(this.password)) score += 10;
+                    if (/[@$!%*#?&]/.test(this.password)) score += 10;
+                    const unique = new Set(this.password.split('')).size;
+                    if (unique >= 8) score += 10;
+                    if (unique >= 12) score += 10;
+                    return Math.min(100, score);
+                },
+                get strengthLabel() {
+                    if (this.strength >= 80) return 'Very Strong';
+                    if (this.strength >= 60) return 'Strong';
+                    if (this.strength >= 40) return 'Medium';
+                    if (this.strength >= 20) return 'Weak';
+                    return 'Very Weak';
+                },
+                get strengthColor() {
+                    if (this.strength >= 80) return 'green';
+                    if (this.strength >= 60) return 'blue';
+                    if (this.strength >= 40) return 'yellow';
+                    if (this.strength >= 20) return 'orange';
+                    return 'red';
+                },
+                get hasMinLength() { return this.password.length >= 12; },
+                get hasUppercase() { return /[A-Z]/.test(this.password); },
+                get hasLowercase() { return /[a-z]/.test(this.password); },
+                get hasNumber() { return /[0-9]/.test(this.password); },
+                get hasSpecial() { return /[@$!%*#?&]/.test(this.password); }
+            }">
                 <label for="password" class="block text-sm font-medium text-gray-300 mb-1">Password</label>
                 <input type="password" name="password" id="password" required
+                       x-model="password"
+                       @focus="showRequirements = true"
                        class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+
+                <!-- Password Strength Indicator -->
+                <div x-show="password.length > 0" class="mt-2" x-cloak>
+                    <div class="flex items-center justify-between mb-1">
+                        <span class="text-xs text-gray-400">Password Strength:</span>
+                        <span class="text-xs font-semibold" :class="{
+                            'text-green-400': strengthColor === 'green',
+                            'text-blue-400': strengthColor === 'blue',
+                            'text-yellow-400': strengthColor === 'yellow',
+                            'text-orange-400': strengthColor === 'orange',
+                            'text-red-400': strengthColor === 'red'
+                        }" x-text="strengthLabel"></span>
+                    </div>
+                    <div class="w-full h-2 bg-white/10 rounded-full overflow-hidden">
+                        <div class="h-full transition-all duration-300" :style="`width: ${strength}%`" :class="{
+                            'bg-green-500': strengthColor === 'green',
+                            'bg-blue-500': strengthColor === 'blue',
+                            'bg-yellow-500': strengthColor === 'yellow',
+                            'bg-orange-500': strengthColor === 'orange',
+                            'bg-red-500': strengthColor === 'red'
+                        }"></div>
+                    </div>
+                </div>
+
+                <!-- Password Requirements -->
+                <div x-show="showRequirements" class="mt-3 p-3 bg-white/5 rounded-lg border border-white/10" x-cloak>
+                    <p class="text-xs font-medium text-gray-300 mb-2">Password must contain:</p>
+                    <ul class="space-y-1 text-xs">
+                        <li class="flex items-center gap-2" :class="hasMinLength ? 'text-green-400' : 'text-gray-400'">
+                            <svg class="w-4 h-4" :class="hasMinLength ? 'text-green-400' : 'text-gray-500'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <span>At least 12 characters</span>
+                        </li>
+                        <li class="flex items-center gap-2" :class="hasUppercase ? 'text-green-400' : 'text-gray-400'">
+                            <svg class="w-4 h-4" :class="hasUppercase ? 'text-green-400' : 'text-gray-500'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <span>One uppercase letter (A-Z)</span>
+                        </li>
+                        <li class="flex items-center gap-2" :class="hasLowercase ? 'text-green-400' : 'text-gray-400'">
+                            <svg class="w-4 h-4" :class="hasLowercase ? 'text-green-400' : 'text-gray-500'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <span>One lowercase letter (a-z)</span>
+                        </li>
+                        <li class="flex items-center gap-2" :class="hasNumber ? 'text-green-400' : 'text-gray-400'">
+                            <svg class="w-4 h-4" :class="hasNumber ? 'text-green-400' : 'text-gray-500'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <span>One number (0-9)</span>
+                        </li>
+                        <li class="flex items-center gap-2" :class="hasSpecial ? 'text-green-400' : 'text-gray-400'">
+                            <svg class="w-4 h-4" :class="hasSpecial ? 'text-green-400' : 'text-gray-500'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <span>One special character (@$!%*#?&)</span>
+                        </li>
+                    </ul>
+                </div>
+
                 @error('password')
                     <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
                 @enderror
