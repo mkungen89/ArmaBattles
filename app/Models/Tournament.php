@@ -36,6 +36,9 @@ class Tournament extends Model
         'require_approval',
         'prize_pool',
         'stream_url',
+        'auto_start_enabled',
+        'auto_start_threshold',
+        'auto_started_at',
     ];
 
     protected $casts = [
@@ -43,8 +46,10 @@ class Tournament extends Model
         'registration_ends_at' => 'datetime',
         'starts_at' => 'datetime',
         'ends_at' => 'datetime',
+        'auto_started_at' => 'datetime',
         'is_featured' => 'boolean',
         'require_approval' => 'boolean',
+        'auto_start_enabled' => 'boolean',
     ];
 
     protected static function boot()

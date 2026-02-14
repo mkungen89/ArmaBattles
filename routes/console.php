@@ -101,6 +101,18 @@ Schedule::command('matches:send-reminders')
     ->withoutOverlapping()
     ->name('send:match-reminders');
 
+// Process match no-shows and auto-forfeit
+Schedule::command('matches:process-no-shows')
+    ->everyFiveMinutes()
+    ->withoutOverlapping()
+    ->name('process:match-no-shows');
+
+// Auto-start tournaments when registration threshold is met
+Schedule::command('tournaments:process-auto-start')
+    ->everyTenMinutes()
+    ->withoutOverlapping()
+    ->name('process:tournament-auto-start');
+
 // Check content creators live status every 3 minutes
 Schedule::command('creators:check-live')
     ->everyThreeMinutes()
