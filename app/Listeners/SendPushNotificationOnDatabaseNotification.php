@@ -81,6 +81,7 @@ class SendPushNotificationOnDatabaseNotification
             'video_approved' => '✅ Video Approved',
             'video_rejected' => '❌ Video Rejected',
             'rank_up' => '🎖️ Rank Up!',
+            'server_status' => '🖥️ Server Status Alert',
             default => '🔔 Notification',
         };
     }

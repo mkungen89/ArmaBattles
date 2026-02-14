@@ -6,10 +6,13 @@ use App\Events\ServerStatusUpdated;
 use App\Models\Server;
 use App\Models\ServerSession;
 use App\Models\ServerStatistic;
+use App\Models\User;
+use App\Notifications\ServerStatusAlertNotification;
 use App\Services\A2SQueryService;
 use App\Services\BattleMetricsService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification;
 
 class TrackServerStatus extends Command
 {
@@ -98,9 +101,15 @@ class TrackServerStatus extends Command
         if ($wasOnline && ! $isOnline) {
             $this->warn('Server went OFFLINE - ending current session');
             $this->endCurrentSession($server);
+
+            // Notify admins and moderators about server going offline
+            $this->notifyAdminsAboutStatusChange($server, 'offline', $previousStatus);
         } elseif (! $wasOnline && $isOnline) {
             $this->info('Server came ONLINE - starting new session');
             $this->startNewSession($server);
+
+            // Notify admins and moderators about server coming back online
+            $this->notifyAdminsAboutStatusChange($server, 'online', $previousStatus);
         }
 
         // Update server status
@@ -230,5 +239,28 @@ class TrackServerStatus extends Command
                 'last_seen_at' => now(),
             ]);
         }
+    }
+
+    /**
+     * Notify admins and moderators about server status changes
+     */
+    private function notifyAdminsAboutStatusChange(Server $server, string $status, ?string $previousStatus): void
+    {
+        // Get admin and moderator users
+        $adminsAndMods = User::whereIn('role', ['admin', 'moderator'])
+            ->where('banned_at', null)
+            ->get();
+
+        if ($adminsAndMods->isEmpty()) {
+            return;
+        }
+
+        // Send notification
+        Notification::send(
+            $adminsAndMods,
+            new ServerStatusAlertNotification($server, $status, $previousStatus)
+        );
+
+        $this->info("Sent status alert to {$adminsAndMods->count()} admin(s)/moderator(s)");
     }
 }
