@@ -20,6 +20,15 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#3b82f6">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="ArmaBattles">
+
+    <!-- RSS Feeds -->
     <link rel="alternate" type="application/rss+xml" title="{{ site_setting('site_name', config('app.name')) }} - News" href="{{ route('rss.news') }}">
     <link rel="alternate" type="application/rss+xml" title="{{ site_setting('site_name', config('app.name')) }} - Tournaments" href="{{ route('rss.tournaments') }}">
     <title>{{ site_setting('site_name', config('app.name')) }} - @yield('title', 'Home')</title>
@@ -255,6 +264,31 @@
         };
     </script>
     @endauth
+
+    {{-- PWA Install Banner --}}
+    <div id="pwa-install-banner" class="hidden fixed bottom-0 left-0 right-0 z-50 bg-gradient-to-r from-blue-600 to-blue-700 shadow-lg border-t border-blue-500">
+        <div class="max-w-7xl mx-auto px-4 py-3 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between flex-wrap gap-4">
+                <div class="flex items-center gap-3 flex-1">
+                    <div class="flex-shrink-0">
+                        <img src="/images/icons/icon-96x96.png" alt="ArmaBattles Icon" class="w-12 h-12 rounded-lg shadow-md" onerror="this.style.display='none'">
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-semibold text-white">Install ArmaBattles</p>
+                        <p class="text-xs text-blue-100">Get quick access and work offline</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="installPWA()" class="px-4 py-2 bg-white text-blue-600 rounded-lg font-medium text-sm hover:bg-blue-50 transition-colors shadow-sm">
+                        Install
+                    </button>
+                    <button onclick="dismissInstallBanner()" class="px-3 py-2 text-blue-100 hover:text-white text-sm transition-colors">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     {{-- Full Page Background --}}
     <div class="fixed inset-0 z-0">

@@ -29,6 +29,7 @@ use App\Http\Controllers\LeaderboardController;
 use App\Http\Controllers\MatchController;
 use App\Http\Controllers\NewsController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\NotificationSubscriptionController;
 use App\Http\Controllers\PlayerComparisonController;
 use App\Http\Controllers\PlayerProfileController;
 use App\Http\Controllers\PlayerSearchController;
@@ -300,6 +301,13 @@ Route::middleware('auth')->group(function () {
         Route::get('/unread-count', [NotificationController::class, 'unreadCount'])->name('notifications.unread-count');
         Route::post('/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
         Route::post('/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
+    });
+
+    // Push Notification Subscriptions
+    Route::prefix('push-notifications')->group(function () {
+        Route::post('/subscribe', [NotificationSubscriptionController::class, 'store'])->name('push.subscribe');
+        Route::delete('/unsubscribe', [NotificationSubscriptionController::class, 'destroy'])->name('push.unsubscribe');
+        Route::get('/status', [NotificationSubscriptionController::class, 'status'])->name('push.status');
     });
 });
 
