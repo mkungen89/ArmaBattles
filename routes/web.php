@@ -77,6 +77,17 @@ Route::get('/rules', function () {
     return view('pages.rules');
 })->name('rules');
 
+Route::get('/contact', function () {
+    return view('pages.contact');
+})->name('contact');
+
+Route::get('/about', function () {
+    return view('pages.about');
+})->name('about');
+
+// Sitemap
+Route::get('/sitemap.xml', [\App\Http\Controllers\SitemapController::class, 'index'])->name('sitemap');
+
 Route::get('/api/docs', fn () => view('api.docs'))->name('api.docs');
 
 Route::get('/faq', function () {
