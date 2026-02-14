@@ -1,12 +1,11 @@
 import * as Sentry from "@sentry/browser";
-import { BrowserTracing } from "@sentry/tracing";
 
 // Initialize Sentry for frontend error tracking
 if (import.meta.env.VITE_SENTRY_DSN) {
     Sentry.init({
         dsn: import.meta.env.VITE_SENTRY_DSN,
         integrations: [
-            new BrowserTracing({
+            Sentry.browserTracingIntegration({
                 // Set sampling rate for navigation and other browser events
                 tracePropagationTargets: ["localhost", /^\//],
             }),
