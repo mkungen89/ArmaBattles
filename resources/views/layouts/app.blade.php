@@ -1088,5 +1088,8 @@
     @endauth
 
     @stack('scripts')
+
+    {{-- Cookie Consent Banner (GDPR) --}}
+    <x-cookie-consent />
 </body>
 </html>

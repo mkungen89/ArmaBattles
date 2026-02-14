@@ -270,7 +270,11 @@ Route::middleware('auth')->group(function () {
     Route::post('/profile/social-links', [ProfileController::class, 'updateSocialLinks'])->name('profile.update-social-links');
     Route::post('/profile/settings', [ProfileController::class, 'updateSettings'])->name('profile.update-settings');
     Route::post('/profile/reset-statistics', [ProfileController::class, 'resetStatistics'])->name('profile.reset-statistics');
-    Route::post('/profile/delete-account', [ProfileController::class, 'deleteAccount'])->name('profile.delete-account');
+
+    // GDPR Data Rights
+    Route::get('/profile/export-data', [\App\Http\Controllers\ProfileDataController::class, 'exportData'])->name('profile.export-data');
+    Route::get('/profile/delete-account', [\App\Http\Controllers\ProfileDataController::class, 'showDeleteAccount'])->name('profile.delete-account.show');
+    Route::delete('/profile/delete-account', [\App\Http\Controllers\ProfileDataController::class, 'deleteAccount'])->name('profile.delete-account');
 
     // Stop impersonating
     Route::post('/stop-impersonating', [AdminController::class, 'stopImpersonating'])->name('stop-impersonating');

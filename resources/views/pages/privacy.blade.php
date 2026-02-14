@@ -95,7 +95,7 @@
             </p>
         </div>
         {{-- Cookies --}}
-        <div class="glass-card rounded-xl p-6">
+        <div id="cookies" class="glass-card rounded-xl p-6">
             <h2 class="text-xl font-bold text-green-500 mb-4">Cookies</h2>
             <p class="text-gray-300 mb-4">
                 We use cookies for the following purposes:
