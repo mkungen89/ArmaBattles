@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\MatchReport;
 use App\Models\Tournament;
 use App\Models\TournamentMatch;
+use App\Services\DiscordWebhookService;
 use App\Traits\LogsAdminActions;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -119,6 +120,24 @@ class RefereeController extends Controller
                 ]
             );
         });
+
+        // Send Discord notification
+        try {
+            $discord = app(DiscordWebhookService::class);
+            $match->load(['tournament', 'team1', 'team2', 'winner']);
+
+            $discord->sendMatchResult([
+                'team1_name' => $match->team1->name,
+                'team2_name' => $match->team2->name,
+                'team1_score' => $validated['team1_score'],
+                'team2_score' => $validated['team2_score'],
+                'tournament_name' => $match->tournament->name,
+                'round' => $match->round ?? 'Unknown',
+            ]);
+        } catch (\Exception $e) {
+            // Don't fail the request if Discord notification fails
+            \Log::warning('Discord match result notification failed', ['error' => $e->getMessage()]);
+        }
 
         return redirect()->route('referee.dashboard')
             ->with('success', 'Match report submitted successfully!');

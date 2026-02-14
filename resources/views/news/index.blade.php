@@ -8,14 +8,20 @@
     {{-- Page Header --}}
     <div class="flex items-center justify-between mb-8">
         <h1 class="text-2xl font-bold text-white">News Hub</h1>
-        @auth
-            @if(auth()->user()->isGM())
-            <a href="{{ route('admin.news.create') }}" class="px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-xl transition font-medium text-sm flex items-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                Write Article
+        <div class="flex items-center gap-3">
+            <a href="{{ route('rss.news') }}" target="_blank" class="px-4 py-2 bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white rounded-xl transition font-medium text-sm flex items-center gap-2" title="Subscribe to RSS feed">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M6.18 15.64a2.18 2.18 0 0 1 2.18 2.18C8.36 19 7.38 20 6.18 20C5 20 4 19 4 17.82a2.18 2.18 0 0 1 2.18-2.18M4 4.44A15.56 15.56 0 0 1 19.56 20h-2.83A12.73 12.73 0 0 0 4 7.27V4.44m0 5.66a9.9 9.9 0 0 1 9.9 9.9h-2.83A7.07 7.07 0 0 0 4 12.93V10.1Z"/></svg>
+                RSS Feed
             </a>
-            @endif
-        @endauth
+            @auth
+                @if(auth()->user()->isGM())
+                <a href="{{ route('admin.news.create') }}" class="px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-xl transition font-medium text-sm flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                    Write Article
+                </a>
+                @endif
+            @endauth
+        </div>
     </div>
 
     <div>

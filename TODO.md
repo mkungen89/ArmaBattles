@@ -1018,14 +1018,13 @@
 
 - [ ] **Third-Party Integrations** 🟡
   - [ ] Google Analytics Events för player actions
-  - [ ] Sentry för error tracking
+  - [x] Sentry för error tracking ✅ **KLART 2026-02-14**
+    - Backend: Laravel SDK med custom exception handler och user context
+    - Frontend: JavaScript SDK med session replay och user tracking
+    - Test command: `php artisan sentry:test`
+    - Config: `config/sentry.php`, `.env` vars (SENTRY_LARAVEL_DSN, SENTRY_TRACES_SAMPLE_RATE)
   - [ ] Datadog för performance monitoring
   - [ ] Zapier webhooks för automation
-  - **Packages:**
-    ```bash
-    composer require sentry/sentry-laravel
-    npm install @sentry/browser
-    ```
 
 - [ ] **Public API för Third-Party Apps** 🔴
   - [ ] OAuth2 server för third-party authentication
@@ -1037,8 +1036,18 @@
 
 - [ ] **Export Everywhere** 🟢
   - [ ] Export leaderboards till Google Sheets (Google Sheets API)
-  - [ ] Auto-post tournament results till Discord webhooks
-  - [ ] RSS feed för news articles
+  - [x] Auto-post tournament results till Discord webhooks ✅ **KLART 2026-02-14**
+    - Tournament completions: `TournamentBracketService::checkTournamentComplete()`
+    - Match results: `RefereeController::submitReport()`
+    - Notable kills: Already implemented via `SendDiscordNotification` job
+    - Server restarts: Already implemented in `ExecuteScheduledRestart` job
+    - Settings: `discord_notify_tournament_results`, `discord_notify_match_results`, `discord_notify_notable_kills`, `discord_notify_server_restart`
+  - [x] RSS feed för news articles ✅ **KLART 2026-02-14**
+    - Routes: `/rss/news`, `/rss/tournaments`
+    - Controller: `RssFeedController` with news() and tournaments() methods
+    - RSS 2.0 format with caching (1 hour for news, 30 min for tournaments)
+    - Autodiscovery meta tags in layout
+    - Subscribe buttons on news and tournaments index pages
   - [ ] iCal export för match schedules (.ics files)
   - [ ] Webhook system för custom integrations
 

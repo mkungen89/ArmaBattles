@@ -4,12 +4,14 @@ use App\Http\Controllers\ActivityFeedController;
 use App\Http\Controllers\Admin\AchievementAdminController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\AdminReportController;
+use App\Http\Controllers\Admin\BanManagementController;
 use App\Http\Controllers\Admin\AnticheatAdminController;
 use App\Http\Controllers\Admin\ContentCreatorAdminController;
 use App\Http\Controllers\Admin\DiscordAdminController;
 use App\Http\Controllers\Admin\GameStatsAdminController;
 use App\Http\Controllers\Admin\HighlightClipAdminController;
 use App\Http\Controllers\Admin\MetricsController;
+use App\Http\Controllers\Admin\ModerationController;
 use App\Http\Controllers\Admin\NewsAdminController;
 use App\Http\Controllers\Admin\RankedAdminController;
 use App\Http\Controllers\Admin\ReputationAdminController;
@@ -21,6 +23,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\SteamController;
 use App\Http\Controllers\Auth\TwoFactorController;
+use App\Http\Controllers\BanAppealController;
 use App\Http\Controllers\KillFeedController;
 use App\Http\Controllers\LeaderboardController;
 use App\Http\Controllers\MatchController;
@@ -30,7 +33,9 @@ use App\Http\Controllers\PlayerComparisonController;
 use App\Http\Controllers\PlayerProfileController;
 use App\Http\Controllers\PlayerSearchController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RecruitmentController;
 use App\Http\Controllers\RankedController;
+use App\Http\Controllers\RssFeedController;
 use App\Http\Controllers\ServerController;
 use App\Http\Controllers\ServerDetailController;
 use App\Http\Controllers\ServerStatsController;
@@ -141,6 +146,7 @@ Route::middleware('auth')->prefix('scrims')->name('scrims.')->group(function () 
 // Content Creators
 Route::prefix('creators')->name('content-creators.')->group(function () {
     Route::get('/', [\App\Http\Controllers\ContentCreatorController::class, 'index'])->name('index');
+    Route::get('/live/status', [\App\Http\Controllers\ContentCreatorController::class, 'liveStatus'])->name('live-status');
     Route::get('/{contentCreator}', [\App\Http\Controllers\ContentCreatorController::class, 'show'])->name('show');
 
     Route::middleware('auth')->group(function () {
@@ -153,6 +159,15 @@ Route::prefix('creators')->name('content-creators.')->group(function () {
         Route::post('/{contentCreator}/verify', [\App\Http\Controllers\ContentCreatorController::class, 'verify'])->name('verify');
         Route::post('/{contentCreator}/unverify', [\App\Http\Controllers\ContentCreatorController::class, 'unverify'])->name('unverify');
     });
+});
+
+// Creator Dashboard (for logged-in creators)
+Route::prefix('creator')->name('creator.')->middleware('auth')->group(function () {
+    Route::get('/dashboard', [\App\Http\Controllers\Creator\CreatorDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/stats', [\App\Http\Controllers\Creator\CreatorDashboardController::class, 'stats'])->name('stats');
+    Route::get('/edit', [\App\Http\Controllers\Creator\CreatorDashboardController::class, 'edit'])->name('edit');
+    Route::put('/update', [\App\Http\Controllers\Creator\CreatorDashboardController::class, 'update'])->name('update');
+    Route::post('/check-live', [\App\Http\Controllers\Creator\CreatorDashboardController::class, 'checkLiveStatus'])->name('check-live');
 });
 
 // Highlight Clips
@@ -220,12 +235,19 @@ Route::prefix('auth/google')->middleware('throttle:auth')->group(function () {
     Route::get('/link', [\App\Http\Controllers\Auth\GoogleController::class, 'linkRedirect'])->name('auth.google.link')->middleware('auth');
 });
 
+Route::prefix('auth/twitch')->middleware('throttle:auth')->group(function () {
+    Route::get('/', [\App\Http\Controllers\Auth\TwitchController::class, 'redirect'])->name('auth.twitch');
+    Route::get('/callback', [\App\Http\Controllers\Auth\TwitchController::class, 'callback'])->name('auth.twitch.callback');
+    Route::get('/link', [\App\Http\Controllers\Auth\TwitchController::class, 'linkRedirect'])->name('auth.twitch.link')->middleware('auth');
+});
+
 Route::post('/logout', [SteamController::class, 'logout'])->name('logout')->middleware('auth');
 
 // Account unlinking routes
 Route::middleware('auth')->group(function () {
     Route::delete('/profile/unlink-steam', [SteamController::class, 'unlink'])->name('profile.unlink-steam');
     Route::delete('/profile/unlink-google', [\App\Http\Controllers\Auth\GoogleController::class, 'unlink'])->name('profile.unlink-google');
+    Route::delete('/profile/unlink-twitch', [\App\Http\Controllers\Auth\TwitchController::class, 'unlink'])->name('profile.unlink-twitch');
 });
 
 // Two-Factor Authentication Challenge (guest with session)
@@ -329,6 +351,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/news/{article}/hoorah', [NewsController::class, 'toggleHoorah'])->name('news.hoorah');
 });
 
+// RSS Feeds (Public)
+Route::get('/rss/news', [RssFeedController::class, 'news'])->name('rss.news');
+Route::get('/rss/tournaments', [RssFeedController::class, 'tournaments'])->name('rss.tournaments');
+
 // Public Team Routes
 Route::prefix('teams')->group(function () {
     Route::get('/', [TeamController::class, 'index'])->name('teams.index');
@@ -381,6 +407,25 @@ Route::middleware('auth')->group(function () {
 Route::middleware('auth')->prefix('matches')->group(function () {
     Route::post('/{match}/check-in', [MatchController::class, 'checkIn'])->name('matches.check-in');
     Route::post('/{match}/schedule', [MatchController::class, 'proposeSchedule'])->name('matches.schedule');
+});
+
+// Ban Appeal Routes (User-facing)
+Route::middleware('auth')->prefix('ban-appeals')->group(function () {
+    Route::get('/', [BanAppealController::class, 'index'])->name('ban-appeals.index');
+    Route::get('/create', [BanAppealController::class, 'create'])->name('ban-appeals.create');
+    Route::post('/', [BanAppealController::class, 'store'])->name('ban-appeals.store');
+    Route::get('/{appeal}', [BanAppealController::class, 'show'])->name('ban-appeals.show');
+});
+
+// Recruitment Routes
+Route::prefix('recruitment')->group(function () {
+    Route::get('/', [RecruitmentController::class, 'index'])->name('recruitment.index');
+    Route::middleware('auth')->group(function () {
+        Route::get('/create', [RecruitmentController::class, 'create'])->name('recruitment.create');
+        Route::post('/', [RecruitmentController::class, 'store'])->name('recruitment.store');
+        Route::get('/my-listing', [RecruitmentController::class, 'myListing'])->name('recruitment.my-listing');
+        Route::post('/deactivate', [RecruitmentController::class, 'deactivate'])->name('recruitment.deactivate');
+    });
 });
 
 // Admin routes
@@ -513,8 +558,18 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     // Content Creators Admin
     Route::prefix('creators')->group(function () {
         Route::get('/', [ContentCreatorAdminController::class, 'index'])->name('admin.creators.index');
+        Route::post('/check-all-live', [ContentCreatorAdminController::class, 'checkAllLiveStatuses'])->name('admin.creators.check-all-live');
+        Route::get('/{creator}', [ContentCreatorAdminController::class, 'show'])->name('admin.creators.show');
+        Route::get('/{creator}/edit', [ContentCreatorAdminController::class, 'edit'])->name('admin.creators.edit');
+        Route::put('/{creator}', [ContentCreatorAdminController::class, 'update'])->name('admin.creators.update');
+        Route::post('/{creator}/approve', [ContentCreatorAdminController::class, 'approve'])->name('admin.creators.approve');
+        Route::post('/{creator}/reject', [ContentCreatorAdminController::class, 'reject'])->name('admin.creators.reject');
         Route::post('/{creator}/verify', [ContentCreatorAdminController::class, 'verify'])->name('admin.creators.verify');
         Route::post('/{creator}/unverify', [ContentCreatorAdminController::class, 'unverify'])->name('admin.creators.unverify');
+        Route::post('/{creator}/toggle-featured', [ContentCreatorAdminController::class, 'toggleFeatured'])->name('admin.creators.toggle-featured');
+        Route::post('/{creator}/check-live', [ContentCreatorAdminController::class, 'checkLiveStatus'])->name('admin.creators.check-live');
+        Route::get('/{creator}/dashboard', [\App\Http\Controllers\Creator\CreatorDashboardController::class, 'adminView'])->name('admin.creators.dashboard');
+        Route::get('/{creator}/stats-view', [\App\Http\Controllers\Creator\CreatorDashboardController::class, 'adminStats'])->name('admin.creators.stats-view');
         Route::delete('/{creator}', [ContentCreatorAdminController::class, 'destroy'])->name('admin.creators.destroy');
     });
 
@@ -593,6 +648,37 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/metrics/api/analytics-data', [MetricsController::class, 'apiAnalyticsData'])->name('admin.metrics.analytics-data');
     Route::get('/metrics/api/usage-data', [MetricsController::class, 'apiUsageData'])->name('admin.metrics.usage-data');
     Route::get('/metrics/api/performance-data', [MetricsController::class, 'apiPerformanceData'])->name('admin.metrics.performance-data');
+});
+
+// Ban Management Routes (accessible to GM, Moderator, and Admin roles)
+Route::prefix('admin/bans')->middleware(['auth', 'gm'])->group(function () {
+    Route::get('/', [BanManagementController::class, 'index'])->name('admin.bans.index');
+    Route::get('/users', [BanManagementController::class, 'bannedUsers'])->name('admin.bans.users');
+    Route::get('/appeals', [BanManagementController::class, 'appeals'])->name('admin.bans.appeals');
+    Route::get('/appeals/{appeal}', [BanManagementController::class, 'showAppeal'])->name('admin.bans.appeals.show');
+    Route::post('/appeals/{appeal}/approve', [BanManagementController::class, 'approveAppeal'])->name('admin.bans.appeals.approve');
+    Route::post('/appeals/{appeal}/reject', [BanManagementController::class, 'rejectAppeal'])->name('admin.bans.appeals.reject');
+    Route::get('/users/{user}/history', [BanManagementController::class, 'userHistory'])->name('admin.bans.user-history');
+    Route::post('/users/{user}/ban', [BanManagementController::class, 'banUser'])->name('admin.bans.ban-user');
+    Route::post('/users/{user}/unban', [BanManagementController::class, 'unbanUser'])->name('admin.bans.unban-user');
+    Route::get('/hardware', [BanManagementController::class, 'hardwareBanForm'])->name('admin.bans.hardware');
+    Route::post('/hardware', [BanManagementController::class, 'banByHardwareId'])->name('admin.bans.hardware.ban');
+    Route::get('/ip', [BanManagementController::class, 'ipBanForm'])->name('admin.bans.ip');
+    Route::post('/ip', [BanManagementController::class, 'banByIpAddress'])->name('admin.bans.ip.ban');
+    Route::get('/import', [BanManagementController::class, 'importForm'])->name('admin.bans.import');
+    Route::post('/import', [BanManagementController::class, 'importBans'])->name('admin.bans.import.process');
+});
+
+// Moderation Routes (accessible to GM, Moderator, and Admin roles)
+Route::prefix('admin/moderation')->middleware(['auth', 'gm'])->group(function () {
+    Route::get('/', [ModerationController::class, 'index'])->name('admin.moderation.index');
+    Route::get('/warnings', [ModerationController::class, 'warnings'])->name('admin.moderation.warnings');
+    Route::post('/users/{user}/warn', [ModerationController::class, 'issueWarning'])->name('admin.moderation.warn');
+    Route::get('/notes', [ModerationController::class, 'notes'])->name('admin.moderation.notes');
+    Route::post('/users/{user}/note', [ModerationController::class, 'addNote'])->name('admin.moderation.note');
+    Route::get('/flagged-chat', [ModerationController::class, 'flaggedChat'])->name('admin.moderation.flagged-chat');
+    Route::post('/chat/{chat}/review', [ModerationController::class, 'reviewChat'])->name('admin.moderation.review-chat');
+    Route::post('/import-bans', [ModerationController::class, 'importBans'])->name('admin.moderation.import-bans');
 });
 
 // Admin News Routes (accessible to GM, Moderator, and Admin roles)

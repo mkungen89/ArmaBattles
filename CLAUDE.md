@@ -663,6 +663,50 @@ Embeddable server status widget for external sites:
 - Charts: page views line, API requests line, API response times multi-line (P50/P95/P99), cache hit rate, system memory, queue jobs
 - Follows `admin/server/performance.blade.php` pattern exactly
 
+### Sentry Error Tracking
+
+**Backend (Laravel):**
+- Package: `sentry/sentry-laravel`
+- Config: `config/sentry.php`
+- Exception handler: `bootstrap/app.php` → `withExceptions()`
+- Automatic release tracking via git commit hash
+- User context: ID, name, email, role (for authenticated users)
+- Request context: URL, method, IP, user agent
+- Tags: route name, HTTP method, interface (web/cli)
+
+**Frontend (JavaScript):**
+- Package: `@sentry/browser`, `@sentry/tracing`
+- Init: `resources/js/sentry.js`
+- User tracking via `window.authUser` (set in `layouts/app.blade.php`)
+- Source maps enabled in `vite.config.js` for accurate stack traces
+- Filters out development errors and browser extension noise
+
+**Environment variables:**
+```env
+# Backend
+SENTRY_LARAVEL_DSN=https://xxx@sentry.io/xxx
+SENTRY_TRACES_SAMPLE_RATE=0.1
+SENTRY_PROFILES_SAMPLE_RATE=0.1
+SENTRY_ENABLE_LOGS=true
+
+# Frontend (Vite)
+VITE_SENTRY_DSN="${SENTRY_LARAVEL_DSN}"
+VITE_SENTRY_TRACES_SAMPLE_RATE=0.1
+VITE_APP_ENV="${APP_ENV}"
+```
+
+**Testing:**
+```bash
+php artisan sentry:test  # Send test exception to verify setup
+```
+
+**Best practices:**
+- Errors automatically captured and sent to Sentry with full context
+- Production errors grouped by route, method, and error type
+- Search/filter by user, release version, or custom tags
+- Source maps allow precise line numbers in minified JS
+- Never log sensitive data (passwords, tokens, etc.)
+
 ## Terminology
 
 The codebase uses "platoon" in user-facing text and "team" in code (models, controllers, database). These terms are interchangeable.

@@ -69,6 +69,8 @@ class SiteSettingsSeeder extends Seeder
             ['key' => 'discord_notify_server_restart', 'value' => '0', 'group' => 'Notifications', 'type' => 'boolean', 'label' => 'Discord: Server Restart', 'description' => 'Send Discord notification on server restart', 'sort_order' => 4],
             ['key' => 'discord_notify_notable_kills', 'value' => '0', 'group' => 'Notifications', 'type' => 'boolean', 'label' => 'Discord: Notable Kills', 'description' => 'Send Discord notification for long-distance kills', 'sort_order' => 5],
             ['key' => 'discord_notable_kill_distance', 'value' => '500', 'group' => 'Notifications', 'type' => 'integer', 'label' => 'Discord: Notable Kill Distance (m)', 'description' => 'Minimum kill distance to trigger Discord notification', 'sort_order' => 6],
+            ['key' => 'discord_notify_tournament_results', 'value' => '0', 'group' => 'Notifications', 'type' => 'boolean', 'label' => 'Discord: Tournament Results', 'description' => 'Send Discord notification when tournaments are completed', 'sort_order' => 7],
+            ['key' => 'discord_notify_match_results', 'value' => '0', 'group' => 'Notifications', 'type' => 'boolean', 'label' => 'Discord: Match Results', 'description' => 'Send Discord notification for match results', 'sort_order' => 8],
 
             // Server Manager (1)
             ['key' => 'broadcast_templates', 'value' => json_encode([

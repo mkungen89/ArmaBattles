@@ -54,5 +54,44 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        // Configure Sentry error reporting with user context
+        $exceptions->reportable(function (Throwable $e) {
+            if (app()->bound('sentry')) {
+                \Sentry\Laravel\Integration::captureUnhandledException($e);
+
+                // Add user context
+                if (auth()->check()) {
+                    \Sentry\configureScope(function (\Sentry\State\Scope $scope): void {
+                        $scope->setUser([
+                            'id' => auth()->id(),
+                            'username' => auth()->user()->name,
+                            'email' => auth()->user()->email,
+                            'role' => auth()->user()->role,
+                        ]);
+                    });
+                }
+
+                // Add additional context and tags
+                \Sentry\configureScope(function (\Sentry\State\Scope $scope): void {
+                    // Request context
+                    $scope->setContext('request', [
+                        'url' => request()->fullUrl(),
+                        'method' => request()->method(),
+                        'ip' => request()->ip(),
+                        'user_agent' => request()->userAgent(),
+                    ]);
+
+                    // Add useful tags for filtering
+                    $scope->setTag('route', request()->route()?->getName() ?? 'unknown');
+                    $scope->setTag('http_method', request()->method());
+
+                    // Add environment info
+                    if (app()->runningInConsole()) {
+                        $scope->setTag('interface', 'cli');
+                    } else {
+                        $scope->setTag('interface', 'web');
+                    }
+                });
+            }
+        });
     })->create();

@@ -545,6 +545,24 @@ class TournamentBracketService
                 'ends_at' => now(),
             ]);
 
+            // Send Discord notification
+            try {
+                $discord = app(DiscordWebhookService::class);
+                $tournament->load('winnerTeam');
+
+                $discord->sendTournamentResult([
+                    'name' => $tournament->name,
+                    'format' => $tournament->format,
+                    'team_count' => $tournament->approvedTeams()->count(),
+                    'url' => route('tournaments.show', $tournament),
+                ], [
+                    'name' => $tournament->winnerTeam->name,
+                ]);
+            } catch (\Exception $e) {
+                // Don't fail if Discord notification fails
+                \Log::warning('Discord tournament result notification failed', ['error' => $e->getMessage()]);
+            }
+
             return true;
         }
 
