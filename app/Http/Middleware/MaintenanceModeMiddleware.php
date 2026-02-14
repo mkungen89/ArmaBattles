@@ -20,7 +20,7 @@ class MaintenanceModeMiddleware
         }
 
         // Allow login and admin routes through
-        if ($request->is('login', 'auth/*', 'admin/*', 'api/*', 'logout', 'two-factor-challenge')) {
+        if ($request->is('login', 'auth/*', 'admin/*', 'api/*', 'logout', 'two-factor-challenge', 'creators/live/status')) {
             return $next($request);
         }
 

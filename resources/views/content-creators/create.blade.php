@@ -24,16 +24,29 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-300 mb-2">Channel URL *</label>
                     <input type="url" name="channel_url" required placeholder="https://twitch.tv/yourname" class="w-full bg-gray-900/50 border border-white/5 text-white rounded-xl px-4 py-2">
+                    <p class="mt-1 text-xs text-gray-500">We'll automatically fetch your channel name, bio, and follower count</p>
                     @error('channel_url')<p class="mt-1 text-sm text-red-400">{{ $message }}</p>@enderror
                 </div>
+
+                <div class="bg-green-500/10 border border-green-500/30 rounded-xl p-4">
+                    <div class="flex items-start gap-3">
+                        <svg class="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                        <div class="text-sm text-green-300">
+                            <strong>Auto-fetch enabled!</strong> We'll automatically pull your channel name, bio, and follower count from your platform. You can override these fields below if needed.
+                        </div>
+                    </div>
+                </div>
+
                 <div>
-                    <label class="block text-sm font-medium text-gray-300 mb-2">Channel Name</label>
-                    <input type="text" name="channel_name" placeholder="Your channel display name" class="w-full bg-gray-900/50 border border-white/5 text-white rounded-xl px-4 py-2">
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Channel Name <span class="text-xs text-gray-500">(optional - auto-filled)</span></label>
+                    <input type="text" name="channel_name" placeholder="Leave empty to auto-fetch from your channel" class="w-full bg-gray-900/50 border border-white/5 text-white rounded-xl px-4 py-2">
                     @error('channel_name')<p class="mt-1 text-sm text-red-400">{{ $message }}</p>@enderror
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-300 mb-2">Bio</label>
-                    <textarea name="bio" rows="4" placeholder="Tell us about your content..." class="w-full bg-gray-900/50 border border-white/5 text-white rounded-xl px-4 py-2"></textarea>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Bio <span class="text-xs text-gray-500">(optional - auto-filled)</span></label>
+                    <textarea name="bio" rows="4" placeholder="Leave empty to auto-fetch from your channel..." class="w-full bg-gray-900/50 border border-white/5 text-white rounded-xl px-4 py-2"></textarea>
                     @error('bio')<p class="mt-1 text-sm text-red-400">{{ $message }}</p>@enderror
                 </div>
                 <div class="bg-blue-500/10 border border-blue-500/30 rounded-xl p-4">

@@ -136,7 +136,7 @@ class SteamController extends Controller
         $user = Auth::user();
 
         // Check if user has another login method
-        if (! $user->google_id) {
+        if (! $user->google_id && ! $user->twitch_id && ! $user->password) {
             return redirect()->route('profile.settings')->with('error', 'You cannot unlink your only login method. Please link another account first.');
         }
 

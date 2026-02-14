@@ -179,6 +179,50 @@
                             @endif
                         </div>
                     </div>
+
+                    {{-- Twitch Account --}}
+                    <div class="flex items-center justify-between p-4 bg-white/3 rounded-xl border border-white/5">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-lg bg-purple-600 flex items-center justify-center">
+                                <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-white">Twitch</p>
+                                @if($user->twitch_id)
+                                    <p class="text-xs text-gray-400">Connected • {{ $user->twitch_username }}</p>
+                                @else
+                                    <p class="text-xs text-gray-500">Not connected</p>
+                                @endif
+                            </div>
+                        </div>
+                        <div>
+                            @if($user->twitch_id)
+                                @if($user->steam_id || $user->google_id)
+                                    {{-- Can unlink if has another login method --}}
+                                    <form action="{{ route('profile.unlink-twitch') }}" method="POST" class="inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit"
+                                                class="px-4 py-2 bg-red-600/80 hover:bg-red-500 text-white text-xs rounded-lg transition font-medium"
+                                                onclick="return confirm('Are you sure you want to unlink your Twitch account?')">
+                                            Unlink
+                                        </button>
+                                    </form>
+                                @else
+                                    <span class="px-4 py-2 bg-white/5 text-gray-500 text-xs rounded-lg font-medium cursor-not-allowed" title="You need at least one linked account">
+                                        Unlink
+                                    </span>
+                                @endif
+                            @else
+                                <a href="{{ route('auth.twitch.link') }}"
+                                   class="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white text-xs rounded-lg transition font-medium inline-block">
+                                    Link Twitch
+                                </a>
+                            @endif
+                        </div>
+                    </div>
                 </div>
 
                 <div class="mt-4 p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg">
@@ -186,7 +230,7 @@
                         <svg class="w-4 h-4 inline mr-1" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
                         </svg>
-                        You need at least one linked account (Steam or Google) to log in. You cannot unlink your only login method.
+                        You need at least one linked account (Steam, Google, or Twitch) to log in. You cannot unlink your only login method.
                     </p>
                 </div>
             </div>

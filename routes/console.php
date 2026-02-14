@@ -39,6 +39,12 @@ Schedule::call(function () {
 // Check and award player achievements hourly
 Schedule::command('achievements:check')->hourly();
 
+// Process expired temporary bans every hour
+Schedule::command('bans:process-expired')
+    ->hourly()
+    ->withoutOverlapping()
+    ->name('process:expired-bans');
+
 // Process scheduled server restarts
 Schedule::call(function () {
     $due = \App\Models\ScheduledRestart::where('is_enabled', true)
@@ -94,3 +100,9 @@ Schedule::command('matches:send-reminders')
     ->everyTenMinutes()
     ->withoutOverlapping()
     ->name('send:match-reminders');
+
+// Check content creators live status every 3 minutes
+Schedule::command('creators:check-live')
+    ->everyThreeMinutes()
+    ->withoutOverlapping()
+    ->name('check:creators-live-status');

@@ -28,6 +28,9 @@ class User extends Authenticatable
         'steam_id',
         'google_id',
         'google_email',
+        'twitch_id',
+        'twitch_username',
+        'twitch_email',
         'avatar',
         'avatar_full',
         'custom_avatar',
@@ -39,6 +42,10 @@ class User extends Authenticatable
         'is_banned',
         'ban_reason',
         'banned_at',
+        'banned_until',
+        'hardware_id',
+        'ban_count',
+        'ip_address',
         'last_login_at',
         'last_seen_at',
         'profile_visibility',
@@ -47,6 +54,11 @@ class User extends Authenticatable
         'two_factor_recovery_codes',
         'two_factor_confirmed_at',
         'social_links',
+        'looking_for_team',
+        'preferred_roles',
+        'playstyle',
+        'region',
+        'availability',
     ];
 
     /**
@@ -73,6 +85,7 @@ class User extends Authenticatable
             'password' => 'hashed',
             'is_banned' => 'boolean',
             'banned_at' => 'datetime',
+            'banned_until' => 'datetime',
             'last_login_at' => 'datetime',
             'last_seen_at' => 'datetime',
             'notification_preferences' => 'array',
@@ -80,6 +93,8 @@ class User extends Authenticatable
             'two_factor_secret' => 'encrypted',
             'two_factor_recovery_codes' => 'encrypted',
             'two_factor_confirmed_at' => 'datetime',
+            'looking_for_team' => 'boolean',
+            'preferred_roles' => 'array',
         ];
     }
 
@@ -132,22 +147,59 @@ class User extends Authenticatable
         return in_array($this->role, ['admin', 'moderator', 'referee']);
     }
 
-    public function ban(?string $reason = null): void
+    public function ban(?string $reason = null, $bannedUntil = null, ?string $banType = 'permanent', ?User $admin = null): void
     {
         $this->update([
             'is_banned' => true,
             'ban_reason' => $reason,
             'banned_at' => now(),
+            'banned_until' => $bannedUntil,
+            'ban_count' => $this->ban_count + 1,
+        ]);
+
+        // Log to ban history
+        BanHistory::create([
+            'user_id' => $this->id,
+            'action' => 'banned',
+            'reason' => $reason,
+            'ban_type' => $banType,
+            'banned_until' => $bannedUntil,
+            'hardware_id' => $this->hardware_id,
+            'ip_address' => $this->ip_address,
+            'actioned_by' => $admin?->id,
         ]);
     }
 
-    public function unban(): void
+    public function unban(?User $admin = null): void
     {
         $this->update([
             'is_banned' => false,
             'ban_reason' => null,
             'banned_at' => null,
+            'banned_until' => null,
         ]);
+
+        // Log to ban history
+        BanHistory::create([
+            'user_id' => $this->id,
+            'action' => 'unbanned',
+            'actioned_by' => $admin?->id,
+        ]);
+    }
+
+    public function isTempBanned(): bool
+    {
+        return $this->is_banned && $this->banned_until !== null && $this->banned_until->isFuture();
+    }
+
+    public function isPermanentlyBanned(): bool
+    {
+        return $this->is_banned && $this->banned_until === null;
+    }
+
+    public function tempBanExpired(): bool
+    {
+        return $this->is_banned && $this->banned_until !== null && $this->banned_until->isPast();
     }
 
     public function teams(): BelongsToMany
@@ -397,5 +449,83 @@ class User extends Authenticatable
     public function hasDiscordPresenceEnabled(): bool
     {
         return $this->discordPresence()->where('enabled', true)->exists();
+    }
+
+    /**
+     * Get user's ban appeals
+     */
+    public function banAppeals(): HasMany
+    {
+        return $this->hasMany(BanAppeal::class);
+    }
+
+    /**
+     * Get user's pending ban appeal
+     */
+    public function pendingBanAppeal(): ?\App\Models\BanAppeal
+    {
+        return $this->banAppeals()->where('status', 'pending')->first();
+    }
+
+    /**
+     * Get user's ban history
+     */
+    public function banHistory(): HasMany
+    {
+        return $this->hasMany(BanHistory::class);
+    }
+
+    /**
+     * Check if user has a pending ban appeal
+     */
+    public function hasPendingBanAppeal(): bool
+    {
+        return $this->banAppeals()->where('status', 'pending')->exists();
+    }
+
+    /**
+     * Get user's recruitment listings
+     */
+    public function recruitmentListings(): HasMany
+    {
+        return $this->hasMany(RecruitmentListing::class);
+    }
+
+    /**
+     * Get user's active recruitment listing
+     */
+    public function activeRecruitmentListing(): ?RecruitmentListing
+    {
+        return $this->recruitmentListings()
+            ->active()
+            ->playersLookingForTeam()
+            ->first();
+    }
+
+    /**
+     * Check if user has an active recruitment listing
+     */
+    public function hasActiveRecruitmentListing(): bool
+    {
+        return $this->recruitmentListings()
+            ->active()
+            ->playersLookingForTeam()
+            ->exists();
+    }
+
+    /**
+     * Get user's warnings
+     */
+    public function warnings(): HasMany
+    {
+        return $this->hasMany(PlayerWarning::class);
+    }
+
+    /**
+     * Get user's moderator notes
+     */
+    public function moderatorNotes(): HasMany
+    {
+        return $this->hasMany(ModeratorNote::class);
     }
 }

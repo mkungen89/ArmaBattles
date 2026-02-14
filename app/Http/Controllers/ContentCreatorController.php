@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\ContentCreator;
 use App\Models\HighlightClip;
+use App\Services\ContentCreatorInfoService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class ContentCreatorController extends Controller
 {
@@ -63,7 +65,7 @@ class ContentCreatorController extends Controller
     /**
      * Store content creator registration
      */
-    public function store(Request $request)
+    public function store(Request $request, ContentCreatorInfoService $infoService)
     {
         $user = Auth::user();
 
@@ -78,13 +80,33 @@ class ContentCreatorController extends Controller
             'bio' => 'nullable|string|max:1000',
         ]);
 
+        // Fetch channel info from platform API if not provided
+        $channelName = $validated['channel_name'] ?? null;
+        $bio = $validated['bio'] ?? null;
+        $followerCount = null;
+
+        if (!$channelName || !$bio) {
+            $channelInfo = $infoService->fetchChannelInfo($validated['platform'], $validated['channel_url']);
+
+            if ($channelInfo) {
+                $channelName = $channelName ?? $channelInfo['channel_name'];
+                $bio = $bio ?? $channelInfo['bio'];
+                $followerCount = $channelInfo['follower_count'] ?? null;
+
+                Log::info("Auto-fetched channel info for {$validated['platform']}: " . json_encode($channelInfo));
+            } else {
+                Log::warning("Could not auto-fetch channel info for {$validated['platform']}: {$validated['channel_url']}");
+            }
+        }
+
         try {
             ContentCreator::create([
                 'user_id' => $user->id,
                 'platform' => $validated['platform'],
                 'channel_url' => $validated['channel_url'],
-                'channel_name' => $validated['channel_name'] ?? null,
-                'bio' => $validated['bio'] ?? null,
+                'channel_name' => $channelName,
+                'bio' => $bio,
+                'follower_count' => $followerCount,
             ]);
         } catch (\Illuminate\Database\QueryException $e) {
             // Handle race condition - unique constraint on user_id
@@ -94,8 +116,13 @@ class ContentCreatorController extends Controller
             throw $e;
         }
 
+        $message = 'Content creator profile created! An admin will review your application for verification.';
+        if ($channelName) {
+            $message = "Welcome, {$channelName}! Your content creator profile has been created. An admin will review your application for verification.";
+        }
+
         return redirect()->route('content-creators.index')
-            ->with('success', 'Content creator profile created! An admin will review your application for verification.');
+            ->with('success', $message);
     }
 
     /**
@@ -201,5 +228,39 @@ class ContentCreatorController extends Controller
         ]);
 
         return back()->with('success', 'Content creator verification removed.');
+    }
+
+    /**
+     * Get live creators for AJAX polling
+     */
+    public function liveStatus()
+    {
+        $liveCreators = ContentCreator::with('user')
+            ->live()
+            ->orderByDesc('live_viewers')
+            ->get()
+            ->map(function ($creator) {
+                return [
+                    'id' => $creator->id,
+                    'channel_name' => $creator->channel_name,
+                    'avatar' => $creator->user->avatar_display,
+                    'url' => route('content-creators.show', $creator),
+                    'platform' => $creator->platform,
+                    'platform_name' => $creator->platform_name,
+                    'platform_color' => $creator->platform_color,
+                    'is_verified' => $creator->is_verified,
+                    'live_platform' => $creator->live_platform,
+                    'live_title' => $creator->live_title,
+                    'live_viewers' => $creator->live_viewers ?? 0,
+                    'live_started_at' => $creator->live_started_at?->diffForHumans(null, true),
+                    'bio' => $creator->bio,
+                ];
+            });
+
+        return response()->json([
+            'count' => $liveCreators->count(),
+            'creators' => $liveCreators->take(6),
+            'total' => ContentCreator::where('is_live', true)->count(),
+        ]);
     }
 }

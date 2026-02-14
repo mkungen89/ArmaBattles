@@ -12,6 +12,22 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script src="https://unpkg.com/lucide@latest"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script>
+        // Disable right-click context menu
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            return false;
+        });
+
+        // Disable common keyboard shortcuts for saving
+        document.addEventListener('keydown', function(e) {
+            // Ctrl+S / Cmd+S
+            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                e.preventDefault();
+                return false;
+            }
+        });
+    </script>
 </head>
 <body class="min-h-full bg-gray-900 text-white" x-data="{ sidebarOpen: false }">
 
@@ -87,9 +103,9 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
                 </svg>
                 Creators
-                @php $unverifiedCreators = \App\Models\ContentCreator::where('is_verified', false)->count(); @endphp
-                @if($unverifiedCreators > 0)
-                <span class="ml-auto px-1.5 py-0.5 bg-yellow-500/20 text-yellow-400 rounded-full text-[10px] font-bold">{{ $unverifiedCreators }}</span>
+                @php $pendingCreators = \App\Models\ContentCreator::where('is_approved', false)->count(); @endphp
+                @if($pendingCreators > 0)
+                <span class="ml-auto px-1.5 py-0.5 bg-orange-500/20 text-orange-400 rounded-full text-[10px] font-bold">{{ $pendingCreators }}</span>
                 @endif
             </a>
 
@@ -178,6 +194,32 @@
                 @php $pendingReportCount = \App\Models\PlayerReport::pending()->count(); @endphp
                 @if($pendingReportCount > 0)
                 <span class="ml-auto px-1.5 py-0.5 bg-red-500/20 text-red-400 rounded-full text-[10px] font-bold">{{ $pendingReportCount }}</span>
+                @endif
+            </a>
+
+            <a href="{{ route('admin.moderation.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition {{ request()->routeIs('admin.moderation*') ? 'bg-green-500/20 text-green-400' : 'text-gray-400 hover:bg-white/5 hover:text-white' }}">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                </svg>
+                Moderation
+                @php
+                    $flaggedChatCount = \App\Models\ChatEvent::whereNotNull('is_flagged')->whereNull('reviewed_at')->count();
+                    $activeWarningsCount = \App\Models\PlayerWarning::active()->count();
+                    $moderationQueueTotal = $flaggedChatCount + $activeWarningsCount;
+                @endphp
+                @if($moderationQueueTotal > 0)
+                <span class="ml-auto px-1.5 py-0.5 bg-yellow-500/20 text-yellow-400 rounded-full text-[10px] font-bold">{{ $moderationQueueTotal }}</span>
+                @endif
+            </a>
+
+            <a href="{{ route('admin.bans.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition {{ request()->routeIs('admin.bans*') ? 'bg-green-500/20 text-green-400' : 'text-gray-400 hover:bg-white/5 hover:text-white' }}">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>
+                </svg>
+                Ban Management
+                @php $pendingAppealsCount = \App\Models\BanAppeal::pending()->count(); @endphp
+                @if($pendingAppealsCount > 0)
+                <span class="ml-auto px-1.5 py-0.5 bg-red-500/20 text-red-400 rounded-full text-[10px] font-bold">{{ $pendingAppealsCount }}</span>
                 @endif
             </a>
 

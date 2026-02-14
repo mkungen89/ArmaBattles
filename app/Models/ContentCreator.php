@@ -13,7 +13,14 @@ class ContentCreator extends Model
         'channel_url',
         'channel_name',
         'is_verified',
+        'is_approved',
+        'is_featured',
         'is_live',
+        'live_platform',
+        'live_title',
+        'live_viewers',
+        'live_started_at',
+        'live_checked_at',
         'follower_count',
         'viewer_count',
         'stream_title',
@@ -25,11 +32,16 @@ class ContentCreator extends Model
 
     protected $casts = [
         'is_verified' => 'boolean',
+        'is_approved' => 'boolean',
+        'is_featured' => 'boolean',
         'is_live' => 'boolean',
         'follower_count' => 'integer',
         'viewer_count' => 'integer',
+        'live_viewers' => 'integer',
         'last_live_at' => 'datetime',
         'verified_at' => 'datetime',
+        'live_started_at' => 'datetime',
+        'live_checked_at' => 'datetime',
     ];
 
     /**
