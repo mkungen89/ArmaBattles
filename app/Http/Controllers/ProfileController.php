@@ -162,6 +162,9 @@ class ProfileController extends Controller
         // Competitive rating
         $playerRating = $user->playerRating;
 
+        // Discord Rich Presence
+        $discordPresence = $user->discordPresence;
+
         return view('profile.show', [
             'user' => $user,
             'team' => $team,
@@ -183,6 +186,7 @@ class ProfileController extends Controller
             'showcaseAchievements' => $showcaseAchievements,
             'reputation' => $reputation,
             'playerRating' => $playerRating,
+            'discordPresence' => $discordPresence,
         ]);
     }
 

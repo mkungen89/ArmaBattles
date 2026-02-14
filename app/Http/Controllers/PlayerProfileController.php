@@ -149,6 +149,9 @@ class PlayerProfileController extends Controller
         // Competitive rating
         $playerRating = $user->playerRating;
 
+        // Discord Rich Presence
+        $discordPresence = $user->discordPresence;
+
         return view('profile.public', [
             'user' => $user,
             'team' => $team,
@@ -170,6 +173,7 @@ class PlayerProfileController extends Controller
             'showcaseAchievements' => $showcaseAchievements,
             'reputation' => $reputation,
             'playerRating' => $playerRating,
+            'discordPresence' => $discordPresence,
             'isOwner' => auth()->check() && auth()->id() === $user->id,
         ]);
     }

@@ -11,6 +11,9 @@
     {{-- Achievement Showcase --}}
     <x-profile.achievement-showcase :showcaseAchievements="$showcaseAchievements" />
 
+    {{-- Discord Rich Presence --}}
+    @include('profile._discord-presence')
+
     {{-- Core Stats Grid --}}
     <x-profile.stats-grid :gameStats="$gameStats" :killsByVictimType="$killsByVictimType" :friendlyFireDealt="$friendlyFireDealt" :friendlyFireReceived="$friendlyFireReceived" />
 
