@@ -331,6 +331,36 @@ TOTP-based 2FA (Google Authenticator, Authy). Opt-in per user from profile setti
 - Admin can reset a user's 2FA via `/admin/users/{user}/reset-2fa`
 - Packages: `pragmarx/google2fa-laravel`, `bacon/bacon-qr-code`
 
+### Password Strength Enforcement
+
+Strong password requirements enforced at registration with real-time visual feedback.
+
+- **`StrongPassword`** validation rule (`app/Rules/StrongPassword.php`) — Comprehensive password validation
+  - Minimum 12 characters (configurable via `password_min_length` setting)
+  - At least one uppercase letter (A-Z)
+  - At least one lowercase letter (a-z)
+  - At least one number (0-9)
+  - At least one special character (@$!%*#?&)
+  - Blocks common weak passwords (Password123!, Admin123!, Welcome123!, etc.)
+  - Prevents >3 repeating characters (aaaa, 1111)
+  - Prevents sequential characters (1234, abcd, qwerty)
+- **Helper methods:**
+  - `StrongPassword::getStrength($password)` — Returns 0-100 score
+  - `StrongPassword::getStrengthLabel($score)` — Very Weak/Weak/Medium/Strong/Very Strong
+  - `StrongPassword::getStrengthColor($score)` — red/orange/yellow/blue/green
+- **Registration form** (`resources/views/auth/register.blade.php`) — Alpine.js real-time indicator
+  - Visual strength bar with color coding
+  - Live requirement checklist with checkmarks
+  - Shows/hides on password field focus
+  - Updates in real-time as user types
+- **Site settings** (Security group):
+  - `password_min_length` (integer, default: 12)
+  - `password_require_uppercase` (boolean, default: true)
+  - `password_require_lowercase` (boolean, default: true)
+  - `password_require_numbers` (boolean, default: true)
+  - `password_require_special` (boolean, default: true)
+- **Applied at:** User registration (`RegisterController`)
+
 ### Audit Logging
 
 - **`AdminAuditLog`** model — Stores user_id, action, target_type, target_id, metadata (JSON), ip_address
