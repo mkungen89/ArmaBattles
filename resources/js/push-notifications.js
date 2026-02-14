@@ -48,9 +48,9 @@ export const subscribeToPush = async () => {
         // Subscribe to push manager
         const subscription = await registration.pushManager.subscribe({
             userVisibleOnly: true,
-            // VAPID public key - TODO: Generate actual VAPID keys in production
+            // VAPID public key from environment
             applicationServerKey: urlBase64ToUint8Array(
-                'BEl62iUYgUivxIkv69yViEuiBIa-Ib37gp2ENnCR_DQ2Xm0lH7hqvY9R7gN2bWyqJOwGsOCwTXzr7Ll6MqFyMYI'
+                import.meta.env.VITE_VAPID_PUBLIC_KEY
             ),
         });
 

@@ -79,4 +79,10 @@ return [
         'api_key' => env('YOUTUBE_API_KEY'),
     ],
 
+    'vapid' => [
+        'subject' => env('VAPID_SUBJECT', 'mailto:admin@armabattles.com'),
+        'public_key' => env('VITE_VAPID_PUBLIC_KEY'),
+        'private_key' => env('VAPID_PRIVATE_KEY'),
+    ],
+
 ];

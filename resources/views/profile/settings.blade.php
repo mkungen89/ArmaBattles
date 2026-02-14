@@ -799,6 +799,33 @@
                             </label>
                         </div>
                     </div>
+
+                    {{-- Push Notifications --}}
+                    <div class="mb-5">
+                        <label class="block text-xs font-medium text-gray-400 mb-2.5">Push Notifications</label>
+                        <div class="px-4 py-3 bg-blue-500/5 rounded-xl border border-blue-500/20">
+                            <div class="flex items-center justify-between">
+                                <div class="flex-1">
+                                    <span class="text-white text-xs font-medium">Browser Push Notifications</span>
+                                    <p class="text-gray-500 text-[10px] mt-0.5">Get instant notifications even when the site is closed</p>
+                                </div>
+                                <div>
+                                    @if(data_get($user->notification_preferences, 'push_enabled', false))
+                                        <button type="button" id="disable-push-notifications"
+                                                class="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-lg transition text-xs font-medium">
+                                            Disable
+                                        </button>
+                                    @else
+                                        <button type="button" id="enable-push-notifications"
+                                                class="px-3 py-1.5 bg-green-600 hover:bg-green-500 text-white rounded-lg transition text-xs font-medium">
+                                            Enable
+                                        </button>
+                                    @endif
+                                </div>
+                            </div>
+                            <div id="push-notification-status" class="mt-2 text-xs text-gray-400 hidden"></div>
+                        </div>
+                    </div>
                     <button type="submit" class="px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-xl transition text-sm font-medium">
                         Save Settings
                     </button>
