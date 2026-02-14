@@ -43,6 +43,17 @@ php artisan db:seed --class=SiteSettingsSeeder  # Specific seeder
 
 Note: When running as root, use `COMPOSER_ALLOW_SUPERUSER=1` for composer commands.
 
+## Detailed Documentation
+
+For in-depth documentation on specific systems, see the following dedicated guides:
+
+- **[Ban Management System](docs/BAN_MANAGEMENT.md)** - Comprehensive ban system with appeals, hardware bans, IP bans, and automated processing
+- **[Moderation System](docs/MODERATION.md)** - Player warnings, moderator notes, and automated chat filtering
+- **[Recruitment System](docs/RECRUITMENT.md)** - Player recruitment board for finding groups and team members
+- **[Content Creator System](docs/CONTENT_CREATORS.md)** - Multi-platform streamer directory with live status tracking and creator dashboard
+
+These documents provide complete technical specifications, database schemas, API integration details, and usage examples for each system.
+
 ## Architecture
 
 ### API Versioning
@@ -196,7 +207,13 @@ When displaying scenario names, always use `$server->scenario_display_name` (not
 
 **Ranked Rating System (Glicko-2):** `PlayerRating`, `RatingHistory` — Opt-in competitive tactical rating. Rewards objective play, not just kills. Event types and their Glicko-2 mapping: `kill` = win vs victim's real rating; `team_kill` = LOSS vs phantom at own rating, RD 150 (significant penalty); `friendly_fire` = LOSS vs phantom at own rating, RD 250 (moderate penalty per hit); `vehicle_destroy` = win vs phantom at 1600 (high-value target); `base_capture` = win vs phantom at 1500; `heal` = win vs phantom at 1300 (non-self only); `supply` = win vs phantom at 1300; `building` = win vs phantom at 1200 (engineer role). AI kills excluded. `rated_kills_queue` table stages events for batch processing every 4 hours. Tiers: Bronze (0+), Silver (1200+), Gold (1400+), Platinum (1600+), Diamond (1800+), Master (2000+), Elite (2200+). 10 placement games required. Services: `Glicko2Service` (pure math), `RatingCalculationService` (orchestrator with phantom opponent constants). StatsController hooks: `queueRatedKillIfEligible()` in `storeKill()`, `queueRatedObjectiveIfEligible()` in `storeBaseEvent()`, `storeHealing()`, `storeSupplies()`, `storeXpEvent()` (ENEMY_KILL_VEH), `storeBuildingEvent()` (BUILDING_PLACED), `storeDamageEvents()` (is_friendly_fire). Commands: `ratings:calculate` (every 4h), `ratings:decay` (daily, 14-day inactivity). User: `$user->playerRating()` HasOne, `$user->isCompetitive()`, `$user->getRatingDisplay()`. Team: `$team->getTeamRating()` returns avg rating of competitive members.
 
-**Content Creators:** `ContentCreator`, `HighlightClip`, `ClipVote` — Multi-platform streamer directory (Twitch, YouTube, TikTok, Kick). Clip submission with community voting. "Clip of the Week" feature.
+**Content Creators:** `ContentCreator`, `HighlightClip`, `ClipVote` — Multi-platform streamer directory (Twitch, YouTube, TikTok, Kick). Clip submission with community voting. "Clip of the Week" feature. Live status tracking via streaming APIs. See [docs/CONTENT_CREATORS.md](docs/CONTENT_CREATORS.md).
+
+**Recruitment System:** `RecruitmentListing`, `PlayerRole` — Player recruitment board for LFG/LFM postings. Role-based matching (Infantry, Medic, Engineer, etc.) with playstyle and region filters. See [docs/RECRUITMENT.md](docs/RECRUITMENT.md).
+
+**Ban Management:** `BanAppeal`, `BanHistory` — Comprehensive ban system with temporary/permanent bans, hardware ID bans, IP bans, and full appeal workflow. Service: `BanService`. See [docs/BAN_MANAGEMENT.md](docs/BAN_MANAGEMENT.md).
+
+**Moderation System:** `PlayerWarning`, `ModeratorNote` — Player warnings with severity levels, internal moderator notes, automated chat filtering. Service: `ModerationService`. See [docs/MODERATION.md](docs/MODERATION.md).
 
 **Achievements:** `Achievement`, `AchievementProgress`, `AchievementShowcase` — Category-based achievements with progress tracking, rarity calculation, and profile showcase (pin up to 3).
 
@@ -265,7 +282,13 @@ When displaying scenario names, always use `$server->scenario_display_name` (not
   - `/admin/ranked` — Ranked ratings admin dashboard (competitive count, tier distribution, suspicious players, queue size, rating reset)
   - `/admin/audit-log` — Enhanced audit log with user/date/search filters and CSV export
   - `/admin/news/*` — News article management
+  - `/admin/bans/*` — Ban management system (ban/unban, appeals, hardware/IP bans, import)
+  - `/admin/moderation/*` — Moderation tools (warnings, notes, flagged chat review)
+  - `/admin/creators/*` — Content creator management (approval, featured status)
 - `/export/*` — Stats export: player CSV, match history CSV, leaderboard CSV/JSON (via `StatsExportController`)
+- `/recruitment/*` — Player recruitment board (LFG/LFM listings)
+- `/ban-appeals/*` — User-facing ban appeal submission and viewing
+- `/creator/*` — Content creator dashboard (stats, edit profile, live status check)
 - `/gm/*` — GM/Moderator routes (gm_sessions, editor_actions)
 - `/api/*` — Sanctum-authenticated Stats API
 - `/api/legacy/*` — Legacy token-authenticated GameEvent API
@@ -472,6 +495,8 @@ Production uses PostgreSQL. Tests use in-memory SQLite. Uses database-backed cac
 - Old system metrics cleanup — daily (configurable via `metrics_retention_days` setting, default 90 days)
 - `ratings:calculate` — every 4 hours (processes rated_kills_queue, updates Glicko-2 ratings)
 - `ratings:decay` — daily (increases RD for competitive players inactive >14 days)
+- `bans:process-expired` — hourly (auto-unbans users whose temporary ban has expired)
+- `creators:check-live` — every 3 minutes (checks Twitch/YouTube/Kick/TikTok APIs for live streaming status)
 
 ### Profile System
 
