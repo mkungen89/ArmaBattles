@@ -81,7 +81,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
                     <p class="text-xs text-gray-500" x-text="elapsedFormatted">
-                        {{ $discordPresence->started_at->diffForHumans(null, true) }} elapsed
+                        {{ $discordPresence->started_at?->diffForHumans(null, true) ?? '0 minutes' }} elapsed
                     </p>
                 </div>
             </div>
