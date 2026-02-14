@@ -1,6 +1,48 @@
 {{-- Discord Rich Presence Section --}}
 @if($discordPresence && $discordPresence->enabled && $discordPresence->current_activity)
-<div class="glass rounded-2xl p-6 card-hover">
+<div class="glass rounded-2xl p-6 card-hover"
+     x-data="{
+         activityStatus: @js($discordPresence->getActivityStatus()),
+         activityState: @js($discordPresence->getActivityState()),
+         startedAt: @js($discordPresence->started_at ? $discordPresence->started_at->toIso8601String() : null),
+         enabled: @js($discordPresence->enabled),
+         elapsedSeconds: @js($discordPresence->getElapsedTime()),
+         get elapsedFormatted() {
+             if (!this.elapsedSeconds) return '';
+             const hours = Math.floor(this.elapsedSeconds / 3600);
+             const minutes = Math.floor((this.elapsedSeconds % 3600) / 60);
+             if (hours > 0) return `${hours}h ${minutes}m elapsed`;
+             return `${minutes} minutes elapsed`;
+         }
+     }"
+     x-init="
+         @auth
+         if (window.Echo && {{ auth()->id() }} === {{ $user->id }}) {
+             window.Echo.private('App.Models.User.{{ $user->id }}')
+                 .listen('.presence.updated', (e) => {
+                     activityStatus = e.activity_status;
+                     activityState = e.activity_state;
+                     startedAt = e.started_at;
+                     enabled = e.enabled;
+                     elapsedSeconds = 0;
+
+                     // Hide card if presence disabled or no activity
+                     if (!enabled || !e.activity_status) {
+                         $el.style.display = 'none';
+                     } else {
+                         $el.style.display = 'block';
+                     }
+                 });
+         }
+         @endauth
+
+         // Update elapsed time every second
+         if (startedAt) {
+             setInterval(() => {
+                 elapsedSeconds++;
+             }, 1000);
+         }
+     ">
     <div class="flex items-center justify-between mb-4">
         <div class="flex items-center gap-3">
             <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center">
@@ -28,24 +70,20 @@
 
             {{-- Activity Info --}}
             <div class="flex-1 min-w-0">
-                <p class="font-bold text-white text-sm mb-1 truncate">
+                <p class="font-bold text-white text-sm mb-1 truncate" x-text="activityStatus">
                     {{ $discordPresence->getActivityStatus() }}
                 </p>
-                @if($discordPresence->getActivityState())
-                <p class="text-xs text-gray-400 truncate">
+                <p class="text-xs text-gray-400 truncate" x-show="activityState" x-text="activityState">
                     {{ $discordPresence->getActivityState() }}
                 </p>
-                @endif
-                @if($discordPresence->started_at)
-                <div class="flex items-center gap-2 mt-2">
+                <div class="flex items-center gap-2 mt-2" x-show="startedAt">
                     <svg class="w-3 h-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
-                    <p class="text-xs text-gray-500">
+                    <p class="text-xs text-gray-500" x-text="elapsedFormatted">
                         {{ $discordPresence->started_at->diffForHumans(null, true) }} elapsed
                     </p>
                 </div>
-                @endif
             </div>
         </div>
     </div>

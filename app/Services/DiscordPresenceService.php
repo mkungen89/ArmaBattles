@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Events\DiscordPresenceUpdated;
 use App\Models\DiscordRichPresence;
 use App\Models\Server;
 use App\Models\Tournament;
@@ -231,12 +232,21 @@ class DiscordPresenceService
      */
     private function updateOrCreatePresence(User $user, array $data): void
     {
-        DiscordRichPresence::updateOrCreate(
+        $presence = DiscordRichPresence::updateOrCreate(
             ['user_id' => $user->id],
             array_merge($data, ['user_id' => $user->id])
         );
 
         // Clear cache for this user's presence
         Cache::forget("discord_presence_{$user->id}");
+
+        // Broadcast presence update via WebSocket
+        DiscordPresenceUpdated::dispatch(
+            $user->id,
+            $presence->getActivityStatus(),
+            $presence->getActivityState(),
+            $presence->started_at?->toIso8601String(),
+            $presence->enabled
+        );
     }
 }
