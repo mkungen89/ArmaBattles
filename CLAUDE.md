@@ -202,7 +202,7 @@ When displaying scenario names, always use `$server->scenario_display_name` (not
 
 **Favorites:** `Favorite` — Polymorphic favorites for players, teams, and servers. User methods: `favorites()`, `hasFavorited($model)`, `toggleFavorite($model)`.
 
-**Discord:** `DiscordRichPresence` — Tracks user activity (playing, watching_tournament, browsing) with Discord RPC payload generation.
+**Discord:** `DiscordRichPresence` — Tracks user activity (playing, watching_tournament, browsing) with Discord RPC payload generation. Displayed on user profiles (`profile/_discord-presence.blade.php`) with live WebSocket updates via `DiscordPresenceUpdated` event. Shows activity status, state, elapsed time, and Discord User ID. Auto-hides when disabled or no activity. Updates in real-time on private user channel without page refresh. Service: `DiscordPresenceService` handles all presence updates and broadcasts changes.
 
 **News:** `NewsArticle`, `NewsComment`, `NewsHoorah` — Community news with comments and "hoorah" reactions.
 
@@ -453,6 +453,7 @@ Two controllers serve player profiles with identical data but different views:
 Both controllers must pass the same variables to their views. When adding new stats sections, update BOTH controllers and BOTH views. Shared partials in `resources/views/profile/`:
 - `_social-links.blade.php` — Social media icons
 - `_vehicle-stats.blade.php` — Vehicle distance breakdown + roadkills + top vehicles (expects both `$vehicleStats` and `$gameStats`)
+- `_discord-presence.blade.php` — Live Discord Rich Presence activity (expects `$discordPresence` and `$user`). Shows playing/watching/browsing status with WebSocket real-time updates, elapsed time counter, and auto-hide when disabled or no activity
 
 Profile views display data from two sources:
 1. `$gameStats` (PlayerStat model) — aggregated counters from `player_stats` table
@@ -597,13 +598,18 @@ WebSocket-based real-time updates via Laravel Reverb. Replaces HTTP polling with
 | `ActivityFeedUpdated` | `server.global` | `.activity.new` | ShouldBroadcastNow |
 | `BaseEventOccurred` | `server.{id}` | `.base.event` | ShouldBroadcastNow |
 | `NewNotification` | private `App.Models.User.{id}` | `.notification.new` | ShouldBroadcast (queued) |
+| `DiscordPresenceUpdated` | private `App.Models.User.{id}` | `.presence.updated` | ShouldBroadcastNow |
 
-**Dispatch points in StatsController:**
-- `storeKill()` → `KillFeedUpdated` + `ActivityFeedUpdated`
-- `storeConnection()` → `PlayerConnected` + `ActivityFeedUpdated` (on CONNECT)
-- `storeServerStatus()` → `ServerStatusUpdated`
-- `storeBaseEvent()` → `BaseEventOccurred` + `ActivityFeedUpdated` (on capture)
-- `TrackServerStatus` command → `ServerStatusUpdated`
+**Dispatch points:**
+- **StatsController:**
+  - `storeKill()` → `KillFeedUpdated` + `ActivityFeedUpdated`
+  - `storeConnection()` → `PlayerConnected` + `ActivityFeedUpdated` (on CONNECT)
+  - `storeServerStatus()` → `ServerStatusUpdated`
+  - `storeBaseEvent()` → `BaseEventOccurred` + `ActivityFeedUpdated` (on capture)
+- **DiscordPresenceService:**
+  - `updateOrCreatePresence()` → `DiscordPresenceUpdated` (broadcasts activity changes in real-time)
+- **Commands:**
+  - `TrackServerStatus` → `ServerStatusUpdated`
 
 **Notification listener:** `app/Listeners/BroadcastNotificationCreated.php` listens on Laravel's `NotificationSent` event (auto-discovered). Broadcasts `NewNotification` when a database notification is sent.
 
